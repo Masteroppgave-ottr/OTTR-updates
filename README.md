@@ -12,6 +12,8 @@ Note that all files in the temp folder will be ignored by git.
 * **instances**     -filename of instances
 * **templates**     -filename of templates
 * **output**        -filename of output
+* **query**         -filename of SPARQL query
+* **updateQuery**     -filename of SPARQL update query
 
 ## How to run
 Command to run inital setup:
