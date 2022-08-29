@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# load variables
+source temp/variables
+
+# compare Rebuild and Updated datasets
+cd "$path_to_jena_bin"
+./rdfcompare http://localhost:3030/Updated http://localhost:3030/Rebuild
