@@ -14,12 +14,22 @@ Note that all files in the temp folder will be ignored by git.
 * **output**        -filename of output
 
 ## How to run
-Command to run init-db:
+Command to run inital setup:
+```
+TODO
+```
+
+Command to initiallize database:
 ```
 bash init-db
 ```
 
-Command to run update-db:
+Command to update database with SPARQL and LUTRA rebuild:
 ```
 bash update-db
+```
+
+Command to compare Rebuild and Update datasets to see if they are equal.
+```
+TODO
 ```
