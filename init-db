@@ -7,7 +7,20 @@ source temp/variables
 cd "$path_to_input"
 java -jar lutra.jar --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$output"
 
-# put result in db and host on port 3030
+# create datasets if not defined and load data after server is started
+sleep 5 &&
+curl --location --request POST 'http://localhost:3030/$/datasets?dbName=Original&dbType=mem' &&
+
+curl --location --request POST 'http://localhost:3030/$/datasets?dbName=Rebuild&dbType=mem' &&
+
+curl --location --request POST 'http://localhost:3030/$/datasets?dbName=Updated&dbType=mem' &&
+
+curl --location --request PUT 'http://localhost:3030/Original' \
+--header 'Content-Type: text/turtle' \
+--data-binary "@$path_to_input/$output"&
+
+# start fuseki-server on port 3030
 cp "$output" "$path_to_db"
 cd "$path_to_db"
-./fuseki-server --file="$output" /"$dataset_name"
+./fuseki-server --update 
+
