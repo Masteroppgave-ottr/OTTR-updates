@@ -4,13 +4,13 @@
 source temp/variables
 
 # update Updated dataset
-"$path_to_bin"/s-update --service=http://localhost:3030/Updated --update="$path_to_input/$updateQuery"
+"$path_to_bin"/s-update --service=http://localhost:3030/Updated --update="$temp_files/$updateQuery"
 
 # update Rebuild dataset
-cd "$path_to_input"
-java -jar lutra.jar --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$rebuildOutput"
+cd "$temp_files"
+java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$rebuildOutput"
 
 # insert data into rebuild dataset
 curl --location --request PUT 'http://localhost:3030/Rebuild' \
 --header 'Content-Type: text/turtle' \
---data-binary "@$path_to_input/$rebuildOutput"&
+--data-binary "@$temp_files/$rebuildOutput"&

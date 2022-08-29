@@ -8,5 +8,5 @@ if [ "$1" != "Original" ] && [ "$1" != "Rebuild" ] && [ "$1" != "Updated" ]; the
     exit 1
 fi
 
-"$path_to_bin"/s-query --service=http://localhost:3030/$1 --query="$path_to_input/$query"
+"$path_to_bin"/s-query --service=http://localhost:3030/$1 --query="$temp_files/$query"
 

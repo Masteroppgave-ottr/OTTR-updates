@@ -4,8 +4,8 @@
 source temp/variables
 
 # Create rdf file with lutra
-cd "$path_to_input"
-java -jar lutra.jar --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$output"
+cd "$temp_files"
+java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$output"
 
 # create datasets if not defined and load data after server is started
 sleep 5 &&
@@ -17,7 +17,7 @@ curl --location --request POST 'http://localhost:3030/$/datasets?dbName=Updated&
 
 curl --location --request PUT 'http://localhost:3030/Original' \
 --header 'Content-Type: text/turtle' \
---data-binary "@$path_to_input/$output"&
+--data-binary "@$temp_files/$output"&
 
 # start fuseki-server on port 3030
 cd "$path_to_db"
