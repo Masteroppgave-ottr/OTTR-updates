@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# load variables
+source temp/variables
+
+"$path_to_bin"/s-query --service=http://localhost:3030/Original --query="$path_to_input/$query"
+
