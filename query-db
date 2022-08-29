@@ -3,5 +3,10 @@
 # load variables
 source temp/variables
 
-"$path_to_bin"/s-query --service=http://localhost:3030/Original --query="$path_to_input/$query"
+if [ "$1" != "Original" ] && [ "$1" != "Rebuild" ] && [ "$1" != "Updated" ]; then
+    echo "Usage: ./update-db [Original, Rebuild, Updated]"
+    exit 1
+fi
+
+"$path_to_bin"/s-query --service=http://localhost:3030/$1 --query="$path_to_input/$query"
 
