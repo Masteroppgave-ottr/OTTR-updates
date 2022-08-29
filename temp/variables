@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# paths
+path_to_db="/home/magnus/Emner/Master/apache-jena-fuseki-4.5.0"
+temp_files="/home/magnus/Emner/Master/dev/temp"
+path_to_bin="/home/magnus/Emner/Master/apache-jena-fuseki-4.5.0/bin"
+path_to_jena_bin="/home/magnus/Emner/Master/apache-jena-4.6.0/bin"
+lutra="/home/magnus/Emner/Master/dev/lutra.jar"
+
+# variables
+instances=instances.stottr
+templates=templates.stottr
+output=output.ttl
+rebuildOutput=rebuildOutput.ttl
+dataset_name=Person
+query=query.rq
+updateQuery=updateQuery.rq
