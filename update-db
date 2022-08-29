@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# variables
+old_instances=instances.stottr
+new_instances=new_instances.stottr
+templates=person.stottr
+output=output.ttl
+
+dataset_name=Person
+dataset_name_rebuild="$dataset_name"_Rebuild
+dataset_name_update="$dataset_name"_Update
+
+# paths
+path_to_db=/home/prebz/ottr/apache-jena-fuseki-4.5.0
+
+
+### REBUILD WITH LUTRA ###
+# Create rdf file with lutra
+java -jar lutra.jar --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$output"
+
+
+### UPDATE WITH SPARQL ###

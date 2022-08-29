@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# variables
+instances=instances.stottr
+templates=person.stottr
+output=output.ttl
+dataset_name=Person
+
+#paths
+path_to_db=/home/prebz/ottr/apache-jena-fuseki-4.5.0
+
+# Create rdf file with lutra
+java -jar lutra.jar --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$output"
+
+# put result in db and host on port 3030
+cp "$output" "$path_to_db"
+cd "$path_to_db"
+./fuseki-server --file="$output" /"$dataset_name"
