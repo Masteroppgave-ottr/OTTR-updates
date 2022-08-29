@@ -20,7 +20,5 @@ curl --location --request PUT 'http://localhost:3030/Original' \
 --data-binary "@$path_to_input/$output"&
 
 # start fuseki-server on port 3030
-cp "$output" "$path_to_db"
 cd "$path_to_db"
 ./fuseki-server --update 
-
