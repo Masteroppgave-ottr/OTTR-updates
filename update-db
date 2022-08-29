@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# load variables
+source temp/variables
+
+"$path_to_bin"/s-update --service=http://localhost:3030/Updated --update="$path_to_input/$updateQuery"
