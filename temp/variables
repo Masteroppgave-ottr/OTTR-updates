@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# paths
+path_to_db="" #path to folder with fuseki database
+temp_files="" #folder with temporary files, such as input- and outputfiles
+path_to_bin="" #path to bin folder in fuseki
+path_to_jena_bin="" #path to bin folder in jena without fuseki
+lutra="" #path to lutra.jar
+
+# variables (should be in temp folder)
+instances=instances.stottr #filename of instances
+templates=templates.stottr #filename of templates
+output=output.ttl #filename of output from init
+rebuildOutput=rebuildOutput.ttl #filename of output from rebuild
+query=query.rq #filename of custom SPARQL query
+updateQuery=updateQuery.rq #filename of SPARQL update query

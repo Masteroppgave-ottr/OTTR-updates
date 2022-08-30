@@ -1,0 +1,6 @@
+@prefix ex:  <http://example.org/> .
+
+ex:Person("Arme") .
+ex:Person("Bea") .
+ex:Person("Chris") .
+
