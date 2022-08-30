@@ -8,9 +8,9 @@ Example_temp contains all required variables and files. Set the path-variables a
 Note that all files in the temp folder will be ignored by git. 
 
 ### Requirements:
-* Lutra
-* Apache Jena Fuseki
-* Apache Jena
+* Lutra (https://gitlab.com/ottr/lutra/lutra)
+* Apache Jena Fuseki (https://jena.apache.org/download/)
+* Apache Jena (https://jena.apache.org/download/)
 
 ## How to run
 Command to run inital setup:
