@@ -9,6 +9,7 @@ lutra="" #path to lutra.jar
 
 # variables (should be in temp folder)
 instances=instances.stottr #filename of instances
+new_instances=new_instances.stottr #filename of instances after change
 templates=templates.stottr #filename of templates
 output=output.ttl #filename of output from init
 rebuildOutput=rebuildOutput.ttl #filename of output from rebuild
