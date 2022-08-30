@@ -33,5 +33,5 @@ bash update-db
 
 Command to compare Rebuild and Update datasets to see if they are equal.
 ```
-TODO
+bash compare
 ```
