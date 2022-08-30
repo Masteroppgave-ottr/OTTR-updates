@@ -12,7 +12,7 @@ source temp/variables
 ### REBUILD WITH LUTRA ###
 # rebuild with new instances and templates
 cd "$temp_files"
-java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$rebuildOutput"
+java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$new_instances" -o "$rebuildOutput"
 
 # insert data into rebuild dataset
 curl --location --request PUT 'http://localhost:3030/Rebuild' \

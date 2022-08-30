@@ -3,6 +3,16 @@
 # load variables
 source temp/variables
 
-# compare Rebuild and Updated datasets
+if [ "$1" != "Original" ] && [ "$1" != "Rebuild" ] && [ "$1" != "Updated" ]; then
+    echo "Usage: ./update-db [Original, Rebuild, Updated] [Original, Rebuild, Updated]"
+    exit 1
+fi
+
+if [ "$2" != "Original" ] && [ "$2" != "Rebuild" ] && [ "$2" != "Updated" ]; then
+    echo "Usage: ./update-db [Original, Rebuild, Updated] [Original, Rebuild, Updated]"
+    exit 1
+fi
+
+# compare datasets
 cd "$path_to_jena_bin"
-./rdfcompare http://localhost:3030/Updated http://localhost:3030/Rebuild
+./rdfcompare http://localhost:3030/$1 http://localhost:3030/$2

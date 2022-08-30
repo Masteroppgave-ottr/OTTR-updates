@@ -28,7 +28,7 @@ Command to update database with SPARQL and LUTRA rebuild:
 bash update-db
 ```
 
-Command to compare Rebuild and Update datasets to see if they are equal.
+Command to compare two datasets. Returns equal or not equal. Dataset must be one of the following: [Original, Rebuild, Updated]
 ```
-bash compare
+bash compare <dataset1> <dataset2>
 ```
