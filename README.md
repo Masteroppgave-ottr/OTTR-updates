@@ -4,21 +4,13 @@
 init-db converts a set of ottr instances and templates to an RDF-file and initializes a database with the result. 
 
 init-db requires certian variables. These are located in the **variables** script in the **temp** folder. 
+Example_temp contains all required variables and files. Set the path-variables and rename the folder to temp, then you can run the different scripts.
 Note that all files in the temp folder will be ignored by git. 
 
-### Required variables:
-* **path_to_db**    -path to folder with fuseki database
-* **temp_files**    -folder with temporary files, such as input- and outputfiles
-* **path_to_bin**     -path to bin folder in fuseki 
-* **path_to_jena_bin** -path to bin folder in jena without fuseki
-* **lutra**         -path to lutra.jar
-
-* **instances**     -filename of instances
-* **templates**     -filename of templates
-* **output**        -filename of output from init
-* **rebuildOutput** -filename of output from rebuild
-* **query**         -filename of custom SPARQL query
-* **updateQuery**   -filename of SPARQL update query
+### Requirements:
+* Lutra (https://gitlab.com/ottr/lutra/lutra)
+* Apache Jena Fuseki (https://jena.apache.org/download/)
+* Apache Jena (https://jena.apache.org/download/)
 
 ## How to run
 Command to run inital setup:
