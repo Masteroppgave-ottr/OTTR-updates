@@ -1,15 +1,16 @@
 #!/bin/bash
 
 # paths
-path_to_db="/home/prebz/ottr/apache-jena-fuseki-4.5.0"
-temp_files="/home/prebz/ottr/dev/temp"
-path_to_bin="/home/prebz/ottr/apache-jena-fuseki-4.5.0/bin"
-path_to_jena_bin="/home/prebz/ottr/apache-jena-4.6.0/bin"
-lutra="/home/prebz/ottr/lutra/lutra-cli/target/lutra.jar"
-# variables
-instances=instances.stottr
-templates=templates.stottr
-output=output.ttl
-rebuildOutput=rebuildOutput.ttl
-query=query.rq
-updateQuery=updateQuery.rq
+path_to_db="" #path to folder with fuseki database
+temp_files="" #folder with temporary files, such as input- and outputfiles
+path_to_bin="" #path to bin folder in fuseki
+path_to_jena_bin="" #path to bin folder in jena without fuseki
+lutra="" #path to lutra.jar
+
+# variables (should be in temp folder)
+instances=instances.stottr #filename of instances
+templates=templates.stottr #filename of templates
+output=output.ttl #filename of output from init
+rebuildOutput=rebuildOutput.ttl #filename of output from rebuild
+query=query.rq #filename of custom SPARQL query
+updateQuery=updateQuery.rq #filename of SPARQL update query
