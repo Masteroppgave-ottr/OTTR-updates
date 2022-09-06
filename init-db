@@ -9,16 +9,16 @@ java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr -
 
 # create datasets if not defined and load data after server is started
 sleep 5 &&
-curl --location --request POST 'http://localhost:3030/$/datasets?dbName=Original&dbType=mem' &&
+curl --location --request POST "http://localhost:$port/$/datasets?dbName=Original&dbType=mem" &&
 
-curl --location --request POST 'http://localhost:3030/$/datasets?dbName=Rebuild&dbType=mem' &&
+curl --location --request POST "http://localhost:$port/$/datasets?dbName=Rebuild&dbType=mem" &&
 
-curl --location --request POST 'http://localhost:3030/$/datasets?dbName=Updated&dbType=mem' &&
+curl --location --request POST "http://localhost:$port/$/datasets?dbName=Updated&dbType=mem" &&
 
-curl --location --request PUT 'http://localhost:3030/Original' \
+curl --location --request PUT "http://localhost:$port/Original" \
 --header 'Content-Type: text/turtle' \
 --data-binary "@$temp_files/$output"&
 
 # start fuseki-server on port 3030
 cd "$path_to_db"
-./fuseki-server --update 
+./fuseki-server --port $port --update 

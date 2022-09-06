@@ -7,7 +7,7 @@ source temp/variables
 # create update query TODO
 
 # update Updated dataset with query
-"$path_to_bin"/s-update --service=http://localhost:3030/Updated --update="$temp_files/$updateQuery"
+"$path_to_bin"/s-update --service=http://localhost:$port/Updated --update="$temp_files/$updateQuery"
 
 ### REBUILD WITH LUTRA ###
 # rebuild with new instances and templates
@@ -15,6 +15,6 @@ cd "$temp_files"
 java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$new_instances" -o "$rebuildOutput"
 
 # insert data into rebuild dataset
-curl --location --request PUT 'http://localhost:3030/Rebuild' \
+curl --location --request PUT "http://localhost:$port/Rebuild" \
 --header 'Content-Type: text/turtle' \
 --data-binary "@$temp_files/$rebuildOutput"
