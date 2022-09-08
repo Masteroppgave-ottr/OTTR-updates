@@ -36,10 +36,10 @@ bash compare <dataset1> <dataset2>
 ## How to run ottr-update
 Navigate into the correct directory
 ```bash
-cd ottr-update/target/classes
+cd ottr-update/
 ```
 
 Run the program
 ```bash
-java update.ottr.App
+java -cp target/ottr-update-1.0-SNAPSHOT.jar:<PATH_TO_lutra.jar> update.ottr.App
 ```
