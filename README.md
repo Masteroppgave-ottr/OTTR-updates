@@ -32,3 +32,14 @@ Command to compare two datasets. Returns equal or not equal. Dataset must be one
 ```
 bash compare <dataset1> <dataset2>
 ```
+
+## How to run ottr-update
+Navigate into the correct directory
+```bash
+cd ottr-update/target/classes
+```
+
+Run the program
+```bash
+java update.ottr.App
+```
