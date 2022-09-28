@@ -2,6 +2,9 @@ package update.ottr;
 
 import xyz.ottr.lutra.api.StandardTemplateManager;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +34,17 @@ public class App
         return writer.writeToModel();
     }
 
+    public static void writeToFile(String query, File file)
+    {
+        try {
+            FileWriter writer = new FileWriter(file);
+            writer.write(query);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main( String[] args )
     //to run: following command in ottr-update folder:
     //mvn package && java -jar target/update.jar
@@ -38,19 +52,26 @@ public class App
         String pathToOldInstances = "/home/prebz/ottr/dev/temp/old_instances.stottr";
         String pathToNewInstances = "/home/prebz/ottr/dev/temp/new_instances.stottr";
         String pathToTemplate = "/home/prebz/ottr/dev/temp/templates.stottr";
+        String pathToDeleteQuery = "/home/prebz/ottr/dev/temp/deleteQuery.rq";
+        String pathToInsertQuery = "/home/prebz/ottr/dev/temp/insertQuery.rq";
+        String pathToUpdateQuery = "/home/prebz/ottr/dev/temp/updateQuery.rq";
+
+        File outputFileDelete = new File(pathToDeleteQuery);
+        File outputFileInsert = new File(pathToInsertQuery);
+        File outputFileUpdate = new File(pathToUpdateQuery);
 
         TemplateManager tm = new StandardTemplateManager();
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate); 
         msgs.printMessages();
 
-        Model oldInstances = expandAndGetModel(pathToOldInstances, tm);
-        Model newInstances = expandAndGetModel(pathToNewInstances, tm);
+        Model oldModel = expandAndGetModel(pathToOldInstances, tm);
+        String deleteQuery = naiveUpdate.createDeleteQuery(oldModel);
+        writeToFile(deleteQuery, outputFileDelete);
         
-        // StmtIterator iterator = oldInstances.listStatements();
-        // for ( ; iterator.hasNext() ; ) {
-        //     System.out.println(iterator.nextStatement());
-        // }
+        Model newModel = expandAndGetModel(pathToNewInstances, tm);
+        String insertQuery = naiveUpdate.createInsertQuery(newModel);
+        writeToFile(insertQuery, outputFileInsert);
 
-        // System.out.println(naiveUpdate.createQuery(oldExpanded, newExpanded));
+        // String updateQuery = naiveUpdate.createUpdateQuery(oldModel, newModel);
     }
 }
