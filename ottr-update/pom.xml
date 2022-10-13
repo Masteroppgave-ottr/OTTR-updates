@@ -31,6 +31,17 @@
       <artifactId>lutra-api</artifactId>
       <version>0.6.13</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>apache-jena-libs</artifactId>
+      <type>pom</type>
+      <version>4.6.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-querybuilder</artifactId>
+      <version>4.6.1</version>
+    </dependency>
   </dependencies>
 
   <build>

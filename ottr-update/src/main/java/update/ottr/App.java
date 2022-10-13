@@ -5,12 +5,12 @@ import xyz.ottr.lutra.api.StandardTemplateManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.net.*;
+import java.io.*;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.StmtIterator;
 
 import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.model.Instance;
@@ -45,16 +45,42 @@ public class App
         }
     }
 
+    public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete, File outputFileInsert)
+    {
+        String deleteQuery = naiveUpdate.createDeleteRequest(oldModel).toString();
+        writeToFile(deleteQuery, outputFileDelete);
+
+        String insertQuery = naiveUpdate.createInsertRequest(newModel).toString();
+        writeToFile(insertQuery, outputFileInsert);
+    }
+
+    public static void updateLocalDB(String deleteQuery, String insertQuery, String dbURL) throws Exception
+    {
+        // send post request to update local db
+        URL url = new URL(dbURL);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        con.setDoOutput(true);
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+        out.writeBytes("update=/home/prebz/ottr/dev/temp/insertQuery.rq");
+        out.flush();
+        out.close();
+        int status = con.getResponseCode();
+        System.out.println(status);
+    }
+
     public static void main( String[] args )
     //to run: following command in ottr-update folder:
     //mvn package && java -jar target/update.jar
     {
-        String pathToOldInstances = "/home/prebz/ottr/dev/temp/old_instances.stottr";
-        String pathToNewInstances = "/home/prebz/ottr/dev/temp/new_instances.stottr";
-        String pathToTemplate = "/home/prebz/ottr/dev/temp/templates.stottr";
-        String pathToDeleteQuery = "/home/prebz/ottr/dev/temp/deleteQuery.rq";
-        String pathToInsertQuery = "/home/prebz/ottr/dev/temp/insertQuery.rq";
-        String pathToUpdateQuery = "/home/prebz/ottr/dev/temp/updateQuery.rq";
+        String pathToOldInstances ="../temp/old_instances.stottr";
+        String pathToNewInstances = "../temp/new_instances.stottr";
+        String pathToTemplate = "../temp/templates.stottr";
+        String pathToDeleteQuery = "../temp/deleteQuery.rq";
+        String pathToInsertQuery = "../temp/insertQuery.rq";
+        String pathToUpdateQuery = "../temp/updateQuery.rq";
+        String dbURL = "http://localhost:3030/";
 
         File outputFileDelete = new File(pathToDeleteQuery);
         File outputFileInsert = new File(pathToInsertQuery);
@@ -65,13 +91,17 @@ public class App
         msgs.printMessages();
 
         Model oldModel = expandAndGetModel(pathToOldInstances, tm);
-        String deleteQuery = naiveUpdate.createDeleteQuery(oldModel);
-        writeToFile(deleteQuery, outputFileDelete);
-        
         Model newModel = expandAndGetModel(pathToNewInstances, tm);
-        String insertQuery = naiveUpdate.createInsertQuery(newModel);
-        writeToFile(insertQuery, outputFileInsert);
 
-        // String updateQuery = naiveUpdate.createUpdateQuery(oldModel, newModel);
+        simpleUpdate(tm, oldModel, newModel, outputFileDelete, outputFileInsert);
+
+
+        try {
+            updateLocalDB(pathToDeleteQuery, pathToInsertQuery, dbURL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // String updateQuery = naiveUpdate.createUpdateQuery(oldModel/fil, newModel/fil, updateDescrioption);
     }
 }
