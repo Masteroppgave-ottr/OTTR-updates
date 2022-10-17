@@ -228,7 +228,7 @@ class Diff {
 
     /*
      * Get a string containing lines from the new instance file where instances are
-     * added
+     * added.
      */
     public String getAddInstances(String newInstanceFileName) throws FileNotFoundException {
         return getInstancesString(newInstanceFileName, addLines);
