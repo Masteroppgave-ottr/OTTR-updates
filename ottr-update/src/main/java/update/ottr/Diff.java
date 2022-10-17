@@ -2,6 +2,13 @@ package update.ottr;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import xyz.ottr.lutra.model.Instance;
+import xyz.ottr.lutra.stottr.parser.SInstanceParser;
+import xyz.ottr.lutra.system.Result;
 
 class Diff {
 
@@ -171,6 +178,51 @@ class Diff {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+    public String getAddInstances(String newInstanceFileName) throws FileNotFoundException {
+        String s = "";
+        int linesAdded = 0;
+        if (addLines.size() == 0)
+            return null;
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(newInstanceFileName));
+
+            int currentLine = 1;
+            int addIndex = 0;
+            int getLine = Integer.parseInt(addLines.get(addIndex));
+            while (br.ready()) {
+                // read through file until the correct line
+                for (; currentLine < getLine; currentLine++) {
+                    br.readLine();
+                }
+
+                // found the correct line. Add to s and find next line
+                s += br.readLine() + "\n";
+                linesAdded++;
+                currentLine++;
+                addIndex++;
+                if (addIndex < addLines.size()) {
+                    getLine = Integer.parseInt(addLines.get(addIndex));
+                } else {
+                    break;
+                }
+            }
+
+            br.close();
+        } catch (IOException e) {
+            System.out.println("Error while reading the file");
+            e.printStackTrace();
+        }
+
+        // If there is a different number of lines in the add list and the created
+        // string something is wrong.
+        if (linesAdded != addLines.size()) {
+            throw new RuntimeException("Could not find all the lines in the new instance file");
+        }
+
+        return s;
     }
 
     /*
