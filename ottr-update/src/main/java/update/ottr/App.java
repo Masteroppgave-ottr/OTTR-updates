@@ -11,6 +11,7 @@ import java.net.*;
 import java.io.*;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.model.Instance;
@@ -45,25 +46,54 @@ public class App
         }
     }
 
-    public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete, File outputFileInsert)
+    public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete, File outputFileInsert, String dbURL)
     {
-        String deleteQuery = naiveUpdate.createDeleteRequest(oldModel).toString();
-        writeToFile(deleteQuery, outputFileDelete);
+        // String deleteQuery = naiveUpdate.createDeleteRequest(oldModel).toString();
+        // writeToFile(deleteQuery, outputFileDelete);
 
-        String insertQuery = naiveUpdate.createInsertRequest(newModel).toString();
-        writeToFile(insertQuery, outputFileInsert);
+        // String insertQuery = naiveUpdate.createInsertRequest(newModel).toString();
+        // writeToFile(insertQuery, outputFileInsert);
+
+        UpdateRequest deleteRequest = naiveUpdate.createDeleteRequest(oldModel);
+        UpdateRequest insertRequest = naiveUpdate.createInsertRequest(newModel);
+
+        System.out.println(insertRequest.toString());
+
+        try {
+            updateLocalDB(deleteRequest, insertRequest, dbURL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void updateLocalDB(String deleteQuery, String insertQuery, String dbURL) throws Exception
+    public static void updateLocalDB(UpdateRequest deleteRequest, UpdateRequest insertRequest, String dbURL) throws Exception
     {
         // send post request to update local db
-        URL url = new URL(dbURL);
+        URL url = new URL(dbURL+"Updated/");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        // con.setRequestProperty("Content-Type", "application/sparql-query");
+        con.setRequestProperty("Content-Type", "text/turtle;charset=utf-8");
+        // con.setRequestProperty("Content-Type", "text/turtle");
+        // con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         con.setDoOutput(true);
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
-        out.writeBytes("update=/home/prebz/ottr/dev/temp/insertQuery.rq");
+        
+        
+        out.writeBytes(insertRequest.toString());
+        // out.writeBytes("SELECT * WHERE { ?sub ?pred ?obj . } LIMIT 10");
+        
+        // DataInputStream in = new DataInputStream(con.getInputStream());
+        // String inputLine;
+        // StringBuffer content = new StringBuffer();
+        // while ((inputLine = in.readLine()) != null) {
+        //     content.append(inputLine);
+        // }
+        // in.close();
+        // out.close();
+        // con.disconnect();
+        // System.out.println(content.toString());
+
         out.flush();
         out.close();
         int status = con.getResponseCode();
@@ -93,14 +123,7 @@ public class App
         Model oldModel = expandAndGetModel(pathToOldInstances, tm);
         Model newModel = expandAndGetModel(pathToNewInstances, tm);
 
-        simpleUpdate(tm, oldModel, newModel, outputFileDelete, outputFileInsert);
-
-
-        try {
-            updateLocalDB(pathToDeleteQuery, pathToInsertQuery, dbURL);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        simpleUpdate(tm, oldModel, newModel, outputFileDelete, outputFileInsert, dbURL);
 
         // String updateQuery = naiveUpdate.createUpdateQuery(oldModel/fil, newModel/fil, updateDescrioption);
     }
