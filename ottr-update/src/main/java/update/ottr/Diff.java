@@ -2,13 +2,19 @@ package update.ottr;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import xyz.ottr.lutra.model.Instance;
+import xyz.ottr.lutra.stottr.parser.SInstanceParser;
+import xyz.ottr.lutra.system.Result;
 
 class Diff {
 
-    ArrayList<String> delete;
-    ArrayList<String> add;
-    ArrayList<String> change;
-    char ignoreCharacters[];
+    public ArrayList<String> addLines;
+    public ArrayList<String> deleteLines;
+    public char ignoreCharacters[];
 
     /*
      * Class used to compare two files containing OTTR instances.
@@ -20,9 +26,8 @@ class Diff {
      * instances.
      */
     public Diff() {
-        this.delete = new ArrayList<String>();
-        this.add = new ArrayList<String>();
-        this.change = new ArrayList<String>();
+        this.addLines = new ArrayList<String>();
+        this.deleteLines = new ArrayList<String>();
         this.ignoreCharacters = new char[] { '<', '>', '\\', '-' };
     }
 
@@ -118,60 +123,53 @@ class Diff {
         return numbers;
     }
 
+    private void handleAdd(String s) {
+        int numbers[] = getNumbersAfter(s);
+        if (numbers[1] == -1) {
+            addLines.add(Integer.toString(numbers[0]));
+        } else {
+            for (int i = numbers[0]; i <= numbers[1]; i++) {
+                addLines.add(Integer.toString(i));
+            }
+        }
+    }
+
+    private void handleDelete(String s) {
+        int numbers[] = getNumbersBefore(s);
+        // there is only one line number
+        if (numbers[1] == -1) {
+            deleteLines.add(Integer.toString(numbers[0]));
+        } else {
+            for (int i = numbers[0]; i <= numbers[1]; i++) {
+                deleteLines.add(Integer.toString(i));
+            }
+        }
+    }
+
+    private void handleChange(String s) {
+        handleDelete(s);
+        handleAdd(s);
+    }
+
     /*
-     * after reading a diff the results can be written to two files_
+     * after reading a diff with `readDiffFromStdIn()` the results can be written to
+     * two files_
      * addFile: contains all the line number of the added instances.
      * This is the new file with updated instances.
      * deleteFile: contains all the line number of the deleted instances.
      * This is the old file with the original instances.
      */
-    void writeToFile(String addFile, String removeFile) {
+    public void writeToFile(String addFile, String removeFile) {
         try {
             FileWriter addFW = new FileWriter(addFile);
             FileWriter deleteFW = new FileWriter(removeFile);
 
-            for (String s : add) {
-                int numbers[] = getNumbersAfter(s);
-                if (numbers[1] == -1) {
-                    addFW.write(numbers[0] + "\n");
-                } else {
-                    for (int i = numbers[0]; i <= numbers[1]; i++) {
-                        addFW.write(i + "\n");
-                    }
-                }
+            for (String s : addLines) {
+                addFW.write(s + "\n");
             }
 
-            for (String s : delete) {
-                int numbers[] = getNumbersBefore(s);
-                // there is only one line number
-                if (numbers[1] == -1) {
-                    deleteFW.write(numbers[0] + "\n");
-                } else {
-                    for (int i = numbers[0]; i <= numbers[1]; i++) {
-                        deleteFW.write(i + "\n");
-                    }
-                }
-            }
-
-            for (String s : change) {
-                int numbers[] = getNumbersBefore(s);
-                // there is only one line number
-                if (numbers[1] == -1) {
-                    deleteFW.write(numbers[0] + "\n");
-                } else {
-                    for (int i = numbers[0]; i <= numbers[1]; i++) {
-                        deleteFW.write(i + "\n");
-                    }
-                }
-
-                numbers = getNumbersAfter(s);
-                if (numbers[1] == -1) {
-                    addFW.write(numbers[0] + "\n");
-                } else {
-                    for (int i = numbers[0]; i <= numbers[1]; i++) {
-                        addFW.write(i + "\n");
-                    }
-                }
+            for (String s : deleteLines) {
+                deleteFW.write(s + "\n");
             }
 
             addFW.close();
@@ -182,26 +180,82 @@ class Diff {
         }
     }
 
+    public String getAddInstances(String newInstanceFileName) throws FileNotFoundException {
+        String s = "";
+        int linesAdded = 0;
+        if (addLines.size() == 0)
+            return null;
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(newInstanceFileName));
+
+            int currentLine = 1;
+            int addIndex = 0;
+            int getLine = Integer.parseInt(addLines.get(addIndex));
+            while (br.ready()) {
+                // read through file until the correct line
+                for (; currentLine < getLine; currentLine++) {
+                    br.readLine();
+                }
+
+                // found the correct line. Add to s and find next line
+                s += br.readLine() + "\n";
+                linesAdded++;
+                currentLine++;
+                addIndex++;
+                if (addIndex < addLines.size()) {
+                    getLine = Integer.parseInt(addLines.get(addIndex));
+                } else {
+                    break;
+                }
+            }
+
+            br.close();
+        } catch (IOException e) {
+            System.out.println("Error while reading the file");
+            e.printStackTrace();
+        }
+
+        // If there is a different number of lines in the add list and the created
+        // string something is wrong.
+        if (linesAdded != addLines.size()) {
+            throw new RuntimeException("Could not find all the lines in the new instance file");
+        }
+
+        return s;
+    }
+
     /*
-     * Read a unix diff from stdin and write the edit codes to 3 lists: add, delete,
-     * change
+     * Read a unix diff from stdin and write the edit codes to 2 lists: addLines,
+     * deleteLines,
      */
     public void readDiffFromStdIn() {
+
+        // // run the command echo "hello world" from the users terminal
+        // // and store the output in a string
+        // String command = "echo \"hello world\"";
+        // ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
+        // Process process = null;
+        // try {
+        // process = pb.start();
+        // } catch (IOException e) {
+        // System.out.println("An error occurred.");
+        // e.printStackTrace();
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line = "<";
 
         while (line != null) {
             try {
-                // switch case to check for the first character of the line
                 switch (firstLetter(line)) {
                     case 'a':
-                        add.add(line);
+                        handleAdd(line);
                         break;
                     case 'c':
-                        change.add(line);
+                        handleChange(line);
                         break;
                     case 'd':
-                        delete.add(line);
+                        handleDelete(line);
                         break;
                     default:
                         break;
@@ -212,12 +266,5 @@ class Diff {
                 e.printStackTrace();
             }
         }
-
-        System.out.println("Add:");
-        System.out.println(add);
-        System.out.println("Delete:");
-        System.out.println(delete);
-        System.out.println("Change:");
-        System.out.println(change);
     }
 }
