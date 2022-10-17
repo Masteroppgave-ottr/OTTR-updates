@@ -47,53 +47,28 @@ public class App
     }
 
     public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete, File outputFileInsert, String dbURL)
-    {
-        // String deleteQuery = naiveUpdate.createDeleteRequest(oldModel).toString();
-        // writeToFile(deleteQuery, outputFileDelete);
-
-        // String insertQuery = naiveUpdate.createInsertRequest(newModel).toString();
-        // writeToFile(insertQuery, outputFileInsert);
-
-        UpdateRequest deleteRequest = naiveUpdate.createDeleteRequest(oldModel);
-        UpdateRequest insertRequest = naiveUpdate.createInsertRequest(newModel);
-
-        System.out.println(insertRequest.toString());
+    { 
+        UpdateRequest updateRequest = naiveUpdate.createUpdateRequest(oldModel, newModel);
 
         try {
-            updateLocalDB(deleteRequest, insertRequest, dbURL);
+            updateLocalDB(updateRequest, dbURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void updateLocalDB(UpdateRequest deleteRequest, UpdateRequest insertRequest, String dbURL) throws Exception
+    public static void updateLocalDB(UpdateRequest updateRequest, String dbURL) throws Exception
     {
         // send post request to update local db
-        URL url = new URL(dbURL+"Updated/");
+        URL url = new URL(dbURL+"Updated/update");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
-        // con.setRequestProperty("Content-Type", "application/sparql-query");
-        con.setRequestProperty("Content-Type", "text/turtle;charset=utf-8");
-        // con.setRequestProperty("Content-Type", "text/turtle");
-        // con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        con.setRequestProperty("Content-Type", "application/sparql-update");
+
         con.setDoOutput(true);
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
         
-        
-        out.writeBytes(insertRequest.toString());
-        // out.writeBytes("SELECT * WHERE { ?sub ?pred ?obj . } LIMIT 10");
-        
-        // DataInputStream in = new DataInputStream(con.getInputStream());
-        // String inputLine;
-        // StringBuffer content = new StringBuffer();
-        // while ((inputLine = in.readLine()) != null) {
-        //     content.append(inputLine);
-        // }
-        // in.close();
-        // out.close();
-        // con.disconnect();
-        // System.out.println(content.toString());
-
+        out.writeBytes(updateRequest.toString());
         out.flush();
         out.close();
         int status = con.getResponseCode();

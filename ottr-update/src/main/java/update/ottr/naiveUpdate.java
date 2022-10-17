@@ -20,4 +20,13 @@ public class naiveUpdate {
         return builder.buildRequest();
     }
 
+    public static UpdateRequest createUpdateRequest(Model oldModel, Model newModel)
+    {
+        UpdateBuilder builder = new UpdateBuilder()
+            .addDelete(oldModel)
+            .addInsert(newModel)
+            .addWhere("?x", "?y", "?z");
+        return builder.buildRequest();
+    }
+
 }
