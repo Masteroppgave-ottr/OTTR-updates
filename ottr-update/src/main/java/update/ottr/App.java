@@ -37,6 +37,7 @@ public class App {
     public static Model expandAndGetModel(String pathToInstances, TemplateManager tm) {
         // read instances from file and expand them
         ResultStream<Instance> expanded = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
+
                 .innerFlatMap(tm.makeExpander());
         Set<Instance> instances = new HashSet<Instance>();
         expanded.innerForEach(instances::add);
@@ -71,23 +72,38 @@ public class App {
     }
 
     public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete,
-            File outputFileInsert) {
-        String deleteQuery = naiveUpdate.createDeleteRequest(oldModel).toString();
-        writeToFile(deleteQuery, outputFileDelete);
+            File outputFileInsert, String dbURL) {
+        // String deleteQuery = naiveUpdate.createDeleteRequest(oldModel).toString();
+        // writeToFile(deleteQuery, outputFileDelete);
 
-        String insertQuery = naiveUpdate.createInsertRequest(newModel).toString();
-        writeToFile(insertQuery, outputFileInsert);
+        // String insertQuery = naiveUpdate.createInsertRequest(newModel).toString();
+        // writeToFile(insertQuery, outputFileInsert);
+
+        UpdateRequest deleteRequest = naiveUpdate.createDeleteRequest(oldModel);
+        UpdateRequest insertRequest = naiveUpdate.createInsertRequest(newModel);
+
+        // System.out.println(insertRequest.toString());
+
+        try {
+            updateLocalDB(deleteRequest, insertRequest, dbURL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void updateLocalDB(String deleteQuery, String insertQuery, String dbURL) throws Exception {
+    public static void updateLocalDB(UpdateRequest deleteRequest, UpdateRequest insertRequest, String dbURL)
+            throws Exception {
         // send post request to update local db
-        URL url = new URL(dbURL);
+        URL url = new URL(dbURL + "Updated/update");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        con.setRequestProperty("Content-Type", "application/sparql-update");
         con.setDoOutput(true);
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
-        out.writeBytes("update=/home/prebz/ottr/dev/temp/insertQuery.rq");
+
+        System.out.println("sending request:\n" + deleteRequest.toString());
+        out.writeBytes(deleteRequest.toString());
+
         out.flush();
         out.close();
         int status = con.getResponseCode();
