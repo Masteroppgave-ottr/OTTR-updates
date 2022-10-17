@@ -180,10 +180,11 @@ class Diff {
         }
     }
 
-    public String getAddInstances(String newInstanceFileName) throws FileNotFoundException {
+    private String getInstancesString(String newInstanceFileName, ArrayList<String> lineNumberList)
+            throws FileNotFoundException {
         String s = "";
         int linesAdded = 0;
-        if (addLines.size() == 0)
+        if (lineNumberList.size() == 0)
             return null;
 
         try {
@@ -191,7 +192,7 @@ class Diff {
 
             int currentLine = 1;
             int addIndex = 0;
-            int getLine = Integer.parseInt(addLines.get(addIndex));
+            int getLine = Integer.parseInt(lineNumberList.get(addIndex));
             while (br.ready()) {
                 // read through file until the correct line
                 for (; currentLine < getLine; currentLine++) {
@@ -203,8 +204,8 @@ class Diff {
                 linesAdded++;
                 currentLine++;
                 addIndex++;
-                if (addIndex < addLines.size()) {
-                    getLine = Integer.parseInt(addLines.get(addIndex));
+                if (addIndex < lineNumberList.size()) {
+                    getLine = Integer.parseInt(lineNumberList.get(addIndex));
                 } else {
                     break;
                 }
@@ -218,11 +219,27 @@ class Diff {
 
         // If there is a different number of lines in the add list and the created
         // string something is wrong.
-        if (linesAdded != addLines.size()) {
+        if (linesAdded != lineNumberList.size()) {
             throw new RuntimeException("Could not find all the lines in the new instance file");
         }
 
         return s;
+    }
+
+    /*
+     * Get a string containing lines from the new instance file where instances are
+     * added.
+     */
+    public String getAddInstances(String newInstanceFileName) throws FileNotFoundException {
+        return getInstancesString(newInstanceFileName, addLines);
+    }
+
+    /*
+     * Get a string containing lines from the old instance file where instances are
+     * removed
+     */
+    public String getDeleteInstances(String oldInstanceFileName) throws FileNotFoundException {
+        return getInstancesString(oldInstanceFileName, deleteLines);
     }
 
     /*
