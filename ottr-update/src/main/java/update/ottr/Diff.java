@@ -8,6 +8,8 @@ class Diff {
     public ArrayList<String> addLines;
     public ArrayList<String> deleteLines;
     public char ignoreCharacters[];
+    private Logger log;
+    private String logLevel = "DIFF";
 
     /**
      * Class used to compare two files containing OTTR instances.
@@ -18,10 +20,11 @@ class Diff {
      * newFile (String): Path to the new instance file containing the modified
      * instances.
      */
-    public Diff() {
+    public Diff(Logger log) {
         this.addLines = new ArrayList<String>();
         this.deleteLines = new ArrayList<String>();
         this.ignoreCharacters = new char[] { '<', '>', '\\', '-' };
+        this.log = log;
     }
 
     /**
@@ -279,5 +282,8 @@ class Diff {
                 e.printStackTrace();
             }
         }
+
+        log.print(logLevel, "lines to add: " + addLines.toString());
+        log.print(logLevel, "lines to remove: " + deleteLines.toString());
     }
 }

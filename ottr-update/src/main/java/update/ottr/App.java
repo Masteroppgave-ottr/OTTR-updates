@@ -10,29 +10,20 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateRequest;
 
 //java
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.*;
 
 public class App {
-    public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete,
-            File outputFileInsert, String dbURL) {
-        FusekiInterface fi = new FusekiInterface();
-        UpdateRequest updateRequest = naiveUpdate.createUpdateRequest(oldModel, newModel);
 
-        try {
-            fi.updateLocalDB(updateRequest, dbURL);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void simpleUpdate(TemplateManager tm, String pathToNewInstances, String pathToOldInstances,
+    public static void simpleUpdate(TemplateManager tm, Logger log, String pathToNewInstances,
+            String pathToOldInstances,
             String dbURL) {
-        Diff d = new Diff();
+        Diff d = new Diff(log);
         d.readDiffFromStdIn();
 
-        System.out.println(d.addLines);
-        System.out.println(d.deleteLines);
+        log.print("DEFAULT", "Add linenumbers" + d.addLines.toString());
+        log.print("DEFAULT", "delete linenumbers" + d.deleteLines.toString());
 
         String addInstancesString = null;
         String deleteInstancesString = null;
@@ -46,21 +37,19 @@ public class App {
             e.printStackTrace();
         }
 
-        System.out.println("addInstancesString: " + addInstancesString);
-        System.out.println("deleteInstancesString: " + deleteInstancesString);
+        log.print("DEFAULT", "String containing instances to add\n'" + addInstancesString + "'");
+        log.print("DEFAULT", "String containing instances to delete\n'" + deleteInstancesString + "'");
 
-        JenaInterface jh = new JenaInterface();
+        JenaInterface jh = new JenaInterface(log);
 
         Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
         Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
-        System.out.println("deleteModel: " + deleteModel);
-        System.out.println("insertModel: " + insertModel);
-
-        UpdateRequest updateRequest = naiveUpdate.createUpdateRequest(deleteModel, insertModel);
+        naiveUpdate nu = new naiveUpdate(log);
+        UpdateRequest updateRequest = nu.createUpdateRequest(deleteModel, insertModel);
 
         try {
-            FusekiInterface fi = new FusekiInterface();
+            FusekiInterface fi = new FusekiInterface(log);
             fi.updateLocalDB(updateRequest, dbURL);
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,11 +69,13 @@ public class App {
         String pathToTemplate = "../temp/templates.stottr";
         String dbURL = "http://localhost:3030/";
 
+        ArrayList<String> loggerLevel = new ArrayList<String>(List.of("FUSEKI", "JENA", "DIFF", "DEFAULT"));
+        Logger log = new Logger(loggerLevel);
         TemplateManager tm = new StandardTemplateManager();
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
         msgs.printMessages();
 
-        simpleUpdate(tm, pathToNewInstances, pathToOldInstances, dbURL);
+        simpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL);
 
     }
 }

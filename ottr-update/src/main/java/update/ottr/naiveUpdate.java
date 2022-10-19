@@ -5,20 +5,32 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateRequest;
 
 public class naiveUpdate {
+    private Logger log;
+    private String logLevel = "DEFAULT";
 
-    public static UpdateRequest createDeleteRequest(Model oldModel) {
+    public naiveUpdate(Logger log) {
+        this.log = log;
+    }
+
+    public UpdateRequest createDeleteRequest(Model oldModel) {
         UpdateBuilder builder = new UpdateBuilder()
                 .addDelete(oldModel);
-        return builder.buildRequest();
+
+        UpdateRequest request = builder.buildRequest();
+        log.print(logLevel, "Delete request: " + request.toString());
+        return request;
     }
 
-    public static UpdateRequest createInsertRequest(Model newModel) {
+    public UpdateRequest createInsertRequest(Model newModel) {
         UpdateBuilder builder = new UpdateBuilder()
                 .addInsert(newModel);
-        return builder.buildRequest();
+
+        UpdateRequest request = builder.buildRequest();
+        log.print(logLevel, "Insert request: " + request.toString());
+        return request;
     }
 
-    public static UpdateRequest createUpdateRequest(Model oldModel, Model newModel) {
+    public UpdateRequest createUpdateRequest(Model oldModel, Model newModel) {
         UpdateBuilder builder = new UpdateBuilder().addWhere("?x", "?y", "?z");
         ;
 
@@ -29,7 +41,9 @@ public class naiveUpdate {
             builder.addInsert(newModel);
         }
 
-        return builder.buildRequest();
+        UpdateRequest request = builder.buildRequest();
+        log.print(logLevel, "Update request: " + request.toString());
+        return request;
     }
 
 }
