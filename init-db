@@ -5,7 +5,7 @@ source temp/variables
 
 # Create rdf file with lutra
 cd "$temp_files"
-java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$instances" -o "$output"
+java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$old_instances" -o "$output"
 
 # create datasets if not defined and load data after server is started
 sleep 5 &&
@@ -16,6 +16,14 @@ curl --location --request POST "http://localhost:$port/$/datasets?dbName=Rebuild
 curl --location --request POST "http://localhost:$port/$/datasets?dbName=Updated&dbType=mem" &&
 
 curl --location --request PUT "http://localhost:$port/Original" \
+--header 'Content-Type: text/turtle' \
+--data-binary "@$temp_files/$output"&&
+
+curl --location --request PUT "http://localhost:$port/Rebuild" \
+--header 'Content-Type: text/turtle' \
+--data-binary "@$temp_files/$output"&&
+
+curl --location --request PUT "http://localhost:$port/Updated" \
 --header 'Content-Type: text/turtle' \
 --data-binary "@$temp_files/$output"&
 

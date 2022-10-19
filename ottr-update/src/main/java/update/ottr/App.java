@@ -44,6 +44,10 @@ public class App {
 
     private static Model expandAndGetModelFromString(String instancesString, TemplateManager tm) {
         // read instances from string and expand them
+        if (instancesString == null) {
+            return null;
+        }
+
         SInstanceParser parser = new SInstanceParser(tm.getPrefixes().getNsPrefixMap(), new HashMap<>());
         ResultStream<Instance> instances = parser.parseString(instancesString).innerFlatMap(tm.makeExpander());
 
@@ -87,6 +91,9 @@ public class App {
         con.setDoOutput(true);
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
 
+        System.out.println("To endpoint " + dbURL + "Updated/update");
+        System.out.println("sending\n" + updateRequest.toString());
+
         out.writeBytes(updateRequest.toString());
         out.flush();
         out.close();
@@ -96,7 +103,11 @@ public class App {
 
     public static void main(String[] args)
     // to run: following command in ottr-update folder:
-    // mvn package && java -jar target/update.jar
+    // mvn package && diff <oldInstanceFile> <New instanceFile> | java -jar
+    // target/update.jar
+    //
+    // Alternatively, you can run the following command in diff folder: make && make
+    // diff
     {
         String pathToOldInstances = "../temp/old_instances.stottr";
         String pathToNewInstances = "../temp/new_instances.stottr";
@@ -106,8 +117,6 @@ public class App {
         String pathToUpdateQuery = "../temp/updateQuery.rq";
         String dbURL = "http://localhost:3030/";
 
-        System.out.println("hello world!");
-
         File outputFileDelete = new File(pathToDeleteQuery);
         File outputFileInsert = new File(pathToInsertQuery);
         File outputFileUpdate = new File(pathToUpdateQuery);
@@ -116,10 +125,40 @@ public class App {
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
         msgs.printMessages();
 
-        Model oldModel = expandAndGetModelFromFile(pathToOldInstances, tm);
-        Model newModel = expandAndGetModelFromFile(pathToNewInstances, tm);
+        Diff d = new Diff();
+        d.readDiffFromStdIn();
 
-        simpleUpdate(tm, oldModel, newModel, outputFileDelete, outputFileInsert, dbURL);
+        System.out.println(d.addLines);
+        System.out.println(d.deleteLines);
 
+        String addInstancesString = null;
+        String deleteInstancesString = null;
+        try {
+            addInstancesString = d.getAddInstancesString(pathToNewInstances);
+            deleteInstancesString = d.getDeleteInstancesString(pathToOldInstances);
+        } catch (FileNotFoundException error) {
+            System.out.println("Could not old or new instance file");
+            error.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("addInstancesString: " + addInstancesString);
+        System.out.println("deleteInstancesString: " + deleteInstancesString);
+
+        Model insertModel = expandAndGetModelFromString(addInstancesString, tm);
+        Model deleteModel = expandAndGetModelFromString(deleteInstancesString, tm);
+
+        System.out.println("deleteModel: " + deleteModel);
+        System.out.println("insertModel: " + insertModel);
+
+        UpdateRequest updateRequest = naiveUpdate.createUpdateRequest(deleteModel, insertModel);
+
+        try {
+            System.out.println("updateRequest: " + updateRequest);
+            updateLocalDB(updateRequest, dbURL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

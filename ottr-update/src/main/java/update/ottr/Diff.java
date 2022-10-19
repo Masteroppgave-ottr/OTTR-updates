@@ -173,15 +173,18 @@ class Diff {
         }
     }
 
-    private String getInstancesString(String newInstanceFileName, ArrayList<String> lineNumberList)
+    private String getInstancesString(String instanceFileName, ArrayList<String> lineNumberList)
             throws FileNotFoundException {
         String s = "";
         int linesAdded = 0;
         if (lineNumberList.size() == 0)
             return null;
 
+        System.out.println("Looking for line " + lineNumberList);
+        System.out.println("in file " + instanceFileName);
+
         try {
-            BufferedReader br = new BufferedReader(new FileReader(newInstanceFileName));
+            BufferedReader br = new BufferedReader(new FileReader(instanceFileName));
 
             int currentLine = 1;
             int addIndex = 0;
@@ -213,7 +216,7 @@ class Diff {
         // If there is a different number of lines in the add list and the created
         // string something is wrong.
         if (linesAdded != lineNumberList.size()) {
-            throw new RuntimeException("Could not find all the lines in the new instance file");
+            throw new RuntimeException("Could not find all the lines in the instance file");
         }
 
         return s;
