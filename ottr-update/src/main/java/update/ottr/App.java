@@ -40,6 +40,7 @@ public class App {
         ArrayList<String> loggerLevel = new ArrayList<String>(List.of(logLevels));
 
         Logger log = new Logger(loggerLevel);
+        Timer timer = new Timer("../temp/times.txt");
         TemplateManager tm = new StandardTemplateManager();
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
         msgs.printMessages();

@@ -46,7 +46,7 @@ public class naiveUpdate {
         }
 
         UpdateRequest request = builder.buildRequest();
-        log.print(logLevel, "Update request:+\n" + request.toString());
+        log.print(logLevel, "Update request:\n" + request.toString());
         return request;
     }
 
