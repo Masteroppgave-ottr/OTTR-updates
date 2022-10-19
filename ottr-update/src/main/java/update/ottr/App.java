@@ -1,31 +1,25 @@
 package update.ottr;
 
+//lutra
 import xyz.ottr.lutra.api.StandardTemplateManager;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.List;
-import java.util.Set;
-import java.net.*;
-import java.io.*;
-
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.update.UpdateRequest;
-
-import java.util.stream.Collectors;
-
 import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.model.Instance;
 import xyz.ottr.lutra.stottr.parser.SInstanceParser;
 import xyz.ottr.lutra.system.MessageHandler;
-import xyz.ottr.lutra.system.Result;
 import xyz.ottr.lutra.system.ResultStream;
 import xyz.ottr.lutra.wottr.writer.WInstanceWriter;
+
+//jena
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.update.UpdateRequest;
+
+//java
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.net.*;
+import java.io.*;
 
 public class App {
     public static Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
@@ -58,16 +52,6 @@ public class App {
         WInstanceWriter writer = new WInstanceWriter();
         writer.addInstances(instanceSet);
         return writer.writeToModel();
-    }
-
-    public static void writeToFile(String query, File file) {
-        try {
-            FileWriter writer = new FileWriter(file);
-            writer.write(query);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete,
@@ -112,14 +96,7 @@ public class App {
         String pathToOldInstances = "../temp/old_instances.stottr";
         String pathToNewInstances = "../temp/new_instances.stottr";
         String pathToTemplate = "../temp/templates.stottr";
-        String pathToDeleteQuery = "../temp/deleteQuery.rq";
-        String pathToInsertQuery = "../temp/insertQuery.rq";
-        String pathToUpdateQuery = "../temp/updateQuery.rq";
         String dbURL = "http://localhost:3030/";
-
-        File outputFileDelete = new File(pathToDeleteQuery);
-        File outputFileInsert = new File(pathToInsertQuery);
-        File outputFileUpdate = new File(pathToUpdateQuery);
 
         TemplateManager tm = new StandardTemplateManager();
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
