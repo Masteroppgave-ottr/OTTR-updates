@@ -1,27 +1,21 @@
 package update.ottr;
 
 //lutra
-import xyz.ottr.lutra.api.StandardTemplateManager;
 import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.model.Instance;
 import xyz.ottr.lutra.stottr.parser.SInstanceParser;
-import xyz.ottr.lutra.system.MessageHandler;
 import xyz.ottr.lutra.system.ResultStream;
 import xyz.ottr.lutra.wottr.writer.WInstanceWriter;
 
 //jena
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.update.UpdateRequest;
 
 //java
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.net.*;
-import java.io.*;
 
-public class JenaHelper {
+public class JenaInterface {
 
     public Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
         // read instances from file and expand them
@@ -53,9 +47,6 @@ public class JenaHelper {
         WInstanceWriter writer = new WInstanceWriter();
         writer.addInstances(instanceSet);
         return writer.writeToModel();
-    }
-
-    public JenaHelper() {
     }
 
 }
