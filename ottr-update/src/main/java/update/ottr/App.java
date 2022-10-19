@@ -22,38 +22,6 @@ import java.net.*;
 import java.io.*;
 
 public class App {
-    public static Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
-        // read instances from file and expand them
-        ResultStream<Instance> expanded = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
-                .innerFlatMap(tm.makeExpander());
-
-        Set<Instance> instances = new HashSet<Instance>();
-        expanded.innerForEach(instances::add);
-
-        // write expanded instances to model
-        WInstanceWriter writer = new WInstanceWriter();
-        writer.addInstances(instances);
-        return writer.writeToModel();
-    }
-
-    private static Model expandAndGetModelFromString(String instancesString, TemplateManager tm) {
-        // read instances from string and expand them
-        if (instancesString == null) {
-            return null;
-        }
-
-        SInstanceParser parser = new SInstanceParser(tm.getPrefixes().getNsPrefixMap(), new HashMap<>());
-        ResultStream<Instance> instances = parser.parseString(instancesString).innerFlatMap(tm.makeExpander());
-
-        Set<Instance> instanceSet = new HashSet<Instance>();
-        instances.innerForEach(instanceSet::add);
-
-        // write expanded instances to model
-        WInstanceWriter writer = new WInstanceWriter();
-        writer.addInstances(instanceSet);
-        return writer.writeToModel();
-    }
-
     public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete,
             File outputFileInsert, String dbURL) {
         UpdateRequest updateRequest = naiveUpdate.createUpdateRequest(oldModel, newModel);
@@ -123,8 +91,10 @@ public class App {
         System.out.println("addInstancesString: " + addInstancesString);
         System.out.println("deleteInstancesString: " + deleteInstancesString);
 
-        Model insertModel = expandAndGetModelFromString(addInstancesString, tm);
-        Model deleteModel = expandAndGetModelFromString(deleteInstancesString, tm);
+        JenaHelper jh = new JenaHelper();
+
+        Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
+        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
         System.out.println("deleteModel: " + deleteModel);
         System.out.println("insertModel: " + insertModel);
@@ -132,7 +102,6 @@ public class App {
         UpdateRequest updateRequest = naiveUpdate.createUpdateRequest(deleteModel, insertModel);
 
         try {
-            System.out.println("updateRequest: " + updateRequest);
             updateLocalDB(updateRequest, dbURL);
         } catch (Exception e) {
             e.printStackTrace();
