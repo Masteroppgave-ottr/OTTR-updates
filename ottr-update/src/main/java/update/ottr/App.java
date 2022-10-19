@@ -26,23 +26,8 @@ public class App {
         }
     }
 
-    public static void main(String[] args)
-    // to run: following command in ottr-update folder:
-    // mvn package && diff <oldInstanceFile> <New instanceFile> | java -jar
-    // target/update.jar
-    //
-    // Alternatively, you can run the following command in diff folder: make && make
-    // diff
-    {
-        String pathToOldInstances = "../temp/old_instances.stottr";
-        String pathToNewInstances = "../temp/new_instances.stottr";
-        String pathToTemplate = "../temp/templates.stottr";
-        String dbURL = "http://localhost:3030/";
-
-        TemplateManager tm = new StandardTemplateManager();
-        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
-        msgs.printMessages();
-
+    public static void simpleUpdate(TemplateManager tm, String pathToNewInstances, String pathToOldInstances,
+            String dbURL) {
         Diff d = new Diff();
         d.readDiffFromStdIn();
 
@@ -80,5 +65,26 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args)
+    // to run: following command in ottr-update folder:
+    // mvn package && diff <oldInstanceFile> <New instanceFile> | java -jar
+    // target/update.jar
+    //
+    // Alternatively, you can run the following command in diff folder: make && make
+    // diff
+    {
+        String pathToOldInstances = "../temp/old_instances.stottr";
+        String pathToNewInstances = "../temp/new_instances.stottr";
+        String pathToTemplate = "../temp/templates.stottr";
+        String dbURL = "http://localhost:3030/";
+
+        TemplateManager tm = new StandardTemplateManager();
+        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
+        msgs.printMessages();
+
+        simpleUpdate(tm, pathToNewInstances, pathToOldInstances, dbURL);
+
     }
 }
