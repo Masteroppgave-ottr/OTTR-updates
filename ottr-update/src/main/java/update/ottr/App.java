@@ -15,6 +15,8 @@ import java.net.*;
 import java.io.*;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.update.UpdateRequest;
+
 import java.util.stream.Collectors;
 
 import xyz.ottr.lutra.TemplateManager;
@@ -37,8 +39,8 @@ public class App {
     public static Model expandAndGetModel(String pathToInstances, TemplateManager tm) {
         // read instances from file and expand them
         ResultStream<Instance> expanded = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
-
                 .innerFlatMap(tm.makeExpander());
+
         Set<Instance> instances = new HashSet<Instance>();
         expanded.innerForEach(instances::add);
 
@@ -49,8 +51,10 @@ public class App {
     }
 
     private static Model expandAndGetModelFromString(String instanceString, TemplateManager tm) {
+        System.out.println("instanceString: " + instanceString);
+        System.out.println("prefixes are " + tm.getPrefixes().getNsPrefixMap());
         SInstanceParser parser = new SInstanceParser(tm.getPrefixes().getNsPrefixMap(), new HashMap<>());
-        ResultStream<Instance> instances = parser.parseString(instanceString);
+        ResultStream<Instance> instances = parser.parseString(instanceString).innerFlatMap(tm.makeExpander());
 
         Set<Instance> instanceSet = new HashSet<Instance>();
         instances.innerForEach(instanceSet::add);
@@ -73,16 +77,9 @@ public class App {
 
     public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete,
             File outputFileInsert, String dbURL) {
-        // String deleteQuery = naiveUpdate.createDeleteRequest(oldModel).toString();
-        // writeToFile(deleteQuery, outputFileDelete);
-
-        // String insertQuery = naiveUpdate.createInsertRequest(newModel).toString();
-        // writeToFile(insertQuery, outputFileInsert);
 
         UpdateRequest deleteRequest = naiveUpdate.createDeleteRequest(oldModel);
         UpdateRequest insertRequest = naiveUpdate.createInsertRequest(newModel);
-
-        // System.out.println(insertRequest.toString());
 
         try {
             updateLocalDB(deleteRequest, insertRequest, dbURL);
@@ -124,7 +121,6 @@ public class App {
 
         System.out.println("hello world!");
 
-        // d.writeToFile("add.txt", "delete.txt");
         File outputFileDelete = new File(pathToDeleteQuery);
         File outputFileInsert = new File(pathToInsertQuery);
         File outputFileUpdate = new File(pathToUpdateQuery);
@@ -136,7 +132,9 @@ public class App {
         // Model oldModel = expandAndGetModel(pathToOldInstances, tm);
         // Model newModel = expandAndGetModel(pathToNewInstances, tm);
 
-        // simpleUpdate(tm, oldModel, newModel, outputFileDelete, outputFileInsert);
+        // simpleUpdate(tm, oldModel, newModel, outputFileDelete, outputFileInsert,
+        // dbURL);
+        // System.out.println("model:\n" + newModel);
 
         Diff d = new Diff();
         d.readDiffFromStdIn();
@@ -155,13 +153,5 @@ public class App {
             System.out.println("could not find file.\n" + e);
         }
 
-        // try {
-        // updateLocalDB(pathToDeleteQuery, pathToInsertQuery, dbURL);
-        // } catch (Exception e) {
-        // e.printStackTrace();
-        // }
-
-        // String updateQuery = naiveUpdate.createUpdateQuery(oldModel/fil,
-        // newModel/fil, updateDescrioption);
     }
 }
