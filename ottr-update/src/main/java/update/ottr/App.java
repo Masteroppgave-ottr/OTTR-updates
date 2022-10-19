@@ -11,12 +11,16 @@ import java.util.List;
 
 public class App {
 
-    public static void simpleUpdate(TemplateManager tm, Logger log, String pathToNewInstances,
+    public static void simpleUpdate(TemplateManager tm, Logger log, Timer timer, String pathToNewInstances,
             String pathToOldInstances,
             String dbURL) {
 
         naiveUpdate nu = new naiveUpdate(log);
+
+        timer.startTimer();
         nu.simpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL);
+        timer.endTimer();
+        log.print("DEFAULT", timer.getDuration() + " ns");
     }
 
     public static void main(String[] args)
@@ -45,7 +49,6 @@ public class App {
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
         msgs.printMessages();
 
-        simpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL);
-
+        simpleUpdate(tm, log, timer, pathToNewInstances, pathToOldInstances, dbURL);
     }
 }
