@@ -2,14 +2,6 @@ package update.ottr;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import xyz.ottr.lutra.model.Instance;
-import xyz.ottr.lutra.stottr.parser.SInstanceParser;
-import xyz.ottr.lutra.system.Result;
 
 class Diff {
 
@@ -17,7 +9,7 @@ class Diff {
     public ArrayList<String> deleteLines;
     public char ignoreCharacters[];
 
-    /*
+    /**
      * Class used to compare two files containing OTTR instances.
      * 
      * Args:
@@ -32,7 +24,7 @@ class Diff {
         this.ignoreCharacters = new char[] { '<', '>', '\\', '-' };
     }
 
-    /*
+    /**
      * check if a character `c` is in the `characters` array
      */
     private boolean contains(char[] characters, char c) {
@@ -44,7 +36,7 @@ class Diff {
         return false;
     }
 
-    /*
+    /**
      * return the first letter (not number or ignoreCharacter) in a string
      */
     private char firstLetter(String s) {
@@ -58,7 +50,7 @@ class Diff {
         return s.charAt(i);
     }
 
-    /*
+    /**
      * given a diff code `s` return an array of the one or two numbers before the
      * letter. If there only is one number the second number is -1.
      * Example:"1,2a2"->[1,2]"1a2"->[1,-1]*
@@ -87,7 +79,7 @@ class Diff {
         return numbers;
     }
 
-    /*
+    /**
      * given a diff code `s` return an array of the one or two numbers after the
      * letter. If there only is one number the second number is -1.
      * Example:"1a2,4"->[2,4]"1a2"->[2,-1]*
@@ -152,7 +144,7 @@ class Diff {
         handleAdd(s);
     }
 
-    /*
+    /**
      * after reading a diff with `readDiffFromStdIn()` the results can be written to
      * two files_
      * addFile: contains all the line number of the added instances.
@@ -160,7 +152,7 @@ class Diff {
      * deleteFile: contains all the line number of the deleted instances.
      * This is the old file with the original instances.
      */
-    public void writeToFile(String addFile, String removeFile) {
+    public void writeLineNumbersToFile(String addFile, String removeFile) {
         try {
             FileWriter addFW = new FileWriter(addFile);
             FileWriter deleteFW = new FileWriter(removeFile);
@@ -227,23 +219,23 @@ class Diff {
         return s;
     }
 
-    /*
+    /**
      * Get a string containing lines from the new instance file where instances are
      * added.
      */
-    public String getAddInstances(String newInstanceFileName) throws FileNotFoundException {
+    public String getAddInstancesString(String newInstanceFileName) throws FileNotFoundException {
         return getInstancesString(newInstanceFileName, addLines);
     }
 
-    /*
+    /**
      * Get a string containing lines from the old instance file where instances are
      * removed
      */
-    public String getDeleteInstances(String oldInstanceFileName) throws FileNotFoundException {
+    public String getDeleteInstancesString(String oldInstanceFileName) throws FileNotFoundException {
         return getInstancesString(oldInstanceFileName, deleteLines);
     }
 
-    /*
+    /**
      * Read a unix diff from stdin and write the edit codes to 2 lists: addLines,
      * deleteLines,
      */

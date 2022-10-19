@@ -36,7 +36,7 @@ public class App {
         return prefixes;
     }
 
-    public static Model expandAndGetModel(String pathToInstances, TemplateManager tm) {
+    public static Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
         // read instances from file and expand them
         ResultStream<Instance> expanded = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
                 .innerFlatMap(tm.makeExpander());
@@ -50,11 +50,10 @@ public class App {
         return writer.writeToModel();
     }
 
-    private static Model expandAndGetModelFromString(String instanceString, TemplateManager tm) {
-        System.out.println("instanceString: " + instanceString);
-        System.out.println("prefixes are " + tm.getPrefixes().getNsPrefixMap());
+    private static Model expandAndGetModelFromString(String instancesString, TemplateManager tm) {
+        // read instances from string and expand them
         SInstanceParser parser = new SInstanceParser(tm.getPrefixes().getNsPrefixMap(), new HashMap<>());
-        ResultStream<Instance> instances = parser.parseString(instanceString).innerFlatMap(tm.makeExpander());
+        ResultStream<Instance> instances = parser.parseString(instancesString).innerFlatMap(tm.makeExpander());
 
         Set<Instance> instanceSet = new HashSet<Instance>();
         instances.innerForEach(instanceSet::add);
@@ -143,7 +142,7 @@ public class App {
         System.out.println("lines to remove from the 'old' file:\n" + d.deleteLines);
 
         try {
-            String add = d.getAddInstances(pathToNewInstances);
+            String add = d.getAddInstancesString(pathToNewInstances);
             System.out.println("add instances:\n" + add);
             Model m = expandAndGetModelFromString(add, tm);
             System.out.println("add model:\n" + m);
