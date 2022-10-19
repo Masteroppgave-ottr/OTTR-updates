@@ -68,30 +68,26 @@ public class App {
 
     public static void simpleUpdate(TemplateManager tm, Model oldModel, Model newModel, File outputFileDelete,
             File outputFileInsert, String dbURL) {
-
-        UpdateRequest deleteRequest = naiveUpdate.createDeleteRequest(oldModel);
-        UpdateRequest insertRequest = naiveUpdate.createInsertRequest(newModel);
+        UpdateRequest updateRequest = naiveUpdate.createUpdateRequest(oldModel, newModel);
 
         try {
-            updateLocalDB(deleteRequest, insertRequest, dbURL);
+            updateLocalDB(updateRequest, dbURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void updateLocalDB(UpdateRequest deleteRequest, UpdateRequest insertRequest, String dbURL)
-            throws Exception {
+    public static void updateLocalDB(UpdateRequest updateRequest, String dbURL) throws Exception {
         // send post request to update local db
         URL url = new URL(dbURL + "Updated/update");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/sparql-update");
+
         con.setDoOutput(true);
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
 
-        System.out.println("sending request:\n" + deleteRequest.toString());
-        out.writeBytes(deleteRequest.toString());
-
+        out.writeBytes(updateRequest.toString());
         out.flush();
         out.close();
         int status = con.getResponseCode();
@@ -120,29 +116,10 @@ public class App {
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
         msgs.printMessages();
 
-        // Model oldModel = expandAndGetModel(pathToOldInstances, tm);
-        // Model newModel = expandAndGetModel(pathToNewInstances, tm);
+        Model oldModel = expandAndGetModelFromFile(pathToOldInstances, tm);
+        Model newModel = expandAndGetModelFromFile(pathToNewInstances, tm);
 
-        // simpleUpdate(tm, oldModel, newModel, outputFileDelete, outputFileInsert,
-        // dbURL);
-        // System.out.println("model:\n" + newModel);
-
-        Diff d = new Diff();
-        d.readDiffFromStdIn();
-
-        System.out.println("lines to add from the 'new' file:\n" + d.addLines);
-        System.out.println("lines to remove from the 'old' file:\n" + d.deleteLines);
-
-        try {
-            String add = d.getAddInstancesString(pathToNewInstances);
-            System.out.println("add instances:\n" + add);
-            Model m = expandAndGetModelFromString(add, tm);
-            System.out.println("add model:\n" + m);
-            String insertQuery = naiveUpdate.createInsertRequest(m).toString();
-            System.out.println("insert query:\n" + insertQuery);
-        } catch (FileNotFoundException e) {
-            System.out.println("could not find file.\n" + e);
-        }
+        simpleUpdate(tm, oldModel, newModel, outputFileDelete, outputFileInsert, dbURL);
 
     }
 }
