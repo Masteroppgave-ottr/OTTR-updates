@@ -28,14 +28,6 @@ import xyz.ottr.lutra.system.ResultStream;
 import xyz.ottr.lutra.wottr.writer.WInstanceWriter;
 
 public class App {
-
-    private static Map<String, String> makePrefixes() {
-
-        Map<String, String> prefixes = new HashMap<>();
-        prefixes.put("ex", "http://example.org/");
-        return prefixes;
-    }
-
     public static Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
         // read instances from file and expand them
         ResultStream<Instance> expanded = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
