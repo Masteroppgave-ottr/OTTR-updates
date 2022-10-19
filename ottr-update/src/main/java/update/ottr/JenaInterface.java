@@ -16,6 +16,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class JenaInterface {
+    private Logger log;
+    private String logLevel = "JENA";
+
+    public JenaInterface(Logger log) {
+        this.log = log;
+    }
 
     public Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
         // read instances from file and expand them
@@ -34,6 +40,7 @@ public class JenaInterface {
     public Model expandAndGetModelFromString(String instancesString, TemplateManager tm) {
         // read instances from string and expand them
         if (instancesString == null) {
+            log.print(logLevel, "instancesString is null");
             return null;
         }
 
