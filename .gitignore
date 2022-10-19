@@ -1,3 +1,7 @@
 # ignore ALL files in ANY directory named temp
 temp/
 *.class
+*.lst
+*.xml
+*.jar
+ottr-update/target/surefire-reports/update.ottr.AppTest.txt
