@@ -10,7 +10,7 @@ import xyz.ottr.lutra.TemplateManager;
 
 public class naiveUpdate {
     private Logger log;
-    private String logLevel = "DEFAULT";
+    private LOGTAG logLevel = LOGTAG.DEFAULT;
 
     public naiveUpdate(Logger log) {
         this.log = log;
@@ -56,8 +56,8 @@ public class naiveUpdate {
         Diff d = new Diff(log);
         d.readDiffFromStdIn();
 
-        log.print("DEFAULT", "Add linenumbers" + d.addLines.toString());
-        log.print("DEFAULT", "delete linenumbers" + d.deleteLines.toString());
+        log.print(logLevel, "Add linenumbers" + d.addLines.toString());
+        log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
 
         String addInstancesString = null;
         String deleteInstancesString = null;
@@ -71,10 +71,10 @@ public class naiveUpdate {
             e.printStackTrace();
         }
 
-        log.print("DEFAULT", "String containing instances to add\n'" + addInstancesString + "'");
-        log.print("DEFAULT", "String containing instances to delete\n'" + deleteInstancesString + "'");
+        log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
+        log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
-        JenaInterface jh = new JenaInterface(log);
+        OttrInterface jh = new OttrInterface(log);
         Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
         Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 

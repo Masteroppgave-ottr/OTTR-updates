@@ -15,11 +15,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class JenaInterface {
+public class OttrInterface {
     private Logger log;
-    private String logLevel = "JENA";
+    private LOGTAG logLevel = LOGTAG.OTTR;
 
-    public JenaInterface(Logger log) {
+    public OttrInterface(Logger log) {
         this.log = log;
     }
 
