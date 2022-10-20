@@ -1,7 +1,9 @@
 package update.ottr;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.jena.update.UpdateRequest;
@@ -14,7 +16,15 @@ public class FusekiInterface {
         this.log = log;
     }
 
-    public int updateLocalDB(UpdateRequest updateRequest, String dbURL) throws Exception {
+    /**
+     * Sends a SPARQL update request to the Fuseki server.
+     * 
+     * @param updateRequest
+     *                      The SPARQL update request to send.
+     * @param dbURL
+     *                      The URL of the Fuseki server.
+     */
+    public int updateLocalDB(UpdateRequest updateRequest, String dbURL) throws MalformedURLException, IOException {
         // send post request to update local db
         URL url = new URL(dbURL + "Updated/update");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();

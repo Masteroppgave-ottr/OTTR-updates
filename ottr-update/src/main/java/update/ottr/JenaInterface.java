@@ -23,6 +23,19 @@ public class JenaInterface {
         this.log = log;
     }
 
+    /**
+     * Reads instances from a file and expands them to a Model
+     * 
+     * @param pathToInstances
+     *                        The path to the file containing the instances. One
+     *                        instance per
+     *                        line. ended with a '.'
+     * @param tm
+     *                        The template manager. The template manager has read
+     *                        the template file.
+     * @return
+     *         The model containing the expanded instances
+     */
     public Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
         // read instances from file and expand them
         ResultStream<Instance> expanded = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
@@ -37,6 +50,18 @@ public class JenaInterface {
         return writer.writeToModel();
     }
 
+    /**
+     * Reads instances from a string and expands them to a Model
+     * 
+     * @param instancesString
+     *                        The string containing the instances. One instance per
+     *                        line. ended with a .
+     * @param tm
+     *                        The template manager. The template manager has read
+     *                        the template file
+     * @return
+     *         The model containing the expanded instances
+     */
     public Model expandAndGetModelFromString(String instancesString, TemplateManager tm) {
         // read instances from string and expand them
         if (instancesString == null) {

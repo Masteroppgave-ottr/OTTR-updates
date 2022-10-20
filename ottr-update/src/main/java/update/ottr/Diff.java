@@ -226,38 +226,43 @@ class Diff {
     }
 
     /**
-     * Get a string containing lines from the new instance file where instances are
-     * added.
+     * From addLines write the corresponding content at the line number to a string
+     * 
+     * @param instanceFileName
+     *                         the file to read the instances from. This is the new
+     *                         file with updated instances
+     * @return
+     *         A string containing all the content from the line numbers in addLines
+     * 
+     * @throws FileNotFoundException
      */
     public String getAddInstancesString(String newInstanceFileName) throws FileNotFoundException {
         return getInstancesString(newInstanceFileName, addLines);
     }
 
     /**
-     * Get a string containing lines from the old instance file where instances are
-     * removed
+     * From deleteLine write the corresponding content at the line number to a
+     * string
+     * 
+     * @param instanceFileName
+     *                         the file to read the instances from. This is the old
+     *                         file with outdated instances
+     * @return
+     *         A string containing all the content from the line numbers in
+     *         deleteLines
+     * 
+     * @throws FileNotFoundException
      */
     public String getDeleteInstancesString(String oldInstanceFileName) throws FileNotFoundException {
         return getInstancesString(oldInstanceFileName, deleteLines);
     }
 
     /**
-     * Read a unix diff from stdin and write the edit codes to 2 lists: addLines,
+     * Read a unix diff from stdin and write the affected line numbers to 2 lists:
+     * addLines,
      * deleteLines,
      */
     public void readDiffFromStdIn() {
-
-        // // run the command echo "hello world" from the users terminal
-        // // and store the output in a string
-        // String command = "echo \"hello world\"";
-        // ProcessBuilder pb = new ProcessBuilder("bash", "-c", command);
-        // Process process = null;
-        // try {
-        // process = pb.start();
-        // } catch (IOException e) {
-        // System.out.println("An error occurred.");
-        // e.printStackTrace();
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String line = "<";
 

@@ -19,6 +19,14 @@ public class Logger {
         this.disabled = false;
     }
 
+    /**
+     * Logs a string if the tag is active in the Logger object
+     * 
+     * @param tag
+     *                The tag of the message
+     * @param message
+     *                The string to console log
+     */
     public void print(String tag, String message) {
         if (!disabled && activeTags.contains(tag)) {
             System.out.println("[" + tag + "] " + message);
@@ -26,6 +34,10 @@ public class Logger {
         }
     }
 
+    /**
+     * Get a set of all tags that have been used prior to this call. This can be
+     * useful to see what tags are available.
+     */
     public Set<String> getExistingTags() {
         return existingTags;
     }
