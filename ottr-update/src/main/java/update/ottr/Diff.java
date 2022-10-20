@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 class Diff {
 
-    public ArrayList<String> addLines;
-    public ArrayList<String> deleteLines;
+    public ArrayList<Integer> addLines;
+    public ArrayList<Integer> deleteLines;
     public char ignoreCharacters[];
     private Logger log;
     private LOGTAG logLevel = LOGTAG.DIFF;
@@ -21,8 +21,8 @@ class Diff {
      * instances.
      */
     public Diff(Logger log) {
-        this.addLines = new ArrayList<String>();
-        this.deleteLines = new ArrayList<String>();
+        this.addLines = new ArrayList<Integer>();
+        this.deleteLines = new ArrayList<Integer>();
         this.ignoreCharacters = new char[] { '<', '>', '\\', '-' };
         this.log = log;
     }
@@ -122,10 +122,10 @@ class Diff {
     private void handleAdd(String s) {
         int numbers[] = getNumbersAfter(s);
         if (numbers[1] == -1) {
-            addLines.add(Integer.toString(numbers[0]));
+            addLines.add(numbers[0]);
         } else {
             for (int i = numbers[0]; i <= numbers[1]; i++) {
-                addLines.add(Integer.toString(i));
+                addLines.add(i);
             }
         }
     }
@@ -134,10 +134,10 @@ class Diff {
         int numbers[] = getNumbersBefore(s);
         // there is only one line number
         if (numbers[1] == -1) {
-            deleteLines.add(Integer.toString(numbers[0]));
+            deleteLines.add(numbers[0]);
         } else {
             for (int i = numbers[0]; i <= numbers[1]; i++) {
-                deleteLines.add(Integer.toString(i));
+                deleteLines.add(i);
             }
         }
     }
@@ -160,12 +160,12 @@ class Diff {
             FileWriter addFW = new FileWriter(addFile);
             FileWriter deleteFW = new FileWriter(removeFile);
 
-            for (String s : addLines) {
-                addFW.write(s + "\n");
+            for (Integer i : addLines) {
+                addFW.write(i + "\n");
             }
 
-            for (String s : deleteLines) {
-                deleteFW.write(s + "\n");
+            for (Integer i : deleteLines) {
+                deleteFW.write(i + "\n");
             }
 
             addFW.close();
@@ -176,7 +176,7 @@ class Diff {
         }
     }
 
-    private String getInstancesString(String instanceFileName, ArrayList<String> lineNumberList)
+    private String getInstancesString(String instanceFileName, ArrayList<Integer> lineNumberList)
             throws FileNotFoundException {
         String s = "";
         int linesAdded = 0;
@@ -191,7 +191,7 @@ class Diff {
 
             int currentLine = 1;
             int addIndex = 0;
-            int getLine = Integer.parseInt(lineNumberList.get(addIndex));
+            int getLine = lineNumberList.get(addIndex);
             while (br.ready()) {
                 // read through file until the correct line
                 for (; currentLine < getLine; currentLine++) {
@@ -204,7 +204,7 @@ class Diff {
                 currentLine++;
                 addIndex++;
                 if (addIndex < lineNumberList.size()) {
-                    getLine = Integer.parseInt(lineNumberList.get(addIndex));
+                    getLine = lineNumberList.get(addIndex);
                 } else {
                     break;
                 }
