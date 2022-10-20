@@ -59,7 +59,13 @@ interval = find_interval(measurements, "better solution", "start", "end")
 n2 = get_n(interval)
 time2 = get_time(interval)
 
+
+plt.xlabel("Number of triples")
+plt.ylabel("Time in nano seconds")
+plt.title("Naive solution vs rebuild")
 plt.plot(n, time)
+plt.plot(n2, time2)
+plt.legend(["Naive solution", "Better solution"])
 
 
 plt.show()
