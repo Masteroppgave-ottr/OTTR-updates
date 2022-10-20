@@ -25,7 +25,7 @@ public class App {
 
     public static void main(String[] args)
     // to run: following command in ottr-update folder:
-    // mvn package && diff <oldInstanceFile> <New instanceFile> | java -jar
+    // mvn package && diff <oldInstanceFilePath> <newInstanceFilePath> | java -jar
     // target/update.jar
     //
     // Alternatively, you can run the following command in diff folder: make && make
