@@ -21,7 +21,7 @@ def get_n(measurement_list):
 def get_time(measurement_list):
     matches = []
     for i in measurement_list:
-        matches.append(i[2])
+        matches.append(i[3])
     return matches
 
 
@@ -48,14 +48,18 @@ with open("temp/times.txt", "r") as f:
         measurements.append(args)
         # [n, solution, tag, time] = args
 
+
+# find n and time for measurements for solution 1 between "start" and "end"
 interval = find_interval(measurements, "naive solution", "start", "end")
 n = get_n(interval)
 time = get_time(interval)
 
-print(interval)
-print(n)
-print(time)
-
+# find n and time for measurements for solution 2 between "start" and "end"
+interval = find_interval(measurements, "better solution", "start", "end")
+n2 = get_n(interval)
+time2 = get_time(interval)
 
 plt.plot(n, time)
+
+
 plt.show()
