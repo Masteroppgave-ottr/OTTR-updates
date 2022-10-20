@@ -9,7 +9,7 @@ class Diff {
     public ArrayList<String> deleteLines;
     public char ignoreCharacters[];
     private Logger log;
-    private String logLevel = "DIFF";
+    private LOGTAG logLevel = LOGTAG.DIFF;
 
     /**
      * Class used to compare two files containing OTTR instances.

@@ -20,7 +20,7 @@ public class App {
         timer.startTimer();
         nu.simpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL);
         timer.endTimer();
-        log.print("DEFAULT", timer.getDuration() + " ns");
+        log.print(LOGTAG.DEFAULT, timer.getDuration() + " ns");
     }
 
     public static void main(String[] args)
@@ -35,13 +35,14 @@ public class App {
         String pathToNewInstances = "../temp/new_instances.stottr";
         String pathToTemplate = "../temp/templates.stottr";
         String dbURL = "http://localhost:3030/";
-        String[] logLevels = {
-                "DEFAULT",
-                // "FUSEKI",
-                // "JENA",
-                // "DIFF"
+        LOGTAG[] logLevels = {
+                LOGTAG.DEFAULT,
+                // LOGTAG.DEBUG,
+                // LOGTAG.FUSEKI,
+                // LOGTAG.OTTR,
+                // LOGTAG.DIFF
         };
-        ArrayList<String> loggerLevel = new ArrayList<String>(List.of(logLevels));
+        ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 
         Logger log = new Logger(loggerLevel);
         Timer timer = new Timer("../temp/times.txt");

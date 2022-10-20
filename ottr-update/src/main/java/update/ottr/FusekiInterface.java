@@ -10,7 +10,7 @@ import org.apache.jena.update.UpdateRequest;
 
 public class FusekiInterface {
     private Logger log;
-    private String logLevel = "FUSEKI";
+    private LOGTAG logLevel = LOGTAG.FUSEKI;
 
     public FusekiInterface(Logger log) {
         this.log = log;
