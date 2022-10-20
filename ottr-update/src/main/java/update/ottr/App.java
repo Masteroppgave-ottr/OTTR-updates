@@ -5,6 +5,7 @@ import xyz.ottr.lutra.api.StandardTemplateManager;
 import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.system.MessageHandler;
 
+import java.io.IOException;
 //java
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,12 @@ public class App {
         nu.simpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL);
         timer.endTimer();
         log.print(LOGTAG.DEFAULT, timer.getDuration() + " ns");
+        log.print(LOGTAG.DEFAULT, timer.getSplits().toString() + " ns");
+        try {
+            timer.writeSplitsToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args)
@@ -35,6 +42,7 @@ public class App {
         String pathToNewInstances = "../temp/new_instances.stottr";
         String pathToTemplate = "../temp/templates.stottr";
         String dbURL = "http://localhost:3030/";
+        String timerFile = "../temp/times.txt";
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
                 // LOGTAG.DEBUG,
@@ -45,7 +53,7 @@ public class App {
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 
         Logger log = new Logger(loggerLevel);
-        Timer timer = new Timer("../temp/times.txt");
+        Timer timer = new Timer(timerFile);
         TemplateManager tm = new StandardTemplateManager();
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
         msgs.printMessages();

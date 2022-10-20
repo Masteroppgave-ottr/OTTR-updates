@@ -16,7 +16,7 @@ public class Timer {
 
         @Override
         public String toString() {
-            return label + ": " + time;
+            return label + " : " + time;
         }
     }
 
@@ -37,7 +37,7 @@ public class Timer {
     private ArrayList<Long> getTimes(String label) {
         ArrayList<Long> times = new ArrayList<Long>();
         for (Split split : splitList) {
-            if (split.label.equals("start")) {
+            if (split.label.equals(label)) {
                 times.add(split.time);
             }
         }
@@ -57,7 +57,7 @@ public class Timer {
     }
 
     public long getEndTime() {
-        return getTimes("end").get(-1);
+        return getTimes("end").get(0);
     }
 
     /**
@@ -67,7 +67,11 @@ public class Timer {
      *         The duration in nano seconds
      */
     public long getDuration() {
-        return getTimes("endTime").get(-1) - getTimes("startTime").get(0);
+        if (getTimes("end").size() == 0 || getTimes("start").size() == 0) {
+            return -1;
+        }
+
+        return getTimes("end").get(0) - getTimes("start").get(0);
     }
 
     public ArrayList<Split> getSplits() {
