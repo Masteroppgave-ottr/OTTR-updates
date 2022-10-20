@@ -22,7 +22,6 @@ public class App {
         nu.simpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL);
         timer.endTimer();
         log.print(LOGTAG.DEFAULT, timer.getDuration() + " ns");
-        log.print(LOGTAG.DEFAULT, timer.getSplits().toString() + " ns");
         try {
             timer.writeSplitsToFile();
         } catch (IOException e) {
