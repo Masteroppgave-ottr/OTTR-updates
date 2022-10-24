@@ -19,9 +19,6 @@ curl --location --request PUT "http://localhost:$port/Original" \
 --header 'Content-Type: text/turtle' \
 --data-binary "@$temp_files/$output"&&
 
-curl --location --request PUT "http://localhost:$port/Rebuild" \
---header 'Content-Type: text/turtle' \
---data-binary "@$temp_files/$output"&&
 
 curl --location --request PUT "http://localhost:$port/Updated" \
 --header 'Content-Type: text/turtle' \
