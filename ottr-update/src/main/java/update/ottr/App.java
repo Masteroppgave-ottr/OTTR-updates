@@ -21,11 +21,11 @@ public class App {
 
         naiveUpdate nu = new naiveUpdate(log);
 
-        timer.startTimer();
+        timer.newSplit("start", "naive solution", 5);
         nu.simpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL);
-        timer.endTimer();
+        timer.newSplit("end", "naive solution", 5);
+        timer.writeSplitsStdout();
         log.print(LOGTAG.DEFAULT, timer.getDuration() + " ns");
-        log.print(LOGTAG.DEFAULT, timer.getSplits().toString() + " ns");
         try {
             timer.writeSplitsToFile();
         } catch (IOException e) {

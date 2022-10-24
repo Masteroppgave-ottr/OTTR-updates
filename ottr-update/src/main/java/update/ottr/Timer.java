@@ -6,17 +6,28 @@ import java.util.ArrayList;
 
 public class Timer {
     private class Split {
+        public String solutionName;
+        public int n;
         public String label;
         public long time;
 
-        public Split(String label, long time) {
+        public Split(String label, String solutionName, int n, long time) {
             this.label = label;
+            this.solutionName = solutionName;
+            this.n = n;
             this.time = time;
+        }
+
+        public Split(String label) {
+            this.label = label;
+            this.solutionName = "?";
+            this.n = 0;
+            this.time = System.nanoTime();
         }
 
         @Override
         public String toString() {
-            return label + " : " + time;
+            return n + " ; " + solutionName + " ; " + label + " ; " + time;
         }
     }
 
@@ -44,20 +55,46 @@ public class Timer {
         return times;
     }
 
-    public void startTimer() {
-        splitList.add(new Split("start", System.nanoTime()));
-    }
-
-    public void endTimer() {
-        splitList.add(new Split("end", System.nanoTime()));
-    }
-
+    /**
+     * Get the time of the Split with tag "start". If there is no such Split,
+     * return
+     * the first
+     * split.
+     */
     public long getStartTime() {
-        return getTimes("start").get(0);
+        // there are not splits
+        if (splitList.size() < 1) {
+            return -1;
+        }
+
+        ArrayList<Long> times = getTimes("start");
+        if (times.size() > 0) {
+            return times.get(0);
+        } else {
+            // if there is no time with "start" label, return the first time
+            return splitList.get(0).time;
+        }
     }
 
+    /**
+     * Get the time of the Split with tag "end". If there is no such Split,
+     * return
+     * the last time.
+     */
     public long getEndTime() {
-        return getTimes("end").get(0);
+        // there are not splits
+        if (splitList.size() < 1) {
+            return -1;
+
+        }
+
+        ArrayList<Long> times = getTimes("end");
+        if (times.size() > 0) {
+            return times.get(0);
+        } else {
+            // if there is no time with "end" label, return the last time
+            return splitList.get(splitList.size() - 1).time;
+        }
     }
 
     /**
@@ -67,11 +104,11 @@ public class Timer {
      *         The duration in nano seconds
      */
     public long getDuration() {
-        if (getTimes("end").size() == 0 || getTimes("start").size() == 0) {
+        if (getEndTime() == -1 || getStartTime() == -1) {
             return -1;
         }
 
-        return getTimes("end").get(0) - getTimes("start").get(0);
+        return getEndTime() - getStartTime();
     }
 
     public ArrayList<Split> getSplits() {
@@ -102,8 +139,32 @@ public class Timer {
      * @param label
      *              The label to give the split
      */
+    public void newSplit(Split split) {
+        splitList.add(split);
+    }
+
+    /**
+     * Create a new split
+     * 
+     * @param label
+     *                     The label to give the split
+     * @param solutionName
+     *                     The name of the solution
+     * @param n
+     *                     Number of instances
+     */
+    public void newSplit(String label, String solutionName, int n) {
+        splitList.add(new Split(label, solutionName, n, System.nanoTime()));
+    }
+
+    /**
+     * Create a new split
+     * 
+     * @param label
+     *              The label to give the split
+     */
     public void newSplit(String label) {
-        splitList.add(new Split(label, System.nanoTime()));
+        splitList.add(new Split(label));
     }
 
     /**
@@ -118,7 +179,7 @@ public class Timer {
     public void writeSplitsToFile() throws IOException {
         FileWriter fw = new FileWriter(outputFile);
         for (Split s : splitList) {
-            fw.write(s.label + " : " + s.time + "\n");
+            fw.write(s.toString() + "\n");
         }
         fw.close();
     }
@@ -128,7 +189,7 @@ public class Timer {
      */
     public void writeSplitsStdout() {
         for (Split s : splitList) {
-            System.out.println(s.label + " : " + s.time + "\n");
+            System.out.println(s.toString() + "\n");
         }
     }
 }
