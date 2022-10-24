@@ -5,5 +5,6 @@ public enum LOGTAG {
     DEBUG,
     FUSEKI,
     OTTR,
-    DIFF
+    DIFF,
+    WARNING
 }
