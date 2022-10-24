@@ -65,11 +65,12 @@ public class App {
         String dbURL = "http://localhost:3030/";
         String timerFile = "../temp/times.txt";
         LOGTAG[] logLevels = {
-                // LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
-                LOGTAG.FUSEKI,
+                LOGTAG.DEFAULT,
+                // LOGTAG.DEBUG,
+                // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF
+                LOGTAG.WARNING
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 

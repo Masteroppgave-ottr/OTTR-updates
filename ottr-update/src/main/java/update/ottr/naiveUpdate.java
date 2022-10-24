@@ -78,12 +78,15 @@ public class naiveUpdate {
         Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
         Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
-        naiveUpdate nu = new naiveUpdate(log);
-        UpdateRequest updateRequest = nu.createUpdateRequest(deleteModel, insertModel);
+
+        UpdateRequest deleteRequest = createDeleteRequest(deleteModel);
+        UpdateRequest insertRequest = createInsertRequest(insertModel);
+        // UpdateRequest updateRequest = createUpdateRequest(deleteModel, insertModel);
 
         try {
             FusekiInterface fi = new FusekiInterface(log);
-            fi.updateLocalDB(updateRequest, dbURL);
+            fi.updateLocalDB(deleteRequest, dbURL);
+            fi.updateLocalDB(insertRequest, dbURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
