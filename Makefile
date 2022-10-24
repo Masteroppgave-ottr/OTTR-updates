@@ -6,6 +6,7 @@ TEMP_DIR = /home/magnus/Emner/Master/dev/temp
 OLD_INSTANCES = old_instances.stottr
 NEW_INSTANCES = new_instances.stottr
 TEMPLATES = templates.stottr
+TIMER = timer.txt
 
 all: build
 
@@ -18,3 +19,5 @@ diff:
 test:
 	cd $(APP_DIR) && diff $(TEMP_DIR)/$(OLD_INSTANCES) $(TEMP_DIR)/$(NEW_INSTANCES)
 
+plot:
+	python3 Plotter.py $(TEMP_DIR)/$(TIMER)
