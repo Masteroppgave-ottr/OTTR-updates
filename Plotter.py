@@ -66,15 +66,22 @@ def read_file(filename):
     return measurements
 
 
-def default_plot(measurement_list):
-    """
-    try to plot the data. Each solution is a separate line.
-    requires the label to include "start" and "end"
-    """
+def create_bar_chart(measurement_list):
     solutions = find_all_solutions(measurement_list)
     for solution in solutions:
         n, time = get_n_and_time_lists(
             measurement_list, solution, "start", "end")
+        print(solution, n, time)
+        plt.bar(solution, time, label=solution)
+    plt.show()
+
+
+def create_line_graph(measurement_list):
+    solutions = find_all_solutions(measurement_list)
+    for solution in solutions:
+        n, time = get_n_and_time_lists(
+            measurement_list, solution, "start", "end")
+        print(solution, n, time)
         plt.plot(n, time, label=solution)
 
     plt.xlabel("Number of triples")
@@ -82,6 +89,20 @@ def default_plot(measurement_list):
     plt.legend(solutions)
     plt.title("Runtime")
     plt.show()
+
+
+def default_plot(measurement_list):
+    """
+    try to plot the data. Each solution is a separate line.
+    requires the label to include "start" and "end"
+    """
+
+    first_n = measurement_list[0][0]
+    for measurement in measurement_list:
+        if (measurement[0] != first_n):
+            create_line_graph(measurement_list)
+            return
+    create_bar_chart(measurement_list)
 
 
 if __name__ == '__main__':

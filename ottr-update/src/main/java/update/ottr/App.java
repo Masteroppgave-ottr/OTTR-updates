@@ -5,9 +5,9 @@ import xyz.ottr.lutra.api.StandardTemplateManager;
 import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.system.MessageHandler;
 
+//java
 import java.io.IOException;
 import java.net.MalformedURLException;
-//java
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,13 +24,6 @@ public class App {
         timer.newSplit("start", "naive solution", 5);
         nu.simpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL);
         timer.newSplit("end", "naive solution", 5);
-        timer.writeSplitsStdout();
-        log.print(LOGTAG.DEFAULT, timer.getDuration() + " ns");
-        try {
-            timer.writeSplitsToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void buildRebuildSet(String pathToNewInstances, TemplateManager tm, Logger log,
@@ -38,12 +31,12 @@ public class App {
         OttrInterface ottrInterface = new OttrInterface(log);
         FusekiInterface fi = new FusekiInterface(log);
 
-        timer.newSplit("start");
+        timer.newSplit("start", "rebuild set", 5);
 
         Model model = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
         try {
             fi.rebuild(model, dbURL);
-            timer.newSplit("end");
+            timer.newSplit("end", "rebuild set", 5);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -82,5 +75,11 @@ public class App {
 
         simpleUpdate(tm, log, timer, pathToNewInstances, pathToOldInstances, dbURL);
         buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL);
+
+        try {
+            timer.writeSplitsToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
