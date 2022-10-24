@@ -38,12 +38,12 @@ public class App {
         OttrInterface ottrInterface = new OttrInterface(log);
         FusekiInterface fi = new FusekiInterface(log);
 
-        timer.startTimer();
+        timer.newSplit("start");
 
         Model model = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
         try {
             fi.rebuild(model, dbURL);
-            timer.endTimer();
+            timer.newSplit("end");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
