@@ -6,9 +6,12 @@ import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.system.MessageHandler;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 //java
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.jena.rdf.model.Model;
 
 public class App {
 
@@ -30,12 +33,30 @@ public class App {
         }
     }
 
+    public static void buildRebuildSet(String pathToNewInstances, TemplateManager tm, Logger log,
+            Timer timer, String dbURL) {
+        OttrInterface ottrInterface = new OttrInterface(log);
+        FusekiInterface fi = new FusekiInterface(log);
+
+        timer.startTimer();
+
+        Model model = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
+        try {
+            fi.rebuild(model, dbURL);
+            timer.endTimer();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args)
     // to run: following command in ottr-update folder:
     // mvn package && diff <oldInstanceFilePath> <newInstanceFilePath> | java -jar
     // target/update.jar
     //
-    // Alternatively, you can run the following command in diff folder: make && make
+    // Alternatively, you can run the following command in dev folder: make && make
     // diff
     {
         String pathToOldInstances = "../temp/old_instances.stottr";
@@ -44,9 +65,9 @@ public class App {
         String dbURL = "http://localhost:3030/";
         String timerFile = "../temp/times.txt";
         LOGTAG[] logLevels = {
-                LOGTAG.DEFAULT,
-                // LOGTAG.DEBUG,
-                // LOGTAG.FUSEKI,
+                // LOGTAG.DEFAULT,
+                LOGTAG.DEBUG,
+                LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF
         };
@@ -59,5 +80,6 @@ public class App {
         msgs.printMessages();
 
         simpleUpdate(tm, log, timer, pathToNewInstances, pathToOldInstances, dbURL);
+        buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL);
     }
 }

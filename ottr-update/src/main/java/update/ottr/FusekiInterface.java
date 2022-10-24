@@ -6,6 +6,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.update.UpdateRequest;
 
 public class FusekiInterface {
@@ -44,5 +48,40 @@ public class FusekiInterface {
         int res = con.getResponseCode();
         log.print(logLevel, "Response Code : " + res);
         return res;
+    }
+
+    /**
+     * Puts the new model into the Rebuild dataset on the Fuseki server
+     * @param rebuiltModel
+     *                    The model to put into the Rebuild dataset.
+     * @param dbURL
+     *                   The URL of the Fuseki server.
+     * @return
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    public int rebuild(Model rebuiltModel, String dbURL) throws MalformedURLException, IOException{
+        URL url = new URL(dbURL + "Rebuild");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "text/turtle");
+        con.setDoOutput(true);
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+
+        log.print(logLevel, "Sending rebuild request to endpoint " + url);
+
+        RDFDataMgr.write(out, rebuiltModel, RDFFormat.TURTLE_BLOCKS);
+        out.flush();
+        out.close();
+
+        int res = con.getResponseCode();
+        log.print(logLevel, "Response Code from rebuild: " + res);
+        if (res >= 400) {
+            log.print(LOGTAG.WARNING, "Error, response from " + url.toString() + " resulted in a status code " + res
+                    + " check whether the database is up and running.");
+            return 1;
+        }
+        return res;
+        
     }
 }
