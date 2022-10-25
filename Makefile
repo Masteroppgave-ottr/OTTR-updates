@@ -6,7 +6,7 @@ TEMP_DIR = /home/magnus/Emner/Master/dev/temp
 OLD_INSTANCES = old_instances.stottr
 NEW_INSTANCES = new_instances.stottr
 TEMPLATES = templates.stottr
-TIMER = timer.txt
+TIMER = times.txt
 
 all: build
 
