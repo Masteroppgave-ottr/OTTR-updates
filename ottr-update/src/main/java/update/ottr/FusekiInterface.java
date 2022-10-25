@@ -70,7 +70,7 @@ public class FusekiInterface {
 
         log.print(logLevel, "Sending rebuild request to endpoint " + url);
 
-        RDFDataMgr.write(out, rebuiltModel, RDFFormat.TURTLE_BLOCKS);
+        RDFDataMgr.write(out, rebuiltModel, RDFFormat.NTRIPLES);
         out.flush();
         out.close();
 

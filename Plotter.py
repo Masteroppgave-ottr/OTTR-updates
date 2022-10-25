@@ -1,4 +1,6 @@
 
+from ast import arg
+import sys
 import matplotlib.pyplot as plt
 
 
@@ -68,11 +70,28 @@ def read_file(filename):
 
 def create_bar_chart(measurement_list):
     solutions = find_all_solutions(measurement_list)
+
+    baseline = None
+    times = []
     for solution in solutions:
         n, time = get_n_and_time_lists(
             measurement_list, solution, "start", "end")
+
         print(solution, n, time)
+        if solution == "rebuild set":
+            baseline = int(time[0])
+            print("baseline", baseline)
+        else:
+            times.append(int(time[0]))
+
         plt.bar(solution, time, label=solution)
+
+    if baseline:
+        # speedup with three decimal places
+        speedup = baseline / times[0]
+        speedup = int(speedup * 1000) / 1000
+        plt.title(f"WOW {speedup} i speedup!")
+
     plt.show()
 
 
@@ -106,6 +125,7 @@ def default_plot(measurement_list):
 
 
 if __name__ == '__main__':
-    all_measurements = read_file("temp/times.txt")
+    # get first comand line argument
+    all_measurements = read_file(sys.argv[1])
 
     default_plot(all_measurements)
