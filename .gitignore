@@ -5,3 +5,4 @@ temp/
 *.xml
 *.jar
 ottr-update/target/surefire-reports/update.ottr.AppTest.txt
+Makefile
