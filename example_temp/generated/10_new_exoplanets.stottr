@@ -1,0 +1,23 @@
+@prefix ottr: <http://ns.ottr.xyz/0.4/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/11_Com_b>, 'new text here25291662', <http://example.org/data/11_Com>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/11_Com_b>, "11 Com b", <http://example.org/data/11_Com>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/11_Oph_b>, "11 Oph b", <http://example.org/data/11_Oph>, none, "21.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/11_UMi_b>, 'new text here22866947', <http://example.org/data/11_UMi>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/11_UMi_b>, "11 UMi b", <http://example.org/data/11_UMi>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/14_And_b>, "14 And b", <http://example.org/data/14_And>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/14_Her_b>, 'new text here32712829', <http://example.org/data/14_Her>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/14_Her_b>, "14 Her b", <http://example.org/data/14_Her>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/16_Cyg_B_b>, 'new text here14308170', <http://example.org/data/16_Cyg_B>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/16_Cyg_B_b>, "16 Cyg B b", <http://example.org/data/16_Cyg_B>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/17_Sco_b>, 'new text here71816084', <http://example.org/data/17_Sco>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/17_Sco_b>, "17 Sco b", <http://example.org/data/17_Sco>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/18_Del_b>, 'new text here61871095', <http://example.org/data/18_Del>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/18_Del_b>, "18 Del b", <http://example.org/data/18_Del>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/1I/'Oumuamua>, 'new text here78410518', <http://example.org/data/Sun>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/1RXS_1609_b>, 'new text here30597954', <http://example.org/data/1RXS_1609>, none, "14.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/1RXS_1609_b>, "1RXS 1609 b", <http://example.org/data/1RXS_1609>, none, "14.0"^^xsd:decimal) .
