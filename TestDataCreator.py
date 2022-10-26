@@ -29,7 +29,6 @@ def peek(db: Connection, n=10):
         print(row)
 
 
-# main program
 if __name__ == '__main__':
     db = create_db()
     read_SQL_file(db, 'temp/planeter.sql')
