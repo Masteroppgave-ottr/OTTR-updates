@@ -262,8 +262,8 @@ class Diff {
      * addLines,
      * deleteLines,
      */
-    public void readDiffFromStdIn() {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    public void readDiffFromInputStream(InputStream in) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line = "<";
 
         while (line != null) {
@@ -290,5 +290,21 @@ class Diff {
 
         log.print(logLevel, "lines to add: " + addLines.toString());
         log.print(logLevel, "lines to remove: " + deleteLines.toString());
+    }
+
+    public void readDiffFromStdIn() {
+        readDiffFromInputStream(System.in);
+    }
+
+    public void readDiff(String file1, String file2) {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("diff", file1, file2);
+        try {
+            Process process = processBuilder.start();
+            readDiffFromInputStream(process.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
