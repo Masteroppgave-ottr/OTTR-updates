@@ -7,6 +7,11 @@ OLD_INSTANCES = old_instances.stottr
 NEW_INSTANCES = new_instances.stottr
 TEMPLATES = templates.stottr
 TIMER = times.txt
+SOURCE = "exoplanets.stottr"
+N = "10, 100, 1000"
+DELETION_NUMBER = 2
+CHANGE_NUMBER = 5
+INSERT_NUMBER = 11
 
 all: build
 
@@ -21,3 +26,6 @@ test:
 
 plot:
 	python3 Plotter.py $(TEMP_DIR)/$(TIMER)
+
+create:
+	python3 StringDataCreator.py $(SOURCE) $(N) $(DELETION_NUMBER) $(CHANGE_NUMBER) $(INSERT_NUMBER)
