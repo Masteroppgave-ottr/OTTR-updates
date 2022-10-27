@@ -296,9 +296,9 @@ class Diff {
         readDiffFromInputStream(System.in);
     }
 
-    public void readDiff(String file1, String file2) {
+    public void readDiff(String old_file, String new_file) {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("diff", file1, file2);
+        processBuilder.command("diff", old_file, new_file);
         try {
             Process process = processBuilder.start();
             readDiffFromInputStream(process.getInputStream());

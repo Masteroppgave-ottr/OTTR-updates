@@ -92,7 +92,7 @@ def create_bar_chart(measurement_list):
         speedup = int(speedup * 1000) / 1000
         plt.title(f"WOW {speedup} i speedup!")
 
-    plt.show()
+    plt.savefig("./temp/bar.png")
 
 
 def create_line_graph(measurement_list):
@@ -107,7 +107,7 @@ def create_line_graph(measurement_list):
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.title("Runtime")
-    plt.show()
+    plt.savefig("./temp/line.png")
 
 
 def default_plot(measurement_list):

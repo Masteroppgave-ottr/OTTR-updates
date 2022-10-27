@@ -8,11 +8,11 @@ import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
 
-public class naiveUpdate {
+public class SimpleUpdate {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.DEFAULT;
 
-    public naiveUpdate(Logger log) {
+    public SimpleUpdate(Logger log) {
         this.log = log;
     }
 
@@ -50,12 +50,15 @@ public class naiveUpdate {
         return request;
     }
 
-    public void simpleUpdate(TemplateManager tm, Logger log, String pathToNewInstances,
+    public void runSimpleUpdate(TemplateManager tm, Logger log, String pathToNewInstances,
             String pathToOldInstances,
-            String dbURL) {
+            String dbURL,
+            Timer timer,
+            int n) {
+        
+        timer.newSplit("start", "simple solution", n);
         Diff d = new Diff(log);
-        d.readDiffFromStdIn();
-
+        d.readDiff( pathToOldInstances, pathToNewInstances);
         log.print(logLevel, "Add linenumbers" + d.addLines.toString());
         log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
 
@@ -78,17 +81,21 @@ public class naiveUpdate {
         Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
         Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
-
-        UpdateRequest deleteRequest = createDeleteRequest(deleteModel);
-        UpdateRequest insertRequest = createInsertRequest(insertModel);
-        // UpdateRequest updateRequest = createUpdateRequest(deleteModel, insertModel);
+        log.print(logLevel, "delete model " + deleteModel.toString());
 
         try {
             FusekiInterface fi = new FusekiInterface(log);
-            fi.updateLocalDB(deleteRequest, dbURL);
-            fi.updateLocalDB(insertRequest, dbURL);
+            if (insertModel != null) {
+                UpdateRequest insertRequest = createInsertRequest(insertModel);
+                fi.updateLocalDB(insertRequest, dbURL);
+            }
+            if (deleteModel != null) {
+                UpdateRequest deleteRequest = createDeleteRequest(deleteModel);
+                fi.updateLocalDB(deleteRequest, dbURL);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        timer.newSplit("end", "simple solution", n);
     }
 }
