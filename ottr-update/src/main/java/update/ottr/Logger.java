@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Logger {
     public ArrayList<LOGTAG> activeTags;
-    private boolean disabled;
+    public boolean disabled;
 
     public Logger(ArrayList<LOGTAG> activeTags) {
         if (activeTags == null) {

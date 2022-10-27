@@ -45,8 +45,7 @@ public class App {
         String[] N = args[1].split(", ");
         String[] changes = args[2].split(", ");
 
-        String pathToOldInstances = "../temp/old_instances.stottr";
-        String pathToNewInstances = "../temp/new_instances.stottr";
+        
         String pathToTemplate = "../temp/planet.stottr";
         String dbURL = "http://localhost:3030/";
         String timerFile = "../temp/times.txt";
@@ -62,16 +61,15 @@ public class App {
         ArrayList<Solutions> solutions = new ArrayList<Solutions>(List.of(Solutions.REBUILD, Solutions.SIMPLE));
 
         Logger log = new Logger(loggerLevel);
+        log.disabled = true;
         Timer timer = new Timer(timerFile);
         TemplateManager tm = new StandardTemplateManager();
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
-        System.out.println("MANAGER" + tm.toString());
         msgs.printMessages();
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
         
         // controller.testSingleFile(pathToNewInstances, pathToOldInstances, 5);
         controller.nElements(N, changes, source);
-        buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL);
 
         try {
             timer.writeSplitsToFile();

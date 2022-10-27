@@ -16,7 +16,7 @@ def create_subfile(filename: str, new_filename: str, n: int):
     """
         creates a new file with the first `n` instances of `filename`
     """
-    print("creating shortened file", new_filename)
+    print("[CREATE] creating shortened file", new_filename)
     # open a new file to write the data to
     original_file = open(filename, "r")
     new_file = open(new_filename, "w")
@@ -56,7 +56,7 @@ def create_changed_file(deletions: int, changes: int, insertions: int, filename:
         creates a new file where `insertions` instances are inserted and `deletions` instances are deleted.
     """
     print(
-        f"creating changed   file  {new_filename} del[{deletions}] change[{changes}] insert[{insertions}]")
+        f"[CREATE] creating changed   file  {new_filename} del[{deletions}] change[{changes}] insert[{insertions}]")
 
     # open source and target file
     original_file = open(filename, "r")
@@ -79,10 +79,6 @@ def create_changed_file(deletions: int, changes: int, insertions: int, filename:
     change_line_numbers.sort()
     deletion_line_numbers.sort()
     insert_line_numbers.sort()
-
-    print("delete lines", deletion_line_numbers)
-    print("change lines", change_line_numbers)
-    print("insert lines", insert_line_numbers)
 
     next_change_line = _next_in_list(change_line_numbers)
     next_delete_line = _next_in_list(deletion_line_numbers)

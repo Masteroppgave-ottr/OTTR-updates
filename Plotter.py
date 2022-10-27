@@ -15,14 +15,14 @@ def find_all_solutions(measurement_list):
 def get_n(measurement_list):
     matches = []
     for i in measurement_list:
-        matches.append(i[0])
+        matches.append(int(i[0]))
     return matches
 
 
 def get_time(measurement_list):
     matches = []
     for i in measurement_list:
-        matches.append(i[3])
+        matches.append(int(i[3]))
     return matches
 
 
@@ -77,10 +77,8 @@ def create_bar_chart(measurement_list):
         n, time = get_n_and_time_lists(
             measurement_list, solution, "start", "end")
 
-        print(solution, n, time)
         if solution == "rebuild set":
             baseline = int(time[0])
-            print("baseline", baseline)
         else:
             times.append(int(time[0]))
 
@@ -100,7 +98,6 @@ def create_line_graph(measurement_list):
     for solution in solutions:
         n, time = get_n_and_time_lists(
             measurement_list, solution, "start", "end")
-        print(solution, n, time)
         plt.plot(n, time, label=solution)
 
     plt.xlabel("Number of triples")

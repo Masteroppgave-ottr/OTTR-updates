@@ -29,7 +29,8 @@ public class Controller {
                 simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer, Integer.parseInt(n));
             }
             if (solutions.contains(Solutions.REBUILD)) {
-                
+                Rebuild rebuild = new Rebuild();
+                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n);
             }
         }
     }
