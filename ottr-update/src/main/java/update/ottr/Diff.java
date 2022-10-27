@@ -183,9 +183,6 @@ class Diff {
         if (lineNumberList.size() == 0)
             return null;
 
-        System.out.println("Looking for line " + lineNumberList);
-        System.out.println("in file " + instanceFileName);
-
         try {
             BufferedReader br = new BufferedReader(new FileReader(instanceFileName));
 

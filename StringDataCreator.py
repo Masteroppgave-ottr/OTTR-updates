@@ -29,11 +29,13 @@ def create_subfile(filename: str, new_filename: str, n: int):
             prefix_end = nr
             break
 
-    if (n > length):
-        raise Exception("n is larger than the file length")
-
-    for i in range(0, n + prefix_end):
+    for i in range(0, min(n + prefix_end, length)):
         new_file.write(lines[i])
+
+    if (n > length):
+        print("[CREATE] generating", n - length, "new instances")
+        for i in range(prefix_end, n - length):
+            new_file.write(mutate_instance(lines[prefix_end+1], 2))
 
 
 def mutate_instance(instance: str, arg_nr: int, new_value: str = None):
