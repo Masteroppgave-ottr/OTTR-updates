@@ -19,14 +19,27 @@ public class Controller {
         this.tm = tm;
     }
 
-    public void nElements(String[] numElements, String[] changes, String source){
+    /**
+     * For every n in numElements:
+     * run the solutions specified in 'this.solutions'
+     * log the time it took to run the solution. The times are saved to timerPath
+     * 
+     * @param numElements
+     *                         an array of n sizes
+     * @param generatedPath
+     *                         path to the generated ottr-files
+     * @param instanceFileName
+     *                         the name of the original instance file
+     */
+    public void nElements(String[] numElements, String generatedPath, String instanceFileName) {
         for (String n : numElements) {
-            String pathToNewInstances = "../temp/generated/" + n + "_new_" + source;
-            String pathToOldInstances = "../temp/generated/" + n + "_old_" + source;
+            String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
+            String pathToOldInstances = generatedPath + n + "_old_" + instanceFileName;
 
             if (solutions.contains(Solutions.SIMPLE)) {
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
-                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer, Integer.parseInt(n));
+                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
+                        Integer.parseInt(n));
             }
             if (solutions.contains(Solutions.REBUILD)) {
                 Rebuild rebuild = new Rebuild();
@@ -35,23 +48,24 @@ public class Controller {
         }
     }
 
-    public void nChanges(String[] changes, String[] numElements){
+    public void nChanges(String[] changes, String[] numElements) {
         for (String n : changes) {
-            
+
         }
     }
 
-    public void procentChanges(String[] numElements, String[] changeProcent){
+    public void procentChanges(String[] numElements, String[] changeProcent) {
         for (String n : numElements) {
-            
+
         }
     }
 
-    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String n){
-        //test all solutions with this dataset
+    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String n) {
+        // test all solutions with this dataset
         if (solutions.contains(Solutions.SIMPLE)) {
             SimpleUpdate simpleUpdate = new SimpleUpdate(this.log);
-            simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer, Integer.parseInt(n));
+            simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
+                    Integer.parseInt(n));
         }
     }
 

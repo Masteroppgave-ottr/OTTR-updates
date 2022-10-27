@@ -41,35 +41,35 @@ public class App {
     // Alternatively, you can run the following command in dev folder: make && make
     // diff
     {
-        String source = args[0];
-        String[] N = args[1].split(", ");
-        String[] changes = args[2].split(", ");
+        String tempDir = args[0];
+        String instanceFileName = args[1];
+        String templateFileName = args[2];
+        String timerFileName = args[3];
+        String dbURL = args[4];
+        String[] N = args[5].split(", ");
+        String[] total_changes = args[6].split(", ");
 
-        
-        String pathToTemplate = "../temp/planet.stottr";
-        String dbURL = "http://localhost:3030/";
-        String timerFile = "../temp/times.txt";
         LOGTAG[] logLevels = {
-                LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
+                // LOGTAG.DEFAULT,
+                // LOGTAG.DEBUG,
                 // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
-                LOGTAG.WARNING
+                // LOGTAG.WARNING
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
-        ArrayList<Solutions> solutions = new ArrayList<Solutions>(List.of(Solutions.REBUILD, Solutions.SIMPLE));
+        ArrayList<Solutions> solutions = new ArrayList<Solutions>(List.of(
+                Solutions.REBUILD,
+                Solutions.SIMPLE));
 
         Logger log = new Logger(loggerLevel);
-        log.disabled = true;
-        Timer timer = new Timer(timerFile);
+        Timer timer = new Timer(tempDir + timerFileName);
         TemplateManager tm = new StandardTemplateManager();
-        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplate);
+        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir + templateFileName);
         msgs.printMessages();
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
-        
-        // controller.testSingleFile(pathToNewInstances, pathToOldInstances, 5);
-        controller.nElements(N, changes, source);
+
+        controller.nElements(N, tempDir + "generated/", instanceFileName);
 
         try {
             timer.writeSplitsToFile();
