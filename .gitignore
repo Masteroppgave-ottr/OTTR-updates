@@ -6,3 +6,4 @@ temp/
 *.jar
 ottr-update/target/surefire-reports/update.ottr.AppTest.txt
 Makefile
+__pycache__/TestDataCreator.cpython-310.pyc
