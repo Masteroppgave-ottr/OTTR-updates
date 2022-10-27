@@ -36,7 +36,7 @@ def create_subfile(filename: str, new_filename: str, n: int):
         print("[CREATE] generating", n - length, "new instances")
         for i in range(prefix_end, n - length):
             new_file.write(mutate_instance(
-                lines[prefix_end+1], 2, 10000000000000000000))
+                lines[prefix_end+1], 2, rng_range=10000000000000000000))
 
 
 def mutate_instance(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 100000000):
