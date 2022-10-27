@@ -35,16 +35,17 @@ def create_subfile(filename: str, new_filename: str, n: int):
     if (n > length):
         print("[CREATE] generating", n - length, "new instances")
         for i in range(prefix_end, n - length):
-            new_file.write(mutate_instance(lines[prefix_end+1], 2))
+            new_file.write(mutate_instance(
+                lines[prefix_end+1], 2, 10000000000000000000))
 
 
-def mutate_instance(instance: str, arg_nr: int, new_value: str = None):
+def mutate_instance(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 100000000):
     """
         mutates argument `arg_nr` in instance `line`.
         NB the argument at position `arg_nr` is assumed to be a string
     """
     if new_value is None:
-        new_value = "'new text here" + str(random.randint(0, 100000000)) + "'"
+        new_value = "'new text here" + str(random.randint(0, rng_range)) + "'"
 
     split = instance.split(", ")
 
