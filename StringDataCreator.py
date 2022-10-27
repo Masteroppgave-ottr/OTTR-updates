@@ -2,6 +2,8 @@
 import random
 import sys
 
+from TestDataCreator import insert
+
 
 def _next_in_list(l: list[int]):
     if len(l) > 0:
@@ -14,6 +16,7 @@ def create_subfile(filename: str, new_filename: str, n: int):
     """
         creates a new file with the first `n` instances of `filename`
     """
+    print("creating shortened file", new_filename)
     # open a new file to write the data to
     original_file = open(filename, "r")
     new_file = open(new_filename, "w")
@@ -33,24 +36,28 @@ def create_subfile(filename: str, new_filename: str, n: int):
         new_file.write(lines[i])
 
 
-def mutate_string_arg(line: str, arg_nr: int):
+def mutate_instance(instance: str, arg_nr: int, new_value: str = None):
     """
         mutates argument `arg_nr` in instance `line`.
         NB the argument at position `arg_nr` is assumed to be a string
     """
-    split = line.split(", ")
+    if new_value is None:
+        new_value = "'new text here" + str(random.randint(0, 100000000)) + "'"
 
-    combo = split[:arg_nr-1] + \
-        ["'new text here" + str(random.randint(0, 100000000)
-                                ) + "'"] + split[arg_nr:]
+    split = instance.split(", ")
+
+    combo = split[:arg_nr-1] + [new_value] + split[arg_nr:]
 
     return ", ".join(combo)
 
 
-def create_changed_file(insertions: int, deletions: int, filename: str, new_filename: str):
+def create_changed_file(deletions: int, changes: int, insertions: int, filename: str, new_filename: str):
     """
         creates a new file where `insertions` instances are inserted and `deletions` instances are deleted.
     """
+    print(
+        f"creating changed   file  {new_filename} del[{deletions}] change[{changes}] insert[{insertions}]")
+
     # open source and target file
     original_file = open(filename, "r")
     new_file = open(new_filename, "w")
@@ -63,33 +70,49 @@ def create_changed_file(insertions: int, deletions: int, filename: str, new_file
             break
 
     # find line number to delete and insert
-    insertion_line_numbers = random.sample(
-        range(prefix_end, length), insertions)
-    deletion_line_numbers = random.sample(range(prefix_end, length), deletions)
-    insertion_line_numbers.sort()
+    change_delete_line_numbers = random.sample(
+        range(prefix_end, length), deletions + changes)
+    change_line_numbers = change_delete_line_numbers[:changes]
+    deletion_line_numbers = change_delete_line_numbers[changes:]
+    insert_line_numbers = [random.randint(
+        prefix_end, length-1) for _ in range(insertions)]
+    change_line_numbers.sort()
     deletion_line_numbers.sort()
-    print("Insertion line numbers: ", insertion_line_numbers)
-    print("Deletion line numbers: ", deletion_line_numbers)
+    insert_line_numbers.sort()
 
-    next_insert_line = _next_in_list(insertion_line_numbers)
+    print("delete lines", deletion_line_numbers)
+    print("change lines", change_line_numbers)
+    print("insert lines", insert_line_numbers)
+
+    next_change_line = _next_in_list(change_line_numbers)
     next_delete_line = _next_in_list(deletion_line_numbers)
+    next_insert_line = _next_in_list(insert_line_numbers)
     for line_nr, line in enumerate(lines):
-        # insert instance here
-        if line_nr == next_insert_line:
-            new_file.write(mutate_string_arg(line, 2))
-            next_insert_line = _next_in_list(insertion_line_numbers)
-        # delete instance here
+
+        # copy line to new file
+        if line_nr != next_delete_line and line_nr != next_change_line:
+            new_file.write(line)
+
+        # delete instance
         if line_nr == next_delete_line:
             next_delete_line = _next_in_list(deletion_line_numbers)
-        # copy line to new file
-        else:
-            new_file.write(line)
+
+        # change instance
+        if line_nr == next_change_line:
+            new_file.write(mutate_instance(line, 2))
+            next_change_line = _next_in_list(change_line_numbers)
+
+        # insert instance
+        if line_nr == next_insert_line:
+            while line_nr == next_insert_line:
+                new_file.write(mutate_instance(line, 2))
+                next_insert_line = _next_in_list(insert_line_numbers)
 
     original_file.close()
     new_file.close()
 
 
-def run(source_dir: str, source: str, target_dir: str, file_sizes: list[str], insert_nr: int, delete_nr: int):
+def run(source_dir: str, source: str, target_dir: str, file_sizes: list[str], delete_nr: int, change_nr: int, insert_nr: int):
     """
         for every N in `file_sizes`:
             create a new file with the first N instances of `source`
@@ -100,22 +123,23 @@ def run(source_dir: str, source: str, target_dir: str, file_sizes: list[str], in
         create_subfile(source_dir + source,
                        target_dir + size + "_old_" + source, int(size))
 
-        create_changed_file(insert_nr, delete_nr,
-                            target_dir + size + "_old_" + source, target_dir + size + "_new_" + source)
+        create_changed_file(delete_nr, change_nr, insert_nr, target_dir +
+                            size + "_old_" + source, target_dir + size + "_new_" + source)
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         raise Exception(
-            "Not enough arguments. Run with arguments <file sizes (n)> <number of insertions> <number of deletions>")
+            "Not enough arguments. Run with arguments <file sizes (n)> <number of changes> <number of deletions>")
 
-    file_sizes = sys.argv[1].split(", ")
-    delete_nr = int(sys.argv[2])
-    insert_nr = int(sys.argv[3])
+    source = sys.argv[1]
+    file_sizes = sys.argv[2].split(", ")
+    delete_nr = int(sys.argv[3])
+    change_nr = int(sys.argv[4])
+    insert_nr = int(sys.argv[5])
 
     source_dir = "temp/"
-    source = "exoplanets.stottr"
     target_dir = "temp/generated/"
 
     run(source_dir, source, target_dir,
-        file_sizes, insert_nr, delete_nr)
+        file_sizes, delete_nr, change_nr, insert_nr)
