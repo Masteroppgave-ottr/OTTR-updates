@@ -41,13 +41,22 @@ public class App {
     // Alternatively, you can run the following command in dev folder: make && make
     // diff
     {
-        String tempDir = args[0];
-        String instanceFileName = args[1];
-        String templateFileName = args[2];
-        String timerFileName = args[3];
-        String dbURL = args[4];
-        String[] N = args[5].split(", ");
-        String[] total_changes = args[6].split(", ");
+        String mode = args[0];
+        String tempDir = args[1];
+        String instanceFileName = args[2];
+        String templateFileName = args[3];
+        String timerFileName = args[4];
+        String dbURL = args[5];
+        String[] N = args[6].split(", ");
+
+        // print all variables
+        System.out.println("mode: " + mode);
+        System.out.println("tempDir: " + tempDir);
+        System.out.println("instanceFileName: " + instanceFileName);
+        System.out.println("templateFileName: " + templateFileName);
+        System.out.println("timerFileName: " + timerFileName);
+        System.out.println("dbURL: " + dbURL);
+        System.out.println("N: " + N);
 
         LOGTAG[] logLevels = {
                 // LOGTAG.DEFAULT,
