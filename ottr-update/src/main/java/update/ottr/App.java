@@ -33,6 +33,19 @@ public class App {
         }
     }
 
+    private static int[] combineStringNumberArrays(String[] arr1, String[] arr2, String[] arr3) {
+        if (arr1.length != arr2.length || arr1.length != arr3.length) {
+            throw new IllegalArgumentException("The arrays must have the same length");
+        }
+
+        int[] newArray = new int[arr1.length];
+        for (int i = 0; i < arr1.length; i++) {
+            newArray[i] = Integer.parseInt(arr1[i]) + Integer.parseInt(arr2[i]) + Integer.parseInt(arr3[i]);
+        }
+
+        return newArray;
+    }
+
     public static void main(String[] args)
     // to run: following command in ottr-update folder:
     // mvn package && diff <oldInstanceFilePath> <newInstanceFilePath> | java -jar
@@ -51,12 +64,14 @@ public class App {
 
         // print all variables
         System.out.println("mode: " + mode);
-        System.out.println("tempDir: " + tempDir);
-        System.out.println("instanceFileName: " + instanceFileName);
-        System.out.println("templateFileName: " + templateFileName);
-        System.out.println("timerFileName: " + timerFileName);
-        System.out.println("dbURL: " + dbURL);
-        System.out.println("N: " + N);
+        // System.out.println("tempDir: " + tempDir);
+        // System.out.println("instanceFileName: " + instanceFileName);
+        // System.out.println("templateFileName: " + templateFileName);
+        // System.out.println("timerFileName: " + timerFileName);
+        // System.out.println("dbURL: " + dbURL);
+        for (String n : N) {
+            System.out.println("N: " + n);
+        }
 
         LOGTAG[] logLevels = {
                 // LOGTAG.DEFAULT,
@@ -78,7 +93,17 @@ public class App {
         msgs.printMessages();
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
 
-        controller.nElements(N, tempDir + "generated/", instanceFileName);
+        if (mode.equals("n=instances")) {
+            controller.nElements(N, tempDir + "generated/", instanceFileName);
+        }
+        if (mode.equals("n=changes")) {
+            String[] deletions = args[7].split(", ");
+            String[] changes = args[8].split(", ");
+            String[] insertions = args[9].split(", ");
+            int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
+
+            controller.nChanges(changeList, tempDir + "generated/", instanceFileName, N[0]);
+        }
 
         try {
             timer.writeSplitsToFile();

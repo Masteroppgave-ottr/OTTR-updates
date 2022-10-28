@@ -48,10 +48,21 @@ public class Controller {
         }
     }
 
-    public void nChanges(String[] changes, String[] numElements) {
-        for (String n : changes) {
+    public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances) {
+        String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
+        for (int n : changes) {
+            String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
 
+            if (solutions.contains(Solutions.SIMPLE)) {
+                SimpleUpdate simpleUpdate = new SimpleUpdate(log);
+                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer, n);
+            }
+            if (solutions.contains(Solutions.REBUILD)) {
+                Rebuild rebuild = new Rebuild();
+                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n + "");
+            }
         }
+
     }
 
     public void procentChanges(String[] numElements, String[] changeProcent) {

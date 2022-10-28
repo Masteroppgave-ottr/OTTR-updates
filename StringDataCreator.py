@@ -54,7 +54,7 @@ def mutate_instance(instance: str, arg_nr: int, new_value: str = None, rng_range
     return ", ".join(combo)
 
 
-def create_changed_file(deletions: int, changes: int, insertions: int, filename: str, new_filename: str):
+def create_file_nInstances(deletions: int, changes: int, insertions: int, filename: str, new_filename: str):
     """
         creates a new file where `insertions` instances are inserted and `deletions` instances are deleted.
     """
@@ -122,8 +122,8 @@ def run(source_dir: str, source: str, target_dir: str, file_sizes: list[str], de
         create_subfile(source_dir + source,
                        target_dir + size + "_old_" + source, int(size))
 
-        create_changed_file(delete_nr, change_nr, insert_nr, target_dir +
-                            size + "_old_" + source, target_dir + size + "_new_" + source)
+        create_file_nInstances(delete_nr, change_nr, insert_nr, target_dir +
+                               size + "_old_" + source, target_dir + size + "_new_" + source)
 
 
 def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_size: int, deletions: list[str], changes: list[str], insertions: list[str],):
@@ -141,8 +141,8 @@ def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_siz
         total_changes = int(deletions[i]) + \
             int(changes[i]) + int(insertions[i])
 
-        create_changed_file(int(deletions[i]), int(changes[i]), int(insertions[i]), old_file_name,
-                            target_dir + str(file_size) + "_changes_" + str(total_changes) + "_new_" + source)
+        create_file_nInstances(int(deletions[i]), int(changes[i]), int(insertions[i]), old_file_name,
+                               target_dir + str(file_size) + "_changes_" + str(total_changes) + "_new_" + source)
 
 
 if __name__ == "__main__":
