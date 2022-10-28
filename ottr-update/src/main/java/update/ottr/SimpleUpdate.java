@@ -59,6 +59,7 @@ public class SimpleUpdate {
         timer.newSplit("start", "simple solution", n);
         Diff d = new Diff(log);
         d.readDiff( pathToOldInstances, pathToNewInstances);
+        timer.newSplit("diff", "simple solution", n);
         log.print(logLevel, "Add linenumbers" + d.addLines.toString());
         log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
 
@@ -80,6 +81,8 @@ public class SimpleUpdate {
         OttrInterface jh = new OttrInterface(log);
         Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
         Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
+
+        timer.newSplit("model", "simple solution", n);
 
         log.print(logLevel, "delete model " + deleteModel.toString());
 
