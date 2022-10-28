@@ -83,7 +83,7 @@ public class App {
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
         ArrayList<Solutions> solutions = new ArrayList<Solutions>(List.of(
-                Solutions.REBUILD,
+                // Solutions.REBUILD,
                 Solutions.SIMPLE));
 
         Logger log = new Logger(loggerLevel);
