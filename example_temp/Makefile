@@ -26,18 +26,23 @@ INSERT_NUMBERS = "0, 0, 0, 0, 0"
 build:
 	cd $(APP_DIR) && mvn package
 
-run: 
-	cd $(APP_DIR) && java -jar target/update.jar $(ALL) $(N) $(TOTAL_CHANGES)
-
 plot:
 	python3 Plotter.py $(TEMP_DIR)/$(TIMER)
 
-create:
+run_nInstances: 
+	cd $(APP_DIR) && java -jar target/update.jar "n=instances" $(ALL) $(N) $(TOTAL_CHANGES)
+
+create_nInstances:
 	python3 StringDataCreator.py "n=instances" $(INSTANCES) $(N) $(DELETION_NUMBER) $(CHANGE_NUMBER) $(INSERT_NUMBER)
 
-create2:
+run_nChanges: 
+	cd $(APP_DIR) && java -jar target/update.jar "n=changes" $(ALL) $(N2) 1
+
+create_nChanges:
 	python3 StringDataCreator.py "n=changes" $(INSTANCES) $(N2) $(DELETION_NUMBERS) $(CHANGE_NUMBERS) $(INSERT_NUMBERS)
 
-test: build create run plot
+test_nInstances: build create_nInstances run_nInstances plot
+test_nChanges: build create_nChanges run_nChanges plot
 
-retest: run plot
+retest_nInstances: run_nInstances plot
+retest_nChanges: run_nChanges plot
