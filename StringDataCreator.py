@@ -126,19 +126,58 @@ def run(source_dir: str, source: str, target_dir: str, file_sizes: list[str], de
                             size + "_old_" + source, target_dir + size + "_new_" + source)
 
 
+def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_size: int, deletions: list[str], changes: list[str], insertions: list[str],):
+    """
+        for every N in `changes`:
+            create a new file with the first `file_size` instances of `source`
+            create a new file with `N` changes
+        the files are placed in `target_dir`
+    """
+    old_file_name = target_dir + str(file_size) + "_old_" + source
+    create_subfile(source_dir + source,
+                   old_file_name, file_size)
+
+    for i in range(len(deletions)):
+        total_changes = int(deletions[i]) + \
+            int(changes[i]) + int(insertions[i])
+
+        create_changed_file(int(deletions[i]), int(changes[i]), int(insertions[i]), old_file_name,
+                            target_dir + str(file_size) + "_changes_" + str(total_changes) + "_new_" + source)
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        raise Exception(
-            "Not enough arguments. Run with arguments <file sizes (n)> <number of changes> <number of deletions>")
-
-    source = sys.argv[1]
-    file_sizes = sys.argv[2].split(", ")
-    delete_nr = int(sys.argv[3])
-    change_nr = int(sys.argv[4])
-    insert_nr = int(sys.argv[5])
-
     source_dir = "temp/"
     target_dir = "temp/generated/"
 
-    run(source_dir, source, target_dir,
-        file_sizes, delete_nr, change_nr, insert_nr)
+    mode = sys.argv[1]
+    if (mode == "n=instances"):
+        if len(sys.argv) < 7:
+            raise Exception(
+                "Not enough arguments. Run with arguments: n=instances <instance_file> <list of number of instances> <number of deletions> <number of changes> <number of insertions>")
+
+        source = sys.argv[2]
+        file_sizes = sys.argv[3].split(", ")
+        delete_nr = int(sys.argv[4])
+        change_nr = int(sys.argv[5])
+        insert_nr = int(sys.argv[6])
+
+        run(source_dir, source, target_dir,
+            file_sizes, delete_nr, change_nr, insert_nr)
+
+    if (mode == "n=changes"):
+        if len(sys.argv) < 7:
+            raise Exception(
+                "Not enough arguments. Run with arguments: n=changes <instance_file> <number_of_instances> <list of deletions> <list of changes> <list of insertions>")
+
+        source = sys.argv[2]
+        file_size = int(sys.argv[3])
+        nr_of_deletions = sys.argv[4].split(", ")
+        nr_of_changes = sys.argv[5].split(", ")
+        nr_of_insertions = sys.argv[6].split(", ")
+
+        if (len(nr_of_deletions) != len(nr_of_changes) or len(nr_of_changes) != len(nr_of_insertions)):
+            raise Exception(
+                "Number of deletions, changes and insertions must be equal")
+
+        create_file_nChanges(source_dir, source, target_dir,
+                             file_size, nr_of_deletions, nr_of_changes, nr_of_insertions)
