@@ -102,8 +102,7 @@ def create_bar_interval(measurement_list):
     plt.xlabel("Sections")
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
-    plt.show()
-    plt.savefig("./temp/bar_sections.png")
+    plt.savefig("./temp/bar.png")
 
 def create_bar_chart(measurement_list):
     solutions = find_all_solutions(measurement_list)
