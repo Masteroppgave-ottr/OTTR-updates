@@ -84,7 +84,7 @@ def create_bar_interval(measurement_list):
             measurement_list, solution, "diff", "model")
         n, queryTime = get_n_and_time_lists(
             measurement_list, solution, "model", "end")
-        
+
         solutionTimes.append(diffTime[0])
         solutionTimes.append(modelTime[0])
         solutionTimes.append(queryTime[0])
@@ -93,16 +93,18 @@ def create_bar_interval(measurement_list):
         if (len(solutions) == 1):
             plt.bar(x, solutionTimes, width=width, label=solution)
         elif (counter % 2 == 0):
-            plt.bar(x+((width/2)*(counter-1)), solutionTimes, width, label=solution)
-        else: 
-            plt.bar(x-((width/2)*counter), solutionTimes, width, label=solution)
-
+            plt.bar(x+((width/2)*(counter-1)),
+                    solutionTimes, width, label=solution)
+        else:
+            plt.bar(x-((width/2)*counter),
+                    solutionTimes, width, label=solution)
 
     plt.xticks(x, ["diff", "expand instances", "query"])
     plt.xlabel("Sections")
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.savefig("./temp/bar.png")
+
 
 def create_bar_chart(measurement_list):
     solutions = find_all_solutions(measurement_list)
@@ -136,7 +138,7 @@ def create_line_graph(measurement_list):
             measurement_list, solution, "start", "end")
         plt.plot(n, time, label=solution)
 
-    plt.xlabel("Number of triples")
+    plt.xlabel("N")
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.title("Runtime")
