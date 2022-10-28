@@ -1,7 +1,9 @@
 
 from ast import arg
+from cProfile import label
 import sys
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def find_all_solutions(measurement_list):
@@ -68,6 +70,41 @@ def read_file(filename):
     return measurements
 
 
+def create_bar_interval(measurement_list):
+    solutions = find_all_solutions(measurement_list)
+    width = 0.2
+    x = np.arange(3)
+    counter = 0
+    for solution in solutions:
+        counter += 1
+        solutionTimes = []
+        n, diffTime = get_n_and_time_lists(
+            measurement_list, solution, "start", "diff")
+        n, modelTime = get_n_and_time_lists(
+            measurement_list, solution, "diff", "model")
+        n, queryTime = get_n_and_time_lists(
+            measurement_list, solution, "model", "end")
+        
+        solutionTimes.append(diffTime[0])
+        solutionTimes.append(modelTime[0])
+        solutionTimes.append(queryTime[0])
+        y1 = [34, 56, 12, 89, 67]
+
+        if (len(solutions) == 1):
+            plt.bar(x, solutionTimes, width=width, label=solution)
+        elif (counter % 2 == 0):
+            plt.bar(x+((width/2)*(counter-1)), solutionTimes, width, label=solution)
+        else: 
+            plt.bar(x-((width/2)*counter), solutionTimes, width, label=solution)
+
+
+    plt.xticks(x, ["diff", "model", "query"])
+    plt.xlabel("Sections")
+    plt.ylabel("Time in nano seconds")
+    plt.legend(solutions)
+    plt.show()
+    plt.savefig("./temp/bar_sections.png")
+
 def create_bar_chart(measurement_list):
     solutions = find_all_solutions(measurement_list)
 
@@ -118,7 +155,7 @@ def default_plot(measurement_list):
         if (measurement[0] != first_n):
             create_line_graph(measurement_list)
             return
-    create_bar_chart(measurement_list)
+    create_bar_interval(measurement_list)
 
 
 if __name__ == '__main__':
