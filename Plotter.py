@@ -98,7 +98,7 @@ def create_bar_interval(measurement_list):
             plt.bar(x-((width/2)*counter), solutionTimes, width, label=solution)
 
 
-    plt.xticks(x, ["diff", "model", "query"])
+    plt.xticks(x, ["diff", "expand instances", "query"])
     plt.xlabel("Sections")
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
