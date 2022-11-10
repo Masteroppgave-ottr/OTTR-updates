@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 
 import org.apache.jena.rdf.model.Model;
@@ -81,6 +82,58 @@ public class FusekiInterface {
                     + " check whether the database is up and running.");
             return 1;
         }
+        return res;
+
+    }
+
+    /**
+     * resets the database
+     * 
+     * @param baseModel
+     *                     The model to put into Original and updated
+     * @param dbURL
+     *                     The URL of the Fuseki server.
+     * @return
+     * @throws IOException
+     */
+    public int resetDb(Model baseModel, String dbURL) throws IOException {
+        URL url = new URL(dbURL + "Original");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "text/turtle");
+        con.setDoOutput(true);
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+
+        log.print(logLevel, "Reset: " + url);
+
+        RDFDataMgr.write(out, baseModel, RDFFormat.NTRIPLES);
+        out.flush();
+        out.close();
+
+        int res = con.getResponseCode();
+        log.print(logLevel, "Response Code from reset Original: " + res);
+        if (res >= 400) {
+            log.print(LOGTAG.WARNING, "Error, response from " + url.toString() + " resulted in a status code " + res
+                    + " check whether the database is up and running.");
+            return 1;
+        }
+
+        url = new URL(dbURL + "Updated");
+        con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "text/turtle");
+        con.setDoOutput(true);
+        out = new DataOutputStream(con.getOutputStream());
+
+        log.print(logLevel, "Reset: " + url);
+
+        RDFDataMgr.write(out, baseModel, RDFFormat.NTRIPLES);
+        out.flush();
+        out.close();
+
+        res = con.getResponseCode();
+        log.print(logLevel, "Response Code from reset Updated: " + res);
+        
         return res;
 
     }
