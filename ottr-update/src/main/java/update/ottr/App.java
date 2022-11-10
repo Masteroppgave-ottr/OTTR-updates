@@ -96,7 +96,7 @@ public class App {
         Controller controller = new Controller(solutions, log, timer, dbURL, tm, baseDBFileName);
 
         if (mode.equals("n=instances")) {
-            controller.nElements(N, tempDir + "generated/", instanceFileName);
+            controller.nElements(N, tempDir + "generated/", instanceFileName, baseDBFileName);
         }
         if (mode.equals("n=changes")) {
             String[] deletions = args[8].split(", ");

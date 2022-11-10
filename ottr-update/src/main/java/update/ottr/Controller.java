@@ -36,8 +36,17 @@ public class Controller {
      * @param instanceFileName
      *                         the name of the original instance file
      */
-    public void nElements(String[] numElements, String generatedPath, String instanceFileName) {
+    public void nElements(String[] numElements, String generatedPath, String instanceFileName, String basePath) {
+        OttrInterface ottrInterface = new OttrInterface(log);
+        Model baseModel = ottrInterface.expandAndGetModelFromFile(basePath, tm);
+        FusekiInterface fuseki = new FusekiInterface(log);
         for (String n : numElements) {
+            try {
+                fuseki.resetDb(baseModel, dbURL);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
             String pathToOldInstances = generatedPath + n + "_old_" + instanceFileName;
 
