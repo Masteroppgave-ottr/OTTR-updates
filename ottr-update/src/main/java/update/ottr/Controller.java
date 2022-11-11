@@ -15,13 +15,12 @@ public class Controller {
     TemplateManager tm;
     String baseDBFileName;
 
-    public Controller(ArrayList<Solutions> solutions, Logger log, Timer timer, String dbURL, TemplateManager tm, String baseDBFileName) {
+    public Controller(ArrayList<Solutions> solutions, Logger log, Timer timer, String dbURL, TemplateManager tm) {
         this.solutions = solutions;
         this.log = log;
         this.timer = timer;
         this.dbURL = dbURL;
         this.tm = tm;
-        this.baseDBFileName = baseDBFileName;
     }
 
     /**
@@ -36,19 +35,19 @@ public class Controller {
      * @param instanceFileName
      *                         the name of the original instance file
      */
-    public void nElements(String[] numElements, String generatedPath, String instanceFileName, String basePath) {
+    public void nElements(String[] numElements, String generatedPath, String instanceFileName) {
         OttrInterface ottrInterface = new OttrInterface(log);
-        Model baseModel = ottrInterface.expandAndGetModelFromFile(basePath, tm);
         FusekiInterface fuseki = new FusekiInterface(log);
         for (String n : numElements) {
+            String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
+            String pathToOldInstances = generatedPath + n + "_old_" + instanceFileName;
+            Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
             try {
                 fuseki.resetDb(baseModel, dbURL);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
-            String pathToOldInstances = generatedPath + n + "_old_" + instanceFileName;
 
             if (solutions.contains(Solutions.SIMPLE)) {
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
@@ -62,10 +61,10 @@ public class Controller {
         }
     }
 
-    public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances, String basePath) {
+    public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances) {
         String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
         OttrInterface ottrInterface = new OttrInterface(log);
-        Model baseModel = ottrInterface.expandAndGetModelFromFile(basePath, tm);
+        Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
         FusekiInterface fuseki = new FusekiInterface(log);
         for (int n : changes) {
             try {

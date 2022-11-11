@@ -60,8 +60,7 @@ public class App {
         String templateFileName = args[3];
         String timerFileName = args[4];
         String dbURL = args[5];
-        String baseDBFileName = args[6];
-        String[] N = args[7].split(", ");
+        String[] N = args[6].split(", ");
 
         // print all variables
         System.out.println("mode: " + mode);
@@ -93,18 +92,18 @@ public class App {
         TemplateManager tm = new StandardTemplateManager();
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir + templateFileName);
         msgs.printMessages();
-        Controller controller = new Controller(solutions, log, timer, dbURL, tm, baseDBFileName);
+        Controller controller = new Controller(solutions, log, timer, dbURL, tm);
 
         if (mode.equals("n=instances")) {
-            controller.nElements(N, tempDir + "generated/", instanceFileName, baseDBFileName);
+            controller.nElements(N, tempDir + "generated/", instanceFileName);
         }
         if (mode.equals("n=changes")) {
-            String[] deletions = args[8].split(", ");
-            String[] changes = args[9].split(", ");
-            String[] insertions = args[10].split(", ");
+            String[] deletions = args[7].split(", ");
+            String[] changes = args[8].split(", ");
+            String[] insertions = args[9].split(", ");
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
-            controller.nChanges(changeList, tempDir + "generated/", instanceFileName, N[0], baseDBFileName);
+            controller.nChanges(changeList, tempDir + "generated/", instanceFileName, N[0]);
         }
 
         try {
