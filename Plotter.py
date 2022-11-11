@@ -75,6 +75,7 @@ def create_bar_interval(measurement_list):
     width = 0.2
     x = np.arange(3)
     counter = 0
+    n = [-1]
     for solution in solutions:
         counter += 1
         solutionTimes = []
@@ -88,7 +89,6 @@ def create_bar_interval(measurement_list):
         solutionTimes.append(diffTime[0])
         solutionTimes.append(modelTime[0])
         solutionTimes.append(queryTime[0])
-        y1 = [34, 56, 12, 89, 67]
 
         if (len(solutions) == 1):
             plt.bar(x, solutionTimes, width=width, label=solution)
@@ -103,6 +103,8 @@ def create_bar_interval(measurement_list):
     plt.xlabel("Sections")
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
+    plt.title("Instances = " + str(n[0]) + " | Changes = TODO")
+    print("[PLOT] Creating bar chart")
     plt.savefig("./temp/bar.png")
 
 
@@ -128,6 +130,7 @@ def create_bar_chart(measurement_list):
         speedup = int(speedup * 1000) / 1000
         plt.title(f"WOW {speedup} i speedup!")
 
+    print("[PLOT] Creating bar chart")
     plt.savefig("./temp/bar.png")
 
 
@@ -142,6 +145,7 @@ def create_line_graph(measurement_list):
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.title("Runtime")
+    print("[PLOT] Creating line graph")
     plt.savefig("./temp/line.png")
 
 
