@@ -85,7 +85,9 @@ public class SimpleUpdate {
 
         timer.newSplit("model", "simple solution", instances, changes);
 
-        log.print(logLevel, "delete model " + deleteModel.toString());
+        if (deleteModel != null) {
+            log.print(logLevel, "delete model " + deleteModel.toString());
+        }
 
         try {
             FusekiInterface fi = new FusekiInterface(log);
