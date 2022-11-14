@@ -1,21 +1,28 @@
 package update.ottr;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.jena.rdf.model.Model;
 
 import xyz.ottr.lutra.TemplateManager;
 
 public class Controller {
-    ArrayList<Solutions> solutions;
+    String[] solutions;
     Logger log;
     Timer timer;
     String dbURL;
     TemplateManager tm;
     String baseDBFileName;
 
-    public Controller(ArrayList<Solutions> solutions, Logger log, Timer timer, String dbURL, TemplateManager tm) {
+    private boolean contains(String[] arr, String targetValue) {
+        for (String s : arr) {
+            if (s.equals(targetValue))
+                return true;
+        }
+        return false;
+    }
+
+    public Controller(String[] solutions, Logger log, Timer timer, String dbURL, TemplateManager tm) {
         this.solutions = solutions;
         this.log = log;
         this.timer = timer;
@@ -35,7 +42,7 @@ public class Controller {
      * @param instanceFileName
      *                         the name of the original instance file
      */
-    public void nElements(String[] numElements, String generatedPath, String instanceFileName) {
+    public void nInstances(String[] numElements, String generatedPath, String instanceFileName, String changes) {
         OttrInterface ottrInterface = new OttrInterface(log);
         FusekiInterface fuseki = new FusekiInterface(log);
         for (String n : numElements) {
@@ -48,15 +55,14 @@ public class Controller {
                 e.printStackTrace();
             }
 
-
-            if (solutions.contains(Solutions.SIMPLE)) {
+            if (this.contains(solutions, Solutions.SIMPLE + "")) {
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
                 simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
-                        Integer.parseInt(n));
+                        Integer.parseInt(n), Integer.parseInt(changes));
             }
-            if (solutions.contains(Solutions.REBUILD)) {
+            if (contains(solutions, Solutions.REBUILD + "")) {
                 Rebuild rebuild = new Rebuild();
-                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n);
+                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
             }
 
             try {
@@ -88,30 +94,26 @@ public class Controller {
 
             String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
 
-            if (solutions.contains(Solutions.SIMPLE)) {
+            if (contains(solutions, Solutions.SIMPLE + "")) {
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
-                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer, n);
+                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
+                        Integer.parseInt(numInstances), n);
             }
-            if (solutions.contains(Solutions.REBUILD)) {
+            if (contains(solutions, Solutions.REBUILD + "")) {
                 Rebuild rebuild = new Rebuild();
-                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n + "");
+                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
             }
         }
 
     }
 
-    public void procentChanges(String[] numElements, String[] changeProcent) {
-        for (String n : numElements) {
-
-        }
-    }
-
-    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String n) {
+    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String numInstances,
+            String changes) {
         // test all solutions with this dataset
-        if (solutions.contains(Solutions.SIMPLE)) {
+        if (contains(solutions, Solutions.SIMPLE + "")) {
             SimpleUpdate simpleUpdate = new SimpleUpdate(this.log);
             simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
-                    Integer.parseInt(n));
+                    Integer.parseInt(numInstances), Integer.parseInt(changes));
         }
     }
 }

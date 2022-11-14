@@ -16,16 +16,16 @@ import org.apache.jena.rdf.model.Model;
 public class App {
 
     public static void buildRebuildSet(String pathToNewInstances, TemplateManager tm, Logger log,
-            Timer timer, String dbURL) {
+            Timer timer, String dbURL, String instances, String changes) {
         OttrInterface ottrInterface = new OttrInterface(log);
         FusekiInterface fi = new FusekiInterface(log);
 
-        timer.newSplit("start", "rebuild set", 5);
+        timer.newSplit("start", "rebuild set", Integer.parseInt(instances), Integer.parseInt(changes));
 
         Model model = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
         try {
             fi.rebuild(model, dbURL);
-            timer.newSplit("end", "rebuild set", 5);
+            timer.newSplit("end", "rebuild set", Integer.parseInt(instances), Integer.parseInt(changes));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -60,18 +60,8 @@ public class App {
         String templateFileName = args[3];
         String timerFileName = args[4];
         String dbURL = args[5];
-        String[] N = args[6].split(", ");
-
-        // print all variables
+        String[] solutions = args[6].split(", ");
         System.out.println("mode: " + mode);
-        // System.out.println("tempDir: " + tempDir);
-        // System.out.println("instanceFileName: " + instanceFileName);
-        // System.out.println("templateFileName: " + templateFileName);
-        // System.out.println("timerFileName: " + timerFileName);
-        // System.out.println("dbURL: " + dbURL);
-        for (String n : N) {
-            System.out.println("N: " + n);
-        }
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
@@ -83,10 +73,6 @@ public class App {
                 LOGTAG.ERROR
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
-        ArrayList<Solutions> solutions = new ArrayList<Solutions>(List.of(
-                Solutions.REBUILD,
-                Solutions.SIMPLE
-                ));
 
         Logger log = new Logger(loggerLevel);
         Timer timer = new Timer(tempDir + timerFileName);
@@ -96,17 +82,19 @@ public class App {
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
 
         if (mode.equals("n=instances")) {
-            controller.nElements(N, tempDir + "generated/", instanceFileName);
+            String[] instances = args[7].split(", ");
+            String changeNr = args[8];
+            controller.nInstances(instances, tempDir + "generated/", instanceFileName, changeNr);
         }
         if (mode.equals("n=changes")) {
-            String[] deletions = args[7].split(", ");
-            String[] changes = args[8].split(", ");
-            String[] insertions = args[9].split(", ");
+            String instances = args[7];
+            String[] deletions = args[8].split(", ");
+            String[] changes = args[9].split(", ");
+            String[] insertions = args[10].split(", ");
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
-            controller.nChanges(changeList, tempDir + "generated/", instanceFileName, N[0]);
+            controller.nChanges(changeList, tempDir + "generated/", instanceFileName, instances);
         }
-
         try {
             timer.writeSplitsToFile();
         } catch (IOException e) {
