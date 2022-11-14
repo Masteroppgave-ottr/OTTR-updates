@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.jena.rdf.model.Model;
@@ -61,15 +62,8 @@ public class App {
         String templateFileName = args[3];
         String timerFileName = args[4];
         String dbURL = args[5];
-        // String[] N = args[6].split(", ");
-
-        // print all variables
+        String[] solutions = args[6].split(", ");
         System.out.println("mode: " + mode);
-        // System.out.println("tempDir: " + tempDir);
-        // System.out.println("instanceFileName: " + instanceFileName);
-        // System.out.println("templateFileName: " + templateFileName);
-        // System.out.println("timerFileName: " + timerFileName);
-        // System.out.println("dbURL: " + dbURL);
 
         LOGTAG[] logLevels = {
                 // LOGTAG.DEFAULT,
@@ -80,9 +74,6 @@ public class App {
                 // LOGTAG.WARNING
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
-        ArrayList<Solutions> solutions = new ArrayList<Solutions>(List.of(
-                Solutions.REBUILD,
-                Solutions.SIMPLE));
 
         Logger log = new Logger(loggerLevel);
         Timer timer = new Timer(tempDir + timerFileName);
@@ -92,20 +83,19 @@ public class App {
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
 
         if (mode.equals("n=instances")) {
-            String[] instances = args[6].split(", ");
-            String changeNr = args[7];
+            String[] instances = args[7].split(", ");
+            String changeNr = args[8];
             controller.nInstances(instances, tempDir + "generated/", instanceFileName, changeNr);
         }
         if (mode.equals("n=changes")) {
-            String instances = args[6];
-            String[] deletions = args[7].split(", ");
-            String[] changes = args[8].split(", ");
-            String[] insertions = args[9].split(", ");
+            String instances = args[7];
+            String[] deletions = args[8].split(", ");
+            String[] changes = args[9].split(", ");
+            String[] insertions = args[10].split(", ");
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
             controller.nChanges(changeList, tempDir + "generated/", instanceFileName, instances);
         }
-
         try {
             timer.writeSplitsToFile();
         } catch (IOException e) {
