@@ -66,7 +66,7 @@ public class Controller {
                 if (updated.isIsomorphicWith(rebuild)) {
                     log.print(LOGTAG.DEFAULT, "The models are isomorphic");
                 } else {
-                    log.print(LOGTAG.WARNING, "The models are not isomorphic");
+                    log.print(LOGTAG.ERROR, "The models are not isomorphic");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
