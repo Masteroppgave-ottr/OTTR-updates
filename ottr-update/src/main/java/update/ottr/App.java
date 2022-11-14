@@ -97,10 +97,10 @@ public class App {
             controller.nInstances(instances, tempDir + "generated/", instanceFileName, changeNr);
         }
         if (mode.equals("n=changes")) {
-            String instances = args[7];
-            String[] deletions = args[8].split(", ");
-            String[] changes = args[9].split(", ");
-            String[] insertions = args[10].split(", ");
+            String instances = args[6];
+            String[] deletions = args[7].split(", ");
+            String[] changes = args[8].split(", ");
+            String[] insertions = args[9].split(", ");
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
             controller.nChanges(changeList, tempDir + "generated/", instanceFileName, instances);
