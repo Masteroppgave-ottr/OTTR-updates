@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 import org.apache.jena.rdf.model.Model;
@@ -90,9 +89,9 @@ public class FusekiInterface {
      * resets the database
      * 
      * @param baseModel
-     *                     The model to put into Original and updated
+     *                  The model to put into Original and updated
      * @param dbURL
-     *                     The URL of the Fuseki server.
+     *                  The URL of the Fuseki server.
      * @return
      * @throws IOException
      */
@@ -133,7 +132,7 @@ public class FusekiInterface {
 
         res = con.getResponseCode();
         log.print(logLevel, "Response Code from reset Updated: " + res);
-        
+
         return res;
 
     }

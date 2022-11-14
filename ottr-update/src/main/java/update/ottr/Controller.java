@@ -1,8 +1,6 @@
 package update.ottr;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.jena.rdf.model.Model;
 

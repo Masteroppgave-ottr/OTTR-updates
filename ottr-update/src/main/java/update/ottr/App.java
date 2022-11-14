@@ -5,12 +5,10 @@ import xyz.ottr.lutra.api.StandardTemplateManager;
 import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.system.MessageHandler;
 
-import java.io.BufferedReader;
 //java
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.jena.rdf.model.Model;
