@@ -94,6 +94,8 @@ def create_bar_interval(measurement_list, field=instances_i):
     instances = [-1]
     changes = [-1]
     for solution in solutions:
+        if (solution == "rebuild set"):
+            continue
         counter += 1
         solutionTimes = []
         instances, changes, diffTime = get_instance_change_time_lists(
@@ -103,9 +105,10 @@ def create_bar_interval(measurement_list, field=instances_i):
         instances, changes, queryTime = get_instance_change_time_lists(
             measurement_list, solution, "model", "end", field)
 
-        solutionTimes.append(diffTime[0])
-        solutionTimes.append(modelTime[0])
-        solutionTimes.append(queryTime[0])
+        if len(diffTime) and len(modelTime) and len(queryTime):
+            solutionTimes.append(diffTime[0])
+            solutionTimes.append(modelTime[0])
+            solutionTimes.append(queryTime[0])
 
         if (len(solutions) == 1):
             plt.bar(x, solutionTimes, width=width, label=solution)
@@ -168,6 +171,7 @@ def has_multiple_n(measurement_list, field=instances_i):
 
 if __name__ == '__main__':
     # get first command line argument
+    print(sys.argv)
     plot_type = sys.argv[1]
     all_measurements = read_file(sys.argv[2])
 
