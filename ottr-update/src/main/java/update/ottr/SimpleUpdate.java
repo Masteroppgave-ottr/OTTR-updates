@@ -54,9 +54,10 @@ public class SimpleUpdate {
             String pathToOldInstances,
             String dbURL,
             Timer timer,
-            int n) {
+            int instances,
+            int changes) {
 
-        timer.newSplit("start", "simple solution", n);
+        timer.newSplit("start", "simple solution", instances, changes);
         Diff d = new Diff(log);
         d.readDiff(pathToOldInstances, pathToNewInstances);
         log.print(logLevel, "Add linenumbers" + d.addLines.toString());
@@ -77,12 +78,12 @@ public class SimpleUpdate {
         log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
-        timer.newSplit("diff", "simple solution", n);
+        timer.newSplit("diff", "simple solution", instances, changes);
         OttrInterface jh = new OttrInterface(log);
         Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
         Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
-        timer.newSplit("model", "simple solution", n);
+        timer.newSplit("model", "simple solution", instances, changes);
 
         log.print(logLevel, "delete model " + deleteModel.toString());
 
@@ -99,6 +100,6 @@ public class SimpleUpdate {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        timer.newSplit("end", "simple solution", n);
+        timer.newSplit("end", "simple solution", instances, changes);
     }
 }

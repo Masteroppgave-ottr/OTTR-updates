@@ -43,3 +43,19 @@ Run the program
 ```bash
 java -cp target/ottr-update-1.0-SNAPSHOT.jar:<PATH_TO_lutra.jar> update.ottr.App
 ```
+
+## Timing:
+Timing is done by the Timer class. A `timer` object is passed to the different classes to be timed. The times are written to a file in the `temp` folder specified by the TIME variable in the make file.
+
+the times are written in the format:
+```
+<instances> ; <changes> ; <solution> ; <tag> ; <time>
+```
+
+- N.B.: The first split need to have the label "start" 
+- N.B.: The last  split need to have the label "end" 
+
+Recording a split:
+```java
+timer.newSplit("label", "solutionName", <instances>, <changes>)
+```

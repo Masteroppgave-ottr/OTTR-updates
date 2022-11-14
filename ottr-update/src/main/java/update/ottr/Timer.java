@@ -7,27 +7,30 @@ import java.util.ArrayList;
 public class Timer {
     private class Split {
         public String solutionName;
-        public int n;
+        public int instances;
+        public int changes;
         public String label;
         public long time;
 
-        public Split(String label, String solutionName, int n, long time) {
+        public Split(String label, String solutionName, int instances, int changes, long time) {
             this.label = label;
             this.solutionName = solutionName;
-            this.n = n;
+            this.instances = instances;
+            this.changes = changes;
             this.time = time;
         }
 
         public Split(String label) {
             this.label = label;
             this.solutionName = "?";
-            this.n = 0;
+            this.instances = 0;
+            this.changes = 0;
             this.time = System.nanoTime();
         }
 
         @Override
         public String toString() {
-            return n + " ; " + solutionName + " ; " + label + " ; " + time;
+            return instances + " ; " + changes + " ; " + solutionName + " ; " + label + " ; " + time;
         }
     }
 
@@ -153,8 +156,8 @@ public class Timer {
      * @param n
      *                     Number of instances
      */
-    public void newSplit(String label, String solutionName, int n) {
-        splitList.add(new Split(label, solutionName, n, System.nanoTime()));
+    public void newSplit(String label, String solutionName, int instances, int changes) {
+        splitList.add(new Split(label, solutionName, instances, changes, System.nanoTime()));
     }
 
     /**

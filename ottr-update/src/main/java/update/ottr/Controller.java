@@ -35,7 +35,7 @@ public class Controller {
      * @param instanceFileName
      *                         the name of the original instance file
      */
-    public void nElements(String[] numElements, String generatedPath, String instanceFileName) {
+    public void nInstances(String[] numElements, String generatedPath, String instanceFileName, String changes) {
         OttrInterface ottrInterface = new OttrInterface(log);
         FusekiInterface fuseki = new FusekiInterface(log);
         for (String n : numElements) {
@@ -48,15 +48,14 @@ public class Controller {
                 e.printStackTrace();
             }
 
-
             if (solutions.contains(Solutions.SIMPLE)) {
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
                 simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
-                        Integer.parseInt(n));
+                        Integer.parseInt(n), Integer.parseInt(changes));
             }
             if (solutions.contains(Solutions.REBUILD)) {
                 Rebuild rebuild = new Rebuild();
-                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n);
+                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
             }
         }
     }
@@ -77,29 +76,24 @@ public class Controller {
 
             if (solutions.contains(Solutions.SIMPLE)) {
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
-                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer, n);
+                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
+                        Integer.parseInt(numInstances), n);
             }
             if (solutions.contains(Solutions.REBUILD)) {
                 Rebuild rebuild = new Rebuild();
-                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n + "");
+                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
             }
         }
 
     }
 
-    public void procentChanges(String[] numElements, String[] changeProcent) {
-        for (String n : numElements) {
-
-        }
-    }
-
-    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String n) {
+    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String numInstances,
+            String changes) {
         // test all solutions with this dataset
         if (solutions.contains(Solutions.SIMPLE)) {
             SimpleUpdate simpleUpdate = new SimpleUpdate(this.log);
             simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
-                    Integer.parseInt(n));
+                    Integer.parseInt(numInstances), Integer.parseInt(changes));
         }
     }
-
 }
