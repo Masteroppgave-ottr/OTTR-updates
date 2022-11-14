@@ -66,7 +66,6 @@ def get_instance_change_time_lists(measurement_list, solution, start, end, field
     n = get_instances(interval)
     changes = get_changes(interval)
     time = get_time(interval)
-    print("get time :      ", time)
     return n, changes, time
 
 
@@ -87,21 +86,22 @@ def read_file(filename):
     return measurements
 
 
-def create_bar_interval(measurement_list):
+def create_bar_interval(measurement_list, field=instances_i):
     solutions = find_all_solutions(measurement_list)
     width = 0.2
     x = np.arange(3)
     counter = 0
-    n = [-1]
+    instances = [-1]
+    changes = [-1]
     for solution in solutions:
         counter += 1
         solutionTimes = []
-        n, diffTime = get_instance_change_time_lists(
-            measurement_list, solution, "start", "diff")
-        n, modelTime = get_instance_change_time_lists(
-            measurement_list, solution, "diff", "model")
-        n, queryTime = get_instance_change_time_lists(
-            measurement_list, solution, "model", "end")
+        instances, changes, diffTime = get_instance_change_time_lists(
+            measurement_list, solution, "start", "diff", field)
+        instances, changes, modelTime = get_instance_change_time_lists(
+            measurement_list, solution, "diff", "model", field)
+        instances, changes, queryTime = get_instance_change_time_lists(
+            measurement_list, solution, "model", "end", field)
 
         solutionTimes.append(diffTime[0])
         solutionTimes.append(modelTime[0])
@@ -117,36 +117,9 @@ def create_bar_interval(measurement_list):
                     solutionTimes, width, label=solution)
 
     plt.xticks(x, ["diff", "expand instances", "query"])
-    plt.xlabel("Sections")
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
-    plt.title("Instances = " + str(n[0]) + " | Changes = TODO")
-    print("[PLOT] Creating bar chart")
-    plt.savefig("./temp/bar.png")
-
-
-def create_bar_chart(measurement_list):
-    solutions = find_all_solutions(measurement_list)
-
-    baseline = None
-    times = []
-    for solution in solutions:
-        n, time = get_instance_change_time_lists(
-            measurement_list, solution, "start", "end")
-
-        if solution == "rebuild set":
-            baseline = int(time[0])
-        else:
-            times.append(int(time[0]))
-
-        plt.bar(solution, time, label=solution)
-
-    if baseline:
-        # speedup with three decimal places
-        speedup = baseline / times[0]
-        speedup = int(speedup * 1000) / 1000
-        plt.title(f"WOW {speedup} i speedup!")
-
+    plt.title(f"Instances = {instances[0]} | Changes = {changes[0]}")
     print("[PLOT] Creating bar chart")
     plt.savefig("./temp/bar.png")
 
@@ -157,9 +130,6 @@ def create_line_graph_nInstances(measurement_list):
         n, changes, time = get_instance_change_time_lists(
             measurement_list, solution, "start", "end", instances_i)
 
-        print("n", n)
-        print("changes", changes)
-        print("time", time)
         plt.plot(n, time, label=solution)
 
     plt.xlabel("number of instances")
@@ -177,9 +147,6 @@ def create_line_graph_nChanges(measurement_list):
         instances, changes, time = get_instance_change_time_lists(
             measurement_list, solution, "start", "end", changes_i)
 
-        print("n", instances)
-        print("changes", changes)
-        print("time", time)
         plt.plot(changes, time, label=solution)
 
     plt.xlabel("number of changes")
@@ -191,18 +158,12 @@ def create_line_graph_nChanges(measurement_list):
     plt.savefig("./temp/line.png")
 
 
-def default_plot(measurement_list):
-    """
-    try to plot the data. Each solution is a separate line.
-    requires the label to include "start" and "end"
-    """
-
-    first_n = measurement_list[instances_i][0]
+def has_multiple_n(measurement_list, field=instances_i):
+    first_n = measurement_list[0][field]
     for measurement in measurement_list:
-        if (measurement[instances_i] != first_n):
-            create_line_graph(measurement_list)
-            return
-    create_bar_interval(measurement_list)
+        if (measurement[field] != first_n):
+            return True
+    return False
 
 
 if __name__ == '__main__':
@@ -211,10 +172,16 @@ if __name__ == '__main__':
     all_measurements = read_file(sys.argv[2])
 
     if plot_type == "n=instances":
-        create_line_graph_nInstances(all_measurements)
+        if has_multiple_n(all_measurements, instances_i):
+            create_line_graph_nInstances(all_measurements)
+        else:
+            create_bar_interval(all_measurements, instances_i)
 
     elif plot_type == "n=changes":
-        create_line_graph_nChanges(all_measurements)
+        if has_multiple_n(all_measurements, changes_i):
+            create_line_graph_nChanges(all_measurements)
+        else:
+            create_bar_interval(all_measurements, changes_i)
 
     else:
         print(f"Unknown plot type '{plot_type}'")
