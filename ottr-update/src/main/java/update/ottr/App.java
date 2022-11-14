@@ -79,7 +79,7 @@ public class App {
                 // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
-                // LOGTAG.WARNING
+                LOGTAG.WARNING
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
         ArrayList<Solutions> solutions = new ArrayList<Solutions>(List.of(

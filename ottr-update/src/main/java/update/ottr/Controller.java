@@ -58,6 +58,19 @@ public class Controller {
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n);
             }
+
+            try {
+                Model updated = fuseki.getGraph(dbURL, "Updated");
+                Model rebuild = fuseki.getGraph(dbURL, "Rebuild");
+                //compare the models
+                if (updated.isIsomorphicWith(rebuild)) {
+                    log.print(LOGTAG.DEFAULT, "The models are isomorphic");
+                } else {
+                    log.print(LOGTAG.WARNING, "The models are not isomorphic");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -101,5 +114,4 @@ public class Controller {
                     Integer.parseInt(n));
         }
     }
-
 }

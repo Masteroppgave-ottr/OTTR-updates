@@ -1,16 +1,22 @@
 package update.ottr;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
+import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.jena.util.FileManager;
 
 public class FusekiInterface {
     private Logger log;
@@ -48,6 +54,12 @@ public class FusekiInterface {
         int res = con.getResponseCode();
         log.print(logLevel, "Response Code : " + res);
         return res;
+    }
+
+    public Model getGraph(String dbURL, String graphName) throws IOException{
+        Model model = ModelFactory.createDefaultModel();
+        model.read(dbURL+graphName, "TURTLE");
+        return model;
     }
 
     /**
