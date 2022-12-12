@@ -86,40 +86,44 @@ def read_file(filename):
     return measurements
 
 
-def create_bar_interval(measurement_list, field=instances_i):
+def create_bar_interval(measurement_list, field=instances_i, labels=["diff", "model", "pikk"], plot_labels=["diff", "expand instances", "pikken", "query"]):
+    # error handling
+    if len(labels) + 1 != len(plot_labels):
+        raise Exception(
+            "plot lables need to have one more element than labels")
+
     solutions = find_all_solutions(measurement_list)
     width = 0.2
-    x = np.arange(3)
+    x = np.arange(len(labels)+1)
     counter = 0
     instances = [-1]
     changes = [-1]
+    labels = ["start"] + labels + ["end"]
     for solution in solutions:
         if (solution == "rebuild set"):
             continue
         counter += 1
-        solutionTimes = []
-        instances, changes, diffTime = get_instance_change_time_lists(
-            measurement_list, solution, "start", "diff", field)
-        instances, changes, modelTime = get_instance_change_time_lists(
-            measurement_list, solution, "diff", "model", field)
-        instances, changes, queryTime = get_instance_change_time_lists(
-            measurement_list, solution, "model", "end", field)
 
-        if len(diffTime) and len(modelTime) and len(queryTime):
-            solutionTimes.append(diffTime[0])
-            solutionTimes.append(modelTime[0])
-            solutionTimes.append(queryTime[0])
+        solutionTimes = []
+        for i in range(1, len(labels)):
+            instances, changes, time = get_instance_change_time_lists(
+                measurement_list, solution, labels[i-1], labels[i], field)
+            if len(time) == 0:
+                print("ERROR: Cant find any time in the interval:",
+                      labels[i-1], labels[i])
+            else:
+                solutionTimes.append(time[0])
 
         if (len(solutions) == 1):
             plt.bar(x, solutionTimes, width=width, label=solution)
         elif (counter % 2 == 0):
             plt.bar(x+((width/2)*(counter-1)),
-                    solutionTimes, width, label=solution)
+                    solutionTimes, width=width, label=solution)
         else:
             plt.bar(x-((width/2)*counter),
-                    solutionTimes, width, label=solution)
+                    solutionTimes, width=width, label=solution)
 
-    plt.xticks(x, ["diff", "expand instances", "query"])
+    plt.xticks(x, plot_labels)
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.title(f"Instances = {instances[0]} | Changes = {changes[0]}")
