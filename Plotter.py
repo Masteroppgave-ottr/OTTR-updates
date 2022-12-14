@@ -238,13 +238,17 @@ if __name__ == '__main__':
         if has_multiple_n(timestamp_list, instances_index):
             create_line_graph_nInstances(timestamp_list)
         else:
-            create_bar_interval(timestamp_list)
+            create_bar_interval(timestamp_list,
+                                ["diff", "model"],
+                                ["diff", "expand instances", "query"])
 
     elif plot_type == "n=changes":
         if has_multiple_n(timestamp_list, changes_idex):
             create_line_graph_nChanges(timestamp_list)
         else:
-            create_bar_interval(timestamp_list)
+            create_bar_interval(timestamp_list,
+                                ["diff", "model"],
+                                ["diff", "expand instances", "query"])
 
     else:
         print(f"Unknown plot type '{plot_type}'")
