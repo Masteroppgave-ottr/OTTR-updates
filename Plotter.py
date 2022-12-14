@@ -1,6 +1,3 @@
-
-from ast import arg
-from cProfile import label
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,6 +22,20 @@ def find_all_solution_names(timestamp_list: list[list[str]]) -> list[str]:
         if i[solution_index] not in solutions:
             solutions.append(i[solution_index])
     return solutions
+
+
+def find_all_tag_names(timestamp_list: list[list[str]]) -> list[str]:
+    """
+    Get the name of all the different tags
+
+    Returns:
+        list[str]: all tag names in a list
+    """
+    tags = []
+    for i in timestamp_list:
+        if i[tag_index] not in tags:
+            tags.append(i[tag_index])
+    return tags
 
 
 def get_instances(timestamp_list: list[list[str]]) -> list[int]:
@@ -57,7 +68,7 @@ def get_time(timestamp_list: list[list[str]]) -> list[int]:
     return matches
 
 
-def find_interval(timestamp_list: list[list[str]], solution: str, start_tag: str, end_tag: str, field=instances_index):
+def find_interval(timestamp_list: list[list[str]], solution: str, start_tag: str, end_tag: str, field=instances_index) -> list[list[str]]:
     """
     For a given solution, find every timestamp in the interval between `start_tag` and `end_tag` 
 
