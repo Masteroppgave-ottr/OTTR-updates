@@ -109,7 +109,7 @@ def read_file(filename: str) -> list[list[str]]:
     return measurements
 
 
-def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["diff", "model", "pikk"], plot_labels: list[str] = ["diff", "expand instances", "pikken", "query"]) -> None:
+def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["diff", "model"], plot_labels: list[str] = ["diff", "expand instances", "query"]) -> None:
     """
     Create a bar chart for the given solution, between the given labels
     Args:
@@ -164,11 +164,14 @@ def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["d
     plt.savefig("./temp/bar.png")
 
 
-def create_line_graph_nInstances(measurement_list):
-    solutions = find_all_solution_names(measurement_list)
+def create_line_graph_nInstances(timestamp_list: list[list[str]]) -> None:
+    """
+    Create a line graph for the given solution, The time is between the start and end tag.
+    """
+    solutions = find_all_solution_names(timestamp_list)
     for solution in solutions:
         n, changes, time = get_instance_change_time_lists(
-            measurement_list, solution, "start", "end", instances_index)
+            timestamp_list, solution, "start", "end", instances_index)
 
         plt.plot(n, time, label=solution)
 
@@ -181,11 +184,14 @@ def create_line_graph_nInstances(measurement_list):
     plt.savefig("./temp/line.png")
 
 
-def create_line_graph_nChanges(measurement_list):
-    solutions = find_all_solution_names(measurement_list)
+def create_line_graph_nChanges(timestamp_list: list[list[str]]) -> None:
+    """
+    Create a line graph for the given solution, The time is between the start and end tag.
+    """
+    solutions = find_all_solution_names(timestamp_list)
     for solution in solutions:
         instances, changes, time = get_instance_change_time_lists(
-            measurement_list, solution, "start", "end", changes_idex)
+            timestamp_list, solution, "start", "end", changes_idex)
 
         plt.plot(changes, time, label=solution)
 
