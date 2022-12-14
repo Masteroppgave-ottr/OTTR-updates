@@ -6,60 +6,60 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # static variables
-instances_i = 0
-changes_i = 1
-solution_i = 2
-tag_i = 3
-time_i = 4
+instances_index = 0
+changes_idex = 1
+solution_index = 2
+tag_index = 3
+time_index = 4
 
 
 def find_all_solutions(measurement_list):
     solutions = []
     for i in measurement_list:
-        if i[solution_i] not in solutions:
-            solutions.append(i[solution_i])
+        if i[solution_index] not in solutions:
+            solutions.append(i[solution_index])
     return solutions
 
 
 def get_instances(measurement_list):
     matches = []
     for i in measurement_list:
-        matches.append(int(i[instances_i]))
+        matches.append(int(i[instances_index]))
     return matches
 
 
 def get_changes(measurement_list):
     matches = []
     for i in measurement_list:
-        matches.append(int(i[changes_i]))
+        matches.append(int(i[changes_idex]))
     return matches
 
 
 def get_time(measurement_list):
     matches = []
     for i in measurement_list:
-        matches.append(int(i[time_i]))
+        matches.append(int(i[time_index]))
     return matches
 
 
-def find_interval(measurement_list, solution, start_tag, end_tag, field=instances_i):
+def find_interval(measurement_list, solution, start_tag, end_tag, field=instances_index):
     """
     For a given solution, find the interval between `start` and `end` for every n
     """
     matches = []
     for i in measurement_list:
-        if i[solution_i] == solution and i[tag_i] == start_tag:
+        if i[solution_index] == solution and i[tag_index] == start_tag:
             # find the next measurement with the same solution and end
             for j in measurement_list:
-                if j[field] == i[field] and j[solution_i] == solution and j[tag_i] == end_tag:
-                    matches.append([i[instances_i], i[changes_i], i[solution_i],
-                                   j[tag_i], int(j[time_i]) - int(i[time_i])])
+                if j[field] == i[field] and j[solution_index] == solution and j[tag_index] == end_tag:
+                    matches.append([i[instances_index], i[changes_idex], i[solution_index],
+                                   j[tag_index], int(j[time_index]) - int(i[time_index])])
                     break
 
     return matches
 
 
-def get_instance_change_time_lists(measurement_list, solution, start, end, field=instances_i):
+def get_instance_change_time_lists(measurement_list, solution, start, end, field=instances_index):
     """find n and time for measurements for the given solution between `start` and `end`
     """
     interval = find_interval(measurement_list, solution, start, end, field)
@@ -88,7 +88,15 @@ def read_file(filename):
     return measurements
 
 
-def create_bar_interval(measurement_list, field=instances_i, labels=["diff", "model", "pikk"], plot_labels=["diff", "expand instances", "pikken", "query"]):
+def create_bar_interval(measurement_list, field=instances_index, labels=["diff", "model", "pikk"], plot_labels=["diff", "expand instances", "pikken", "query"]):
+    """
+    Create a bar chart for the given solution, between the given labels
+    Input:
+        measurement_list: list of measurements
+        field: the field to use for the x-axis
+        labels: labels we want to measure between
+        plot_labels: labels to use for the x-axis
+    """
     # error handling
     if len(labels) + 1 != len(plot_labels):
         raise Exception(
@@ -137,7 +145,7 @@ def create_line_graph_nInstances(measurement_list):
     solutions = find_all_solutions(measurement_list)
     for solution in solutions:
         n, changes, time = get_instance_change_time_lists(
-            measurement_list, solution, "start", "end", instances_i)
+            measurement_list, solution, "start", "end", instances_index)
 
         plt.plot(n, time, label=solution)
 
@@ -154,7 +162,7 @@ def create_line_graph_nChanges(measurement_list):
     solutions = find_all_solutions(measurement_list)
     for solution in solutions:
         instances, changes, time = get_instance_change_time_lists(
-            measurement_list, solution, "start", "end", changes_i)
+            measurement_list, solution, "start", "end", changes_idex)
 
         plt.plot(changes, time, label=solution)
 
@@ -167,7 +175,7 @@ def create_line_graph_nChanges(measurement_list):
     plt.savefig("./temp/line.png")
 
 
-def has_multiple_n(measurement_list, field=instances_i):
+def has_multiple_n(measurement_list, field=instances_index):
     print(measurement_list)
     first_n = measurement_list[0][field]
     for measurement in measurement_list:
@@ -183,16 +191,16 @@ if __name__ == '__main__':
     all_measurements = read_file(sys.argv[2])
 
     if plot_type == "n=instances":
-        if has_multiple_n(all_measurements, instances_i):
+        if has_multiple_n(all_measurements, instances_index):
             create_line_graph_nInstances(all_measurements)
         else:
-            create_bar_interval(all_measurements, instances_i)
+            create_bar_interval(all_measurements, instances_index)
 
     elif plot_type == "n=changes":
-        if has_multiple_n(all_measurements, changes_i):
+        if has_multiple_n(all_measurements, changes_idex):
             create_line_graph_nChanges(all_measurements)
         else:
-            create_bar_interval(all_measurements, changes_i)
+            create_bar_interval(all_measurements, changes_idex)
 
     else:
         print(f"Unknown plot type '{plot_type}'")
