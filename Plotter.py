@@ -72,14 +72,16 @@ def get_instance_change_time_lists(measurement_list, solution, start, end, field
 def read_file(filename):
     """
     read the content of the file, and parse to list
-    Format of file content: ``` n, solution, label, time ```
-    Example: ```10 ; naive solution ; start ; 34328947247251```
+    Format of file content per line: ``` instances ; changes ; solution ; label ; time ```
+    Example: ```10 ; 2 ; naive solution ; start ; 34328947247251```
     """
     measurements = []
     with open(filename, "r") as f:
         lines = f.readlines()
 
         for line in lines:
+            if len(line) == 1:
+                continue
             line = line.strip()
             args = line.split(" ; ")
             measurements.append(args)
@@ -109,8 +111,8 @@ def create_bar_interval(measurement_list, field=instances_i, labels=["diff", "mo
             instances, changes, time = get_instance_change_time_lists(
                 measurement_list, solution, labels[i-1], labels[i], field)
             if len(time) == 0:
-                print("ERROR: Cant find any time in the interval:",
-                      labels[i-1], labels[i])
+                raise Exception("ERROR: Cant find any time in the interval:",
+                                labels[i-1], labels[i])
             else:
                 solutionTimes.append(time[0])
 
@@ -166,6 +168,7 @@ def create_line_graph_nChanges(measurement_list):
 
 
 def has_multiple_n(measurement_list, field=instances_i):
+    print(measurement_list)
     first_n = measurement_list[0][field]
     for measurement in measurement_list:
         if (measurement[field] != first_n):
