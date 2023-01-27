@@ -20,28 +20,12 @@ public class BlankNode {
         this.log = log;
     }
 
-    public UpdateRequest createDelRequest(Model deleteModel) {
-        // find all occurences of blank nodes in the old model
-
-        int count = 0; // has to be several when considering multiple blank nodes
-
-        // count the number of occurences of the blank node in the old model
-        log.print(LOGTAG.DEBUG, "lez go!");
-
-        StmtIterator statements = deleteModel.listStatements();
-        while (statements.hasNext()) {
-            // if the statement contains a blank node
-            Statement statement = statements.next();
-            if (statement.getSubject().isAnon() || statement.getObject().isAnon()) {
-                // increment count
-                count++;
-            }
-        }
-
-        // UpdateBuilder builder = new UpdateBuilder().;
-        SelectBuilder builder = new SelectBuilder();
-        builder.addVar("blank").addVar("count");
-        statements = deleteModel.listStatements();
+    /**
+     * Adds all triples in the deleteModel to the where clause of the builder.
+     * If a triple contains a blank node, it is added as a variable.
+     **/
+    private void addBlankAsVariables(SelectBuilder builder, Model model) {
+        StmtIterator statements = model.listStatements();
         while (statements.hasNext()) {
             // if the statement contains a blank node
             Statement statement = statements.next();
@@ -67,6 +51,31 @@ public class BlankNode {
                 builder.addWhere(statement.getSubject(), statement.getPredicate(), statement.getObject());
             }
         }
+    }
+
+    /**
+     * Count the number of triples containing one or more blank nodes in the model.
+     **/
+    private int countBlankNodes(Model model) {
+        int count = 0;
+        StmtIterator statements = model.listStatements();
+        while (statements.hasNext()) {
+            Statement statement = statements.next();
+            // if the statement contains a blank node
+            if (statement.getSubject().isAnon() || statement.getObject().isAnon()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public UpdateRequest createDelRequest(Model deleteModel) {
+        int count = countBlankNodes(deleteModel);
+        log.print(LOGTAG.DEBUG, "" + count);
+
+        SelectBuilder builder = new SelectBuilder();
+        builder.addVar("blank").addVar("count");
+        addBlankAsVariables(builder, deleteModel);
 
         log.print(LOGTAG.DEBUG, "\n" + builder.build());
         // return request;
