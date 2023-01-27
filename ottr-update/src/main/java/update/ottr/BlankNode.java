@@ -1,5 +1,6 @@
 package update.ottr;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
@@ -33,11 +34,28 @@ public class BlankNode {
             }
         }
 
-        UpdateBuilder builder = new UpdateBuilder().addWhere(null)
+        // UpdateBuilder builder = new UpdateBuilder().;
+        SelectBuilder builder = new SelectBuilder();
+        builder.addVar("blank").addVar("count");
+        statements = deleteModel.listStatements();
+        while (statements.hasNext()) {
+            // if the statement contains a blank node
+            Statement statement = statements.next();
+            String sub = statement.getSubject().toString();
+            String obj = statement.getObject().toString();
+            if (statement.getSubject().isAnon()) {
+                sub = sub.replaceFirst("^..", "?");
+            }
+            
+            if (statement.getObject().isAnon()) {
+                obj = obj.replaceFirst("^..", "?");
+            }
+            builder.addWhere(sub, statement.getPredicate(), obj);
+        }
 
-        UpdateRequest request = builder.buildRequest();
-        log.print(logLevel, "Delete request:\n" + request.toString());
-        return request;
+        log.print(LOGTAG.DEBUG, "" + builder.build());
+        // return request;
+        return null;
     }
 
 
