@@ -19,7 +19,7 @@ public class BlankNode {
      * Adds all triples in the deleteModel to the where clause of the builder.
      * If a triple contains a blank node, it is added as a variable.
      **/
-    private void addBlankAsVariables(SelectBuilder builder, Model model) {
+    private void addToWhereClause(SelectBuilder builder, Model model) {
         StmtIterator statements = model.listStatements();
         while (statements.hasNext()) {
             // if the statement contains a blank node
@@ -70,7 +70,7 @@ public class BlankNode {
 
         SelectBuilder builder = new SelectBuilder();
         builder.addVar("blank").addVar("count");
-        addBlankAsVariables(builder, deleteModel);
+        addToWhereClause(builder, deleteModel);
 
         log.print(LOGTAG.DEBUG, "\n" + builder.build());
         // return request;
