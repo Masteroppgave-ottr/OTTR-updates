@@ -81,24 +81,31 @@ public class App {
         msgs.printMessages();
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
 
-        if (mode.equals("n=instances")) {
-            String[] instances = args[7].split(", ");
-            String changeNr = args[8];
-            controller.nInstances(instances, tempDir + "generated/", instanceFileName, changeNr);
-        }
-        if (mode.equals("n=changes")) {
-            String instances = args[7];
-            String[] deletions = args[8].split(", ");
-            String[] changes = args[9].split(", ");
-            String[] insertions = args[10].split(", ");
-            int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
+        OttrInterface ottrInterface = new OttrInterface(log);
+        Model baseModel = ottrInterface.expandAndGetModelFromFile(tempDir + "generated/10_old_exoplanets.stottr", tm);
+        BlankNode bn = new BlankNode(log);
+        bn.createDelRequest(baseModel);
 
-            controller.nChanges(changeList, tempDir + "generated/", instanceFileName, instances);
-        }
-        try {
-            timer.writeSplitsToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (false) {
+            if (mode.equals("n=instances")) {
+                String[] instances = args[7].split(", ");
+                String changeNr = args[8];
+                controller.nInstances(instances, tempDir + "generated/", instanceFileName, changeNr);
+            }
+            if (mode.equals("n=changes")) {
+                String instances = args[7];
+                String[] deletions = args[8].split(", ");
+                String[] changes = args[9].split(", ");
+                String[] insertions = args[10].split(", ");
+                int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
+
+                controller.nChanges(changeList, tempDir + "generated/", instanceFileName, instances);
+            }
+            try {
+                timer.writeSplitsToFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
