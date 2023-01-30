@@ -4,8 +4,11 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.expr.Expr;
+import org.apache.jena.sparql.expr.ExprAggregator;
 import org.apache.jena.sparql.expr.ExprVar;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 
 // This solution is about removing the local blank node assumption. 
@@ -66,26 +69,56 @@ public class BlankNode {
         }
     }
 
+    /**
+     * Adds the inner sub query to the builder.
+     * This finds all graphs that match the deleteModel and have a blank node.
+     */
+    private void addInnerSubQuery(SelectBuilder builder, Model model) {
+        addWhereClause(builder, model);
+        // TODO: add the isBlank function not as a variable.
+        Expr e = new ExprVar("IsBlank(?blank)");
+        builder.addFilter(e);
+    }
+
+    /**
+     * Adds the outer sub query to the builder.
+     * This counts the number of triples the the sub query has.
+     */
+    private void addOuterSubQuery(SelectBuilder builder, Model model) {
+        // TODO: add the count as a function
+        builder.addVar("sub").addVar("count");
+        builder.addWhere("?sub", "?pred", "?obj");
+
+    }
+
     public UpdateRequest createDelRequest(Model deleteModel) {
         int count = countBlankNodes(deleteModel);
         log.print(LOGTAG.DEBUG, "" + count);
 
+        // create the outer query
         SelectBuilder builder = new SelectBuilder();
         builder.addVar("blank").addVar("count");
         addWhereClause(builder, deleteModel);
+        builder.setLimit(1);
+        builder.addGroupBy("?blank");
+        // TODO: add having clause
+        // builder.addHaving("?count > "+count);
 
+        // create the outer sub query
+        SelectBuilder outerSubBuilder = new SelectBuilder();
+        addOuterSubQuery(outerSubBuilder, deleteModel);
+
+        // create the inner sub query
         SelectBuilder innerSubBuilder = new SelectBuilder();
         innerSubBuilder.addVar("?blank");
-        addWhereClause(innerSubBuilder, deleteModel);
+        addInnerSubQuery(innerSubBuilder, deleteModel);
 
-        Expr e = new ExprVar("IsBlank(?blank)");
+        // set sub queries
+        outerSubBuilder.addSubQuery(innerSubBuilder);
+        builder.addSubQuery(outerSubBuilder);
 
-        innerSubBuilder.addFilter(e);
+        log.print(logLevel, "top level:\n" + builder.buildString());
 
-        log.print(logLevel, innerSubBuilder.buildString());
-
-        // log.print(LOGTAG.DEBUG, "\n" + builder.build());
-        // return request;
         return null;
     }
 
