@@ -1,5 +1,6 @@
 package update.ottr;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.jena.rdf.model.Model;
@@ -13,6 +14,7 @@ public class Controller {
     String dbURL;
     TemplateManager tm;
     String baseDBFileName;
+    LOGTAG logLevel = LOGTAG.BLANK;
 
     private boolean contains(String[] arr, String targetValue) {
         for (String s : arr) {
@@ -68,7 +70,7 @@ public class Controller {
             try {
                 Model updated = fuseki.getGraph(dbURL, "Updated");
                 Model rebuild = fuseki.getGraph(dbURL, "Rebuild");
-                //compare the models
+                // compare the models
                 if (updated.isIsomorphicWith(rebuild)) {
                     log.print(LOGTAG.DEFAULT, "The models are isomorphic");
                 } else {
@@ -109,7 +111,31 @@ public class Controller {
 
     public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String numInstances,
             String changes) {
-        // test all solutions with this dataset
+
+        Diff d = new Diff(log);
+        d.readDiff(pathToOldInstances, pathToNewInstances);
+        log.print(logLevel, "Add linenumbers" + d.addLines.toString());
+        log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
+
+        String addInstancesString = null;
+        String deleteInstancesString = null;
+        try {
+            addInstancesString = d.getAddInstancesString(pathToNewInstances);
+            deleteInstancesString = d.getDeleteInstancesString(pathToOldInstances);
+        } catch (FileNotFoundException error) {
+            System.out.println("Could not old or new instance file");
+            error.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
+        log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
+
+        OttrInterface jh = new OttrInterface(log);
+        Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
+        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
+
         if (contains(solutions, Solutions.SIMPLE + "")) {
             SimpleUpdate simpleUpdate = new SimpleUpdate(this.log);
             simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
