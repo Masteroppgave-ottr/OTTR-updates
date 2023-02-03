@@ -54,14 +54,14 @@ public class App {
     // Alternatively, you can run the following command in dev folder: make && make
     // diff
     {
-        String mode = args[0];
-        String tempDir = args[1];
-        String instanceFileName = args[2];
-        String templateFileName = args[3];
-        String timerFileName = args[4];
-        String dbURL = args[5];
-        String[] solutions = args[6].split(", ");
-        System.out.println("mode: " + mode);
+        // String mode = args[0];
+        // String tempDir = args[1];
+        // String instanceFileName = args[2];
+        // String templateFileName = args[3];
+        // String timerFileName = args[4];
+        // String dbURL = args[5];
+        // String[] solutions = args[6].split(", ");
+        // System.out.println("mode: " + mode);
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
@@ -70,42 +70,53 @@ public class App {
                 LOGTAG.OTTR,
                 LOGTAG.DIFF,
                 LOGTAG.WARNING,
-                LOGTAG.ERROR
+                LOGTAG.ERROR,
+                LOGTAG.BLANK
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 
         Logger log = new Logger(loggerLevel);
-        Timer timer = new Timer(tempDir + timerFileName);
+        // Timer timer = new Timer(tempDir + timerFileName);
         TemplateManager tm = new StandardTemplateManager();
-        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir + templateFileName);
-        msgs.printMessages();
-        Controller controller = new Controller(solutions, log, timer, dbURL, tm);
+        // MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
+        // templateFileName);
+        // msgs.printMessages();
+        // Controller controller = new Controller(solutions, log, timer, dbURL, tm);
 
-        OttrInterface ottrInterface = new OttrInterface(log);
-        Model baseModel = ottrInterface.expandAndGetModelFromFile(tempDir + "generated/10_old_exoplanets.stottr", tm);
-        BlankNode bn = new BlankNode(log);
-        bn.createDelRequest(baseModel);
+        // OttrInterface ottrInterface = new OttrInterface(log);
+        // Model baseModel = ottrInterface.expandAndGetModelFromFile(tempDir +
+        // "generated/initme.stottr", tm);
+        // BlankNode bn = new BlankNode(log);
+        // bn.createDelRequest(baseModel);
+        String oldInstances = args[1];
+        String newInstances = args[2];
+        String templates = args[3];
 
-        if (false) {
-            if (mode.equals("n=instances")) {
-                String[] instances = args[7].split(", ");
-                String changeNr = args[8];
-                controller.nInstances(instances, tempDir + "generated/", instanceFileName, changeNr);
-            }
-            if (mode.equals("n=changes")) {
-                String instances = args[7];
-                String[] deletions = args[8].split(", ");
-                String[] changes = args[9].split(", ");
-                String[] insertions = args[10].split(", ");
-                int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
+        log.print(LOGTAG.BLANK,
+                "\n    old: " + oldInstances + "\n    new: " + newInstances + "\n    templates: " + templates);
+        BlankNode b = new BlankNode(log);
+        b.runBlankNodeUpdate(oldInstances, newInstances, templates);
 
-                controller.nChanges(changeList, tempDir + "generated/", instanceFileName, instances);
-            }
-            try {
-                timer.writeSplitsToFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        // if (mode.equals("n=instances")) {
+        // String[] instances = args[7].split(", ");
+        // String changeNr = args[8];
+        // controller.nInstances(instances, tempDir + "generated/", instanceFileName,
+        // changeNr);
+        // }
+        // if (mode.equals("n=changes")) {
+        // String instances = args[7];
+        // String[] deletions = args[8].split(", ");
+        // String[] changes = args[9].split(", ");
+        // String[] insertions = args[10].split(", ");
+        // int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
+
+        // controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
+        // instances);
+        // }
+        // try {
+        // timer.writeSplitsToFile();
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
     }
 }
