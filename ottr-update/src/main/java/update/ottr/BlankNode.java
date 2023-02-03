@@ -1,9 +1,17 @@
 package update.ottr;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.handlers.AggregationHandler;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.expr.Expr;
+import org.apache.jena.sparql.expr.ExprAggregator;
+import org.apache.jena.sparql.expr.ExprVar;
+import org.apache.jena.sparql.expr.aggregate.AggCountVar;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 
@@ -83,8 +91,13 @@ public class BlankNode {
      * This counts the number of triples the the sub query has.
      */
     private void addOuterSubQuery(SelectBuilder builder, Model model) {
-        // TODO: add the count as a function
-        builder.addVar("sub").addVar("count");
+        builder.addVar("sub");
+        try {
+            builder.addVar("count(?sub)", "count");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         builder.addWhere("?sub", "?pred", "?obj");
     }
 
