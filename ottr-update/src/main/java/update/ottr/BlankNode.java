@@ -77,7 +77,14 @@ public class BlankNode {
         addWhereClause(builder, model);
         // TODO: add the isBlank function not as a variable.
         Expr e = new ExprVar("IsBlank(?blank)");
-        builder.addFilter(e);
+        // builder.addFilter(e);
+        try {
+            // builder.addFilter("2 = " + );
+            builder.addFilter("isblank(?blank)");
+        } catch (ParseException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
     }
 
     /**
@@ -88,12 +95,14 @@ public class BlankNode {
         // TODO: add the count as a function
         builder.addVar("sub").addVar("count");
         builder.addWhere("?sub", "?pred", "?obj");
-
     }
 
     public UpdateRequest createDelRequest(Model deleteModel) {
         int count = countBlankNodes(deleteModel);
         log.print(LOGTAG.DEBUG, "" + count);
+
+        // null pointer if we dont init this
+        org.apache.jena.query.ARQ.init();
 
         // create the outer query
         SelectBuilder builder = new SelectBuilder();
