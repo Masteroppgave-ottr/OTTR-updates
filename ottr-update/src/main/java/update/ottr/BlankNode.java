@@ -1,24 +1,22 @@
 package update.ottr;
 
+import java.io.FileNotFoundException;
+
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.handlers.AggregationHandler;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.expr.Expr;
-import org.apache.jena.sparql.expr.ExprAggregator;
-import org.apache.jena.sparql.expr.ExprVar;
-import org.apache.jena.sparql.expr.aggregate.AggCountVar;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
+
+import xyz.ottr.lutra.TemplateManager;
+import xyz.ottr.lutra.api.StandardTemplateManager;
+import xyz.ottr.lutra.system.MessageHandler;
 
 // This solution is about removing the local blank node assumption. 
 public class BlankNode {
     private Logger log;
-    private LOGTAG logLevel = LOGTAG.DEFAULT;
+    private LOGTAG logLevel = LOGTAG.BLANK;
 
     public BlankNode(Logger log) {
         this.log = log;
@@ -91,17 +89,17 @@ public class BlankNode {
      * This counts the number of triples the the sub query has.
      */
     private void addOuterSubQuery(SelectBuilder builder, Model model, int count) {
-        builder.addVar("sub");
+        builder.addVar("blank");
         try {
-            builder.addVar("count(?sub)", "count");
+            builder.addVar("count(?blank)", "count");
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        builder.addWhere("?sub", "?pred", "?obj");
-        builder.addGroupBy("?sub");
+        builder.addWhere("?blank", "?pred", "?obj");
+        builder.addGroupBy("?blank");
         try {
-            builder.addHaving("?count > " + count);
+            builder.addHaving("?count = " + count);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -139,4 +137,43 @@ public class BlankNode {
     }
 
     // run blanknode update
+
+    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, String pathToTemplates) {
+        TemplateManager tm = new StandardTemplateManager();
+        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplates);
+        log.print(logLevel, "----------------");
+        msgs.printMessages();
+        log.print(logLevel, "----------------");
+
+        Diff d = new Diff(log);
+        d.readDiff(pathToOldInstances, pathToNewInstances);
+        log.print(logLevel, "Add linenumbers" + d.addLines.toString());
+        log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
+
+        String addInstancesString = null;
+        String deleteInstancesString = null;
+        try {
+            addInstancesString = d.getAddInstancesString(pathToNewInstances);
+            deleteInstancesString = d.getDeleteInstancesString(pathToOldInstances);
+        } catch (FileNotFoundException error) {
+            System.out.println("Could not old or new instance file");
+            error.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
+        log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
+
+        OttrInterface jh = new OttrInterface(log);
+        Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
+        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
+
+        if (deleteModel != null) {
+            log.print(logLevel, "delete model " + deleteModel.toString());
+        }
+
+        createDelRequest(deleteModel);
+
+    }
 }
