@@ -75,14 +75,9 @@ public class BlankNode {
      */
     private void addInnerSubQuery(SelectBuilder builder, Model model) {
         addWhereClause(builder, model);
-        // TODO: add the isBlank function not as a variable.
-        Expr e = new ExprVar("IsBlank(?blank)");
-        // builder.addFilter(e);
         try {
-            // builder.addFilter("2 = " + );
             builder.addFilter("isblank(?blank)");
         } catch (ParseException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
     }
@@ -110,8 +105,11 @@ public class BlankNode {
         addWhereClause(builder, deleteModel);
         builder.setLimit(1);
         builder.addGroupBy("?blank");
-        // TODO: add having clause
-        // builder.addHaving("?count > "+count);
+        try {
+            builder.addHaving("?count > " + count);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         // create the outer sub query
         SelectBuilder outerSubBuilder = new SelectBuilder();
