@@ -54,11 +54,11 @@ public class BlankNode {
             String sub = null;
             String obj = null;
             if (statement.getSubject().isAnon()) {
-                sub = "?" + statement.getSubject().toString();
+                sub = "?" + statement.getSubject().toString().replace("-", "_");
             }
 
             if (statement.getObject().isAnon()) {
-                obj = "?" + statement.getObject().toString();
+                obj = "?" + statement.getObject().toString().replace("-", "_");
             }
 
             if (sub != null && obj != null) {
@@ -90,7 +90,7 @@ public class BlankNode {
      * Adds the outer sub query to the builder.
      * This counts the number of triples the the sub query has.
      */
-    private void addOuterSubQuery(SelectBuilder builder, Model model) {
+    private void addOuterSubQuery(SelectBuilder builder, Model model, int count) {
         builder.addVar("sub");
         try {
             builder.addVar("count(?sub)", "count");
@@ -99,6 +99,12 @@ public class BlankNode {
         }
 
         builder.addWhere("?sub", "?pred", "?obj");
+        builder.addGroupBy("?sub");
+        try {
+            builder.addHaving("?count > " + count);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public UpdateRequest createDelRequest(Model deleteModel) {
@@ -113,16 +119,10 @@ public class BlankNode {
         builder.addVar("blank").addVar("count");
         addWhereClause(builder, deleteModel);
         builder.setLimit(1);
-        builder.addGroupBy("?blank");
-        try {
-            builder.addHaving("?count > " + count);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 
         // create the outer sub query
         SelectBuilder outerSubBuilder = new SelectBuilder();
-        addOuterSubQuery(outerSubBuilder, deleteModel);
+        addOuterSubQuery(outerSubBuilder, deleteModel, count);
 
         // create the inner sub query
         SelectBuilder innerSubBuilder = new SelectBuilder();
