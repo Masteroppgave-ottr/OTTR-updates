@@ -12,12 +12,28 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.update.UpdateRequest;
 
+import xyz.ottr.lutra.TemplateManager;
+
 public class FusekiInterface {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.FUSEKI;
 
     public FusekiInterface(Logger log) {
         this.log = log;
+    }
+
+    public int initDB(String generatedPath, String instanceFileName, TemplateManager tm, String dbURL) {
+        OttrInterface ottrInterface = new OttrInterface(log);
+        String pathToNewInstances = generatedPath + "new_" + instanceFileName;
+        Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
+
+        int triples = 0;
+        try {
+            triples = resetDb(baseModel, dbURL);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return triples;
     }
 
     /**

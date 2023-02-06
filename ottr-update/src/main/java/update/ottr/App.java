@@ -78,18 +78,25 @@ public class App {
         Logger log = new Logger(loggerLevel);
         Timer timer = new Timer(tempDir + timerFileName);
         TemplateManager tm = new StandardTemplateManager();
+        FusekiInterface fi = new FusekiInterface(log);
+
+        // initial population of the triple store
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
                 templateFileName);
         msgs.printMessages();
-        Controller controller = new Controller(solutions, log, timer, dbURL, tm);
+        fi.initDB(tempDir, instanceFileName, tm, dbURL);
+        log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
 
+        Controller controller = new Controller(solutions, log, timer, dbURL, tm);
         if (mode.equals("n=instances")) {
+            // parse extra arguments
             String[] instances = args[7].split(", ");
             String changeNr = args[8];
             controller.nInstances(instances, tempDir + "generated/", instanceFileName,
                     changeNr);
         }
         if (mode.equals("n=changes")) {
+            // parse extra arguments
             String instances = args[7];
             String[] deletions = args[8].split(", ");
             String[] changes = args[9].split(", ");
