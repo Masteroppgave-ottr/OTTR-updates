@@ -13,6 +13,7 @@ public class Controller {
     String dbURL;
     TemplateManager tm;
     String baseDBFileName;
+    LOGTAG logLevel = LOGTAG.BLANK;
 
     private boolean contains(String[] arr, String targetValue) {
         for (String s : arr) {
@@ -68,7 +69,7 @@ public class Controller {
             try {
                 Model updated = fuseki.getGraph(dbURL, "Updated");
                 Model rebuild = fuseki.getGraph(dbURL, "Rebuild");
-                //compare the models
+                // compare the models
                 if (updated.isIsomorphicWith(rebuild)) {
                     log.print(LOGTAG.DEFAULT, "The models are isomorphic");
                 } else {
@@ -107,13 +108,8 @@ public class Controller {
 
     }
 
-    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String numInstances,
-            String changes) {
-        // test all solutions with this dataset
-        if (contains(solutions, Solutions.SIMPLE + "")) {
-            SimpleUpdate simpleUpdate = new SimpleUpdate(this.log);
-            simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
-                    Integer.parseInt(numInstances), Integer.parseInt(changes));
-        }
+    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String pathToTemplates) {
+        BlankNode b = new BlankNode(log);
+        b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, pathToTemplates);
     }
 }

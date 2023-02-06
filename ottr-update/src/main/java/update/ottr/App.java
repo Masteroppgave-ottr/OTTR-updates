@@ -46,14 +46,7 @@ public class App {
         return newArray;
     }
 
-    public static void main(String[] args)
-    // to run: following command in ottr-update folder:
-    // mvn package && diff <oldInstanceFilePath> <newInstanceFilePath> | java -jar
-    // target/update.jar
-    //
-    // Alternatively, you can run the following command in dev folder: make && make
-    // diff
-    {
+    public static void main(String[] args) {
         String mode = args[0];
         String tempDir = args[1];
         String instanceFileName = args[2];
@@ -62,6 +55,12 @@ public class App {
         String dbURL = args[5];
         String[] solutions = args[6].split(", ");
         System.out.println("mode: " + mode);
+        System.out.println("tempDir: " + tempDir);
+        System.out.println("instanceFileName: " + instanceFileName);
+        System.out.println("templateFileName: " + templateFileName);
+        System.out.println("timerFileName: " + timerFileName);
+        System.out.println("dbURL: " + dbURL);
+        System.out.println("solutions: " + solutions);
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
@@ -70,30 +69,49 @@ public class App {
                 LOGTAG.OTTR,
                 LOGTAG.DIFF,
                 LOGTAG.WARNING,
-                LOGTAG.ERROR
+                LOGTAG.ERROR,
+                LOGTAG.BLANK
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 
+        // init objects
         Logger log = new Logger(loggerLevel);
         Timer timer = new Timer(tempDir + timerFileName);
         TemplateManager tm = new StandardTemplateManager();
-        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir + templateFileName);
-        msgs.printMessages();
-        Controller controller = new Controller(solutions, log, timer, dbURL, tm);
+        FusekiInterface fi = new FusekiInterface(log);
 
+        // initial population of the triple store
+        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
+                templateFileName);
+        msgs.printMessages();
+        String pathToNewInstances = tempDir + "new_" + instanceFileName;
+        fi.initDB(pathToNewInstances, tm, dbURL);
+        log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
+
+        Controller controller = new Controller(solutions, log, timer, dbURL, tm);
         if (mode.equals("n=instances")) {
+            // parse extra arguments
             String[] instances = args[7].split(", ");
             String changeNr = args[8];
-            controller.nInstances(instances, tempDir + "generated/", instanceFileName, changeNr);
+            controller.nInstances(instances, tempDir + "generated/", instanceFileName,
+                    changeNr);
         }
         if (mode.equals("n=changes")) {
+            // parse extra arguments
             String instances = args[7];
             String[] deletions = args[8].split(", ");
             String[] changes = args[9].split(", ");
             String[] insertions = args[10].split(", ");
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
-            controller.nChanges(changeList, tempDir + "generated/", instanceFileName, instances);
+            controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
+                    instances);
+        }
+        if (mode.equals("blank")) {
+            String old_instance_fileName = tempDir + "old_" + instanceFileName;
+            String new_instance_fileName = tempDir + "new_" + instanceFileName;
+            String fullTemplateFileName = tempDir + templateFileName;
+            controller.testSingleFile(new_instance_fileName, old_instance_fileName, fullTemplateFileName);
         }
         try {
             timer.writeSplitsToFile();

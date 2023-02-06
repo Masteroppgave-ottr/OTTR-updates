@@ -15,6 +15,7 @@ public class Logger {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
+    public static final String ANSI_ORANGE = "\u001B[38;5;208m";
 
     public Logger(ArrayList<LOGTAG> activeTags) {
         if (activeTags == null) {
@@ -36,17 +37,19 @@ public class Logger {
     public void print(LOGTAG tag, String message) {
         if (!disabled && activeTags.contains(tag)) {
             if (tag == LOGTAG.ERROR) {
-                System.out.println(ANSI_RED + "["+tag + "]" + ANSI_RESET + message);
+                System.out.println(ANSI_RED + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.WARNING) {
-                System.out.println(ANSI_YELLOW + "["+tag + "]" + ANSI_RESET + message);
+                System.out.println(ANSI_YELLOW + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.DEBUG) {
-                System.out.println(ANSI_BLUE + "["+tag + "]" + ANSI_RESET + message);
+                System.out.println(ANSI_BLUE + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.FUSEKI) {
-                System.out.println(ANSI_PURPLE + "["+tag + "]" + ANSI_RESET + message);
+                System.out.println(ANSI_PURPLE + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.OTTR) {
-                System.out.println(ANSI_CYAN + "["+tag + "]" + ANSI_RESET + message);
+                System.out.println(ANSI_CYAN + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.DIFF) {
-                System.out.println(ANSI_GREEN + "["+tag + "]" + ANSI_RESET + message);
+                System.out.println(ANSI_GREEN + "[" + tag + "]" + ANSI_RESET + message);
+            } else if (tag == LOGTAG.BLANK) {
+                System.out.println(ANSI_ORANGE + "[" + tag + "]" + ANSI_RESET + message);
             } else {
                 System.out.println("[" + tag + "] " + message);
             }

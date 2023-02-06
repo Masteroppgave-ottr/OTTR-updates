@@ -7,5 +7,6 @@ public enum LOGTAG {
     OTTR,
     DIFF,
     WARNING,
-    ERROR
+    ERROR,
+    BLANK
 }
