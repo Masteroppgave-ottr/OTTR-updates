@@ -13,35 +13,20 @@ Note that all files in the temp folder will be ignored by git.
 * Apache Jena (https://jena.apache.org/download/)
 
 ## How to run
-Command to run inital setup:
-```
-TODO
-```
 
-Command to initiallize database:
-```
-bash init-db
-```
-
-Command to update database with SPARQL and LUTRA rebuild:
-```
-bash update-db
-```
-
-Command to compare two datasets. Returns equal or not equal. Dataset must be one of the following: [Original, Rebuild, Updated]
-```
-bash compare <dataset1> <dataset2>
-```
-
-## How to run ottr-update
-Navigate into the correct directory
+build the program
 ```bash
-cd ottr-update/
+make build
 ```
 
-Run the program
+Start the server:
+```
+bash init_db
+```
+
+run the program
 ```bash
-java -cp target/ottr-update-1.0-SNAPSHOT.jar:<PATH_TO_lutra.jar> update.ottr.App
+make run_Blank
 ```
 
 ## Timing:
@@ -52,10 +37,39 @@ the times are written in the format:
 <instances> ; <changes> ; <solution> ; <tag> ; <time>
 ```
 
-- N.B.: The first split need to have the label "start" 
-- N.B.: The last  split need to have the label "end" 
-
 Recording a split:
 ```java
 timer.newSplit("label", "solutionName", <instances>, <changes>)
 ```
+
+- N.B.: The first split needs to have the label "start" 
+- N.B.: The last  split needs to have the label "end" 
+
+
+## Structure
+### APP.java
+  - parse command-line arguments
+  - start the correct function from the `Controller` class
+### Controller.java
+  - initialize necessary objects 
+  - run one or multiple solutions
+  - validate the graphs
+### Diff.java
+  - read unix diff from std:in
+  - parse the diff to `update-string` and `delete-string`
+### FusekiInterface.java
+  - query the triplestore
+### Logger.java
+  - Custom log class printing
+  - LOGTAG
+### OttrInterface.java
+  - Expand instances from string or file
+### Timer.java
+  - Create timestamps with meta information and save to file
+###  Plotter.py
+   -  reads the timer file and creates plots
+### Solutions
+  - Rebuild.java
+    - the baseline naive solution
+  - SImpleUpdate.java
+  - BlankNode.java
