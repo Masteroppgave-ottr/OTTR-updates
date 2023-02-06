@@ -1,12 +1,5 @@
 # OTTR Update algorithm
 
-## Setup
-init-db converts a set of ottr instances and templates to an RDF-file and initializes a database with the result. 
-
-init-db requires certian variables. These are located in the **variables** script in the **temp** folder. 
-Example_temp contains all required variables and files. Set the path-variables and rename the folder to temp, then you can run the different scripts.
-Note that all files in the temp folder will be ignored by git. 
-
 ### Requirements:
 * Lutra (https://gitlab.com/ottr/lutra/lutra)
 * Apache Jena Fuseki (https://jena.apache.org/download/)
@@ -29,21 +22,18 @@ run the program
 make run_Blank
 ```
 
-## Timing:
-Timing is done by the Timer class. A `timer` object is passed to the different classes to be timed. The times are written to a file in the `temp` folder specified by the TIME variable in the make file.
+## Configure the makefile
+In the example_temp directory, we see an example of a makefile.
 
-the times are written in the format:
-```
-<instances> ; <changes> ; <solution> ; <tag> ; <time>
-```
+The default inputs have to be specified:
+- `TEMPDIR`: the absolute path to your temp directory
+- `INSTANCE_FILE`: the filename of the instance file. 
+  - The filename is automatically appended "new_" or "old_"
+- `TEMPLATE_FILE`: the filename of the file containing templates
+- `TIMER`: the name of the file where timestamps are saved
+- `SOLUTIONS`: String of space-separated solution names.
 
-Recording a split:
-```java
-timer.newSplit("label", "solutionName", <instances>, <changes>)
-```
-
-- N.B.: The first split needs to have the label "start" 
-- N.B.: The last  split needs to have the label "end" 
+NB: INSTANCE_FILE, TEMPLATE_FILE and TIMER have to be stored in the temp directory. 
 
 
 ## Structure
@@ -73,3 +63,20 @@ timer.newSplit("label", "solutionName", <instances>, <changes>)
     - the baseline naive solution
   - SImpleUpdate.java
   - BlankNode.java
+
+
+## Timing:
+Timing is done by the Timer class. A `timer` object is passed to the different classes to be timed. The times are written to a file in the `temp` folder specified by the TIME variable in the make file.
+
+the times are written in the format:
+```
+<instances> ; <changes> ; <solution> ; <tag> ; <time>
+```
+
+Recording a split:
+```java
+timer.newSplit("label", "solutionName", <instances>, <changes>)
+```
+
+- N.B.: The first split needs to have the label "start" 
+- N.B.: The last  split needs to have the label "end" 
