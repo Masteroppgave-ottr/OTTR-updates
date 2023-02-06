@@ -84,7 +84,8 @@ public class App {
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
                 templateFileName);
         msgs.printMessages();
-        fi.initDB(tempDir, instanceFileName, tm, dbURL);
+        String pathToNewInstances = tempDir + "new_" + instanceFileName;
+        fi.initDB(pathToNewInstances, tm, dbURL);
         log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
 
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
@@ -107,7 +108,10 @@ public class App {
                     instances);
         }
         if (mode.equals("blank")) {
-            controller.testSingleFile(templateFileName, timerFileName, instanceFileName, dbURL);
+            String old_instance_fileName = tempDir + "old_" + instanceFileName;
+            String new_instance_fileName = tempDir + "new_" + instanceFileName;
+            String fullTemplateFileName = tempDir + templateFileName;
+            controller.testSingleFile(new_instance_fileName, old_instance_fileName, fullTemplateFileName);
         }
         try {
             timer.writeSplitsToFile();

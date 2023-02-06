@@ -109,37 +109,8 @@ public class Controller {
 
     }
 
-    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String numInstances,
-            String changes) {
-
-        Diff d = new Diff(log);
-        d.readDiff(pathToOldInstances, pathToNewInstances);
-        log.print(logLevel, "Add linenumbers" + d.addLines.toString());
-        log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
-
-        String addInstancesString = null;
-        String deleteInstancesString = null;
-        try {
-            addInstancesString = d.getAddInstancesString(pathToNewInstances);
-            deleteInstancesString = d.getDeleteInstancesString(pathToOldInstances);
-        } catch (FileNotFoundException error) {
-            System.out.println("Could not old or new instance file");
-            error.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
-        log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
-
-        OttrInterface jh = new OttrInterface(log);
-        Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
-        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
-
-        if (contains(solutions, Solutions.SIMPLE + "")) {
-            SimpleUpdate simpleUpdate = new SimpleUpdate(this.log);
-            simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
-                    Integer.parseInt(numInstances), Integer.parseInt(changes));
-        }
+    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String pathToTemplates) {
+        BlankNode b = new BlankNode(log);
+        b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, pathToTemplates);
     }
 }

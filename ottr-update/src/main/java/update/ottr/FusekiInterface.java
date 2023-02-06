@@ -22,10 +22,16 @@ public class FusekiInterface {
         this.log = log;
     }
 
-    public int initDB(String generatedPath, String instanceFileName, TemplateManager tm, String dbURL) {
+    /**
+     * Populates the Original dataset on the Fuseki server with the expansion of
+     * `instanceFileName`
+     * Any existing data in the Original or Updated dataset is deleted.
+     * 
+     */
+    public int initDB(String instanceFileName, TemplateManager tm, String dbURL) {
         OttrInterface ottrInterface = new OttrInterface(log);
-        String pathToNewInstances = generatedPath + "new_" + instanceFileName;
-        Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
+
+        Model baseModel = ottrInterface.expandAndGetModelFromFile(instanceFileName, tm);
 
         int triples = 0;
         try {
