@@ -1,6 +1,5 @@
 package update.ottr;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.jena.rdf.model.Model;
