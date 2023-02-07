@@ -146,34 +146,36 @@ def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_siz
 
 
 if __name__ == "__main__":
-    source_dir = "temp/"
-    target_dir = "temp/generated/"
+    source_dir = sys.argv[2]
+    target_dir = source_dir+"generated/"
 
     mode = sys.argv[1]
     if (mode == "n=instances"):
-        if len(sys.argv) < 7:
+        if len(sys.argv) < 8:
             raise Exception(
                 "Not enough arguments. Run with arguments: n=instances <instance_file> <list of number of instances> <number of deletions> <number of changes> <number of insertions>")
 
-        source = sys.argv[2]
-        file_sizes = sys.argv[3].split(", ")
-        delete_nr = int(sys.argv[4])
-        change_nr = int(sys.argv[5])
-        insert_nr = int(sys.argv[6])
+        source = sys.argv[3]
+        file_sizes = sys.argv[4].split(", ")
+        delete_nr = int(sys.argv[5])
+        change_nr = int(sys.argv[6])
+        insert_nr = int(sys.argv[7])
+
+        print(f"source_dir: {source_dir}\ntarget_dir: {target_dir}\nsource: {source}\nfile_sizes: {file_sizes}\ndelete_nr: {delete_nr}\nchange_nr: {change_nr}\ninsert_nr: {insert_nr}")
 
         run(source_dir, source, target_dir,
             file_sizes, delete_nr, change_nr, insert_nr)
 
     if (mode == "n=changes"):
-        if len(sys.argv) < 7:
+        if len(sys.argv) < 8:
             raise Exception(
                 "Not enough arguments. Run with arguments: n=changes <instance_file> <number_of_instances> <list of deletions> <list of changes> <list of insertions>")
 
-        source = sys.argv[2]
-        file_size = int(sys.argv[3])
-        nr_of_deletions = sys.argv[4].split(", ")
-        nr_of_changes = sys.argv[5].split(", ")
-        nr_of_insertions = sys.argv[6].split(", ")
+        source = sys.argv[3]
+        file_size = int(sys.argv[4])
+        nr_of_deletions = sys.argv[5].split(", ")
+        nr_of_changes = sys.argv[6].split(", ")
+        nr_of_insertions = sys.argv[7].split(", ")
 
         if (len(nr_of_deletions) != len(nr_of_changes) or len(nr_of_changes) != len(nr_of_insertions)):
             raise Exception(

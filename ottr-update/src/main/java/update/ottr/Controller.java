@@ -31,6 +31,10 @@ public class Controller {
         this.tm = tm;
     }
 
+    private boolean fileExists(String path) {
+        return new java.io.File(path).exists();
+    }
+
     /**
      * For every n in numElements:
      * run the solutions specified in 'this.solutions'
@@ -49,6 +53,16 @@ public class Controller {
         for (String n : numElements) {
             String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
             String pathToOldInstances = generatedPath + n + "_old_" + instanceFileName;
+            // check if the files exist
+            if (!new java.io.File(pathToNewInstances).exists()) {
+                log.print(LOGTAG.ERROR, "File " + pathToNewInstances + " does not exist");
+                System.exit(0);
+            }
+            if (!new java.io.File(pathToOldInstances).exists()) {
+                log.print(LOGTAG.ERROR, "File " + pathToOldInstances + " does not exist");
+                System.exit(0);
+            }
+
             Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
             try {
                 fuseki.resetDb(baseModel, dbURL);

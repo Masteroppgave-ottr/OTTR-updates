@@ -6,8 +6,8 @@ PORT = 3030
 # default inputs
 TEMP_DIR = /home/magnus/Emner/Master/dev/temp/
 # all files are automatically annotated with either old_ or new_
-INSTANCE_FILE = "initme.stottr"
-TEMPLATE_FILE = "templateme.stottr"
+INSTANCE_FILE = "exoplanets.stottr"
+TEMPLATE_FILE = "planet.stottr"
 TIMER = times.txt
 DB_URL = http://localhost:3030/
 # SOLUTIONS = "SIMPLE, REBUILD"
@@ -32,7 +32,7 @@ build:
 	cd $(APP_DIR) && mvn package
 
 create_nInstances:
-	python3 StringDataCreator.py n=instances $(INSTANCE_FILE) $(INSTANCE_NR) $(DELETION_NUMBER) $(CHANGE_NUMBER) $(INSERT_NUMBER)
+	python3 StringDataCreator.py n=instances $(TEMP_DIR) $(INSTANCE_FILE) $(INSTANCE_NR) $(DELETION_NUMBER) $(CHANGE_NUMBER) $(INSERT_NUMBER)
 
 run_nInstances: 
 	cd $(APP_DIR) && java -jar target/update.jar n=instances $(ALL) $(INSTANCE_NR) $(TOTAL_CHANGES)
@@ -41,7 +41,7 @@ plot_nInstances:
 	python3 Plotter.py n=instances $(TEMP_DIR)$(TIMER)
 
 create_nChanges:
-	python3 StringDataCreator.py n=changes $(INSTANCE_FILE) $(INSTANCE_NR_2) $(DELETION_NUMBERS) $(CHANGE_NUMBERS) $(INSERT_NUMBERS)
+	python3 StringDataCreator.py n=changes $(TEMP_DIR) $(INSTANCE_FILE)  $(INSTANCE_NR_2) $(DELETION_NUMBERS) $(CHANGE_NUMBERS) $(INSERT_NUMBERS)
 
 run_nChanges: 
 	cd $(APP_DIR) && java -jar target/update.jar n=changes $(ALL) $(INSTANCE_NR_2) $(DELETION_NUMBERS) $(CHANGE_NUMBERS) $(INSERT_NUMBERS)

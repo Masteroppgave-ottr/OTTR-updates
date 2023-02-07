@@ -81,35 +81,9 @@ public class App {
         TemplateManager tm = new StandardTemplateManager();
         FusekiInterface fi = new FusekiInterface(log);
 
-        // initial population of the triple store
-        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
-                templateFileName);
-        Severity severity = msgs.printMessages();
-        if (severity == Severity.ERROR) {
-            log.print(LOGTAG.ERROR, "Error while reading the template file.");
-            log.print(LOGTAG.ERROR,
-                    "Make sure the TEMPLATE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
-            System.exit(1);
-        }
-        String pathToNewInstances = tempDir + "new_" + instanceFileName;
-        int inserted_triples = fi.initDB(pathToNewInstances, tm, dbURL);
-        log.print(LOGTAG.FUSEKI, "Inserted " + inserted_triples + " triples into the triple store.");
-        if (inserted_triples == 1) {
-            log.print(LOGTAG.ERROR, "Error while inserting the initial data into the triple store.");
-            log.print(LOGTAG.ERROR,
-                    "Make sure the INSTANCE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
-            System.exit(1);
-        }
-        if (inserted_triples == 0) {
-            log.print(LOGTAG.ERROR, "Error while connecting to triple store");
-            log.print(LOGTAG.ERROR,
-                    "Make sure you have started the server correctly with the 'make init_db' command");
-            System.exit(1);
-        }
-        log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
-
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
         if (mode.equals("n=instances")) {
+            log.print(LOGTAG.DEBUG, "we in this N=instances mode");
             // parse extra arguments
             String[] instances = args[7].split(", ");
             String changeNr = args[8];
@@ -128,6 +102,33 @@ public class App {
                     instances);
         }
         if (mode.equals("blank")) {
+            // initial population of the triple store
+            MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
+                    templateFileName);
+            Severity severity = msgs.printMessages();
+            if (severity == Severity.ERROR) {
+                log.print(LOGTAG.ERROR, "Error while reading the template file.");
+                log.print(LOGTAG.ERROR,
+                        "Make sure the TEMPLATE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
+                System.exit(1);
+            }
+            String pathToNewInstances = tempDir + "new_" + instanceFileName;
+            int inserted_triples = fi.initDB(pathToNewInstances, tm, dbURL);
+            log.print(LOGTAG.FUSEKI, "Inserted " + inserted_triples + " triples into the triple store.");
+            if (inserted_triples == 1) {
+                log.print(LOGTAG.ERROR, "Error while inserting the initial data into the triple store.");
+                log.print(LOGTAG.ERROR,
+                        "Make sure the INSTANCE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
+                System.exit(1);
+            }
+            if (inserted_triples == 0) {
+                log.print(LOGTAG.ERROR, "Error while connecting to triple store");
+                log.print(LOGTAG.ERROR,
+                        "Make sure you have started the server correctly with the 'make init_db' command");
+                System.exit(1);
+            }
+            log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
+
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
             String fullTemplateFileName = tempDir + templateFileName;
