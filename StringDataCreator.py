@@ -163,8 +163,6 @@ if __name__ == "__main__":
         change_nr = int(sys.argv[6])
         insert_nr = int(sys.argv[7])
 
-        print(f"source_dir: {source_dir}\ntarget_dir: {target_dir}\nsource: {source}\nfile_sizes: {file_sizes}\ndelete_nr: {delete_nr}\nchange_nr: {change_nr}\ninsert_nr: {insert_nr}")
-
         run(source_dir, source, target_dir,
             file_sizes, delete_nr, change_nr, insert_nr)
 

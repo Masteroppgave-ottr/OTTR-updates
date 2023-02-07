@@ -55,13 +55,6 @@ public class App {
         String timerFileName = args[4];
         String dbURL = args[5];
         String[] solutions = args[6].split(", ");
-        System.out.println("mode: " + mode);
-        System.out.println("tempDir: " + tempDir);
-        System.out.println("instanceFileName: " + instanceFileName);
-        System.out.println("templateFileName: " + templateFileName);
-        System.out.println("timerFileName: " + timerFileName);
-        System.out.println("dbURL: " + dbURL);
-        System.out.println("solutions: " + solutions);
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
