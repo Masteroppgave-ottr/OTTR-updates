@@ -14,6 +14,7 @@ public class Controller {
     TemplateManager tm;
     String baseDBFileName;
     LOGTAG logLevel = LOGTAG.BLANK;
+    FusekiInterface fuseki;
 
     private boolean contains(String[] arr, String targetValue) {
         for (String s : arr) {
@@ -29,10 +30,25 @@ public class Controller {
         this.timer = timer;
         this.dbURL = dbURL;
         this.tm = tm;
+        this.fuseki = new FusekiInterface(log);
+
     }
 
-    private boolean fileExists(String path) {
-        return new java.io.File(path).exists();
+    private boolean compareGraphs(String graphName1, String graphName2) {
+        boolean isIsomorphic = false;
+        try {
+            Model updated = fuseki.getGraph(dbURL, graphName1);
+            Model rebuild = fuseki.getGraph(dbURL, graphName2);
+            isIsomorphic = updated.isIsomorphicWith(rebuild);
+            if (isIsomorphic) {
+                log.print(LOGTAG.DEFAULT, "Graphs are isomorphic");
+            } else {
+                log.print(LOGTAG.ERROR, "Graphs are not isomorphic");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return isIsomorphic;
     }
 
     /**
@@ -78,23 +94,9 @@ public class Controller {
             if (contains(solutions, Solutions.REBUILD + "")) {
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
+                compareGraphs("Updated", "Rebuild");
             }
 
-            if (contains(solutions, Solutions.REBUILD + "")) {
-                try {
-
-                    Model updated = fuseki.getGraph(dbURL, "Updated");
-                    Model rebuild = fuseki.getGraph(dbURL, "Rebuild");
-                    // compare the models
-                    if (updated.isIsomorphicWith(rebuild)) {
-                        log.print(LOGTAG.DEFAULT, "The models are isomorphic");
-                    } else {
-                        log.print(LOGTAG.ERROR, "The models are not isomorphic");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -102,7 +104,6 @@ public class Controller {
         String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
         OttrInterface ottrInterface = new OttrInterface(log);
         Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
-        FusekiInterface fuseki = new FusekiInterface(log);
         for (int n : changes) {
             try {
                 fuseki.resetDb(baseModel, dbURL);
@@ -120,6 +121,7 @@ public class Controller {
             if (contains(solutions, Solutions.REBUILD + "")) {
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
+                compareGraphs("Updated", "Rebuild");
             }
         }
 
