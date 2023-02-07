@@ -4,14 +4,15 @@ package update.ottr;
 import xyz.ottr.lutra.api.StandardTemplateManager;
 import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.system.MessageHandler;
+import xyz.ottr.lutra.system.Message.Severity;
+
+import org.apache.jena.rdf.model.Model;
 
 //java
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.jena.rdf.model.Model;
 
 public class App {
 
@@ -83,9 +84,28 @@ public class App {
         // initial population of the triple store
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
                 templateFileName);
-        msgs.printMessages();
+        Severity severity = msgs.printMessages();
+        if (severity == Severity.ERROR) {
+            log.print(LOGTAG.ERROR, "Error while reading the template file.");
+            log.print(LOGTAG.ERROR,
+                    "Make sure the TEMPLATE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
+            System.exit(1);
+        }
         String pathToNewInstances = tempDir + "new_" + instanceFileName;
-        fi.initDB(pathToNewInstances, tm, dbURL);
+        int inserted_triples = fi.initDB(pathToNewInstances, tm, dbURL);
+        log.print(LOGTAG.FUSEKI, "Inserted " + inserted_triples + " triples into the triple store.");
+        if (inserted_triples == 1) {
+            log.print(LOGTAG.ERROR, "Error while inserting the initial data into the triple store.");
+            log.print(LOGTAG.ERROR,
+                    "Make sure the INSTANCE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
+            System.exit(1);
+        }
+        if (inserted_triples == 0) {
+            log.print(LOGTAG.ERROR, "Error while connecting to triple store");
+            log.print(LOGTAG.ERROR,
+                    "Make sure you have started the server correctly with the 'make init_db' command");
+            System.exit(1);
+        }
         log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
 
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);

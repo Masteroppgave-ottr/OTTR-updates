@@ -125,6 +125,13 @@ public class FusekiInterface {
      * @throws IOException
      */
     public int resetDb(Model baseModel, String dbURL) throws IOException {
+        // check the size of the baseModel
+        long triples = baseModel.size();
+        if (triples == 0) {
+            log.print(LOGTAG.WARNING, "Error, the base model is empty.");
+            return 1;
+        }
+
         URL url = new URL(dbURL + "Original");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("PUT");
