@@ -34,6 +34,10 @@ public class Controller {
 
     }
 
+    /**
+     * Check if two graphs are isomorphic.
+     * The result logged to the user
+     */
     private boolean compareGraphs(String graphName1, String graphName2) {
         boolean isIsomorphic = false;
         try {
