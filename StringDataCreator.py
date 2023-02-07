@@ -4,6 +4,8 @@ import sys
 
 from TestDataCreator import insert
 
+tag = "\033[93m[CREATE]\033[0m"
+
 
 def _next_in_list(l: list[int]):
     if len(l) > 0:
@@ -16,7 +18,7 @@ def create_subfile(filename: str, new_filename: str, n: int):
     """
         creates a new file with the first `n` instances of `filename`
     """
-    print("[CREATE] creating shortened file", new_filename)
+    print(f"{tag} creating shortened file", new_filename)
     # open a new file to write the data to
     original_file = open(filename, "r")
     new_file = open(new_filename, "w")
@@ -33,7 +35,7 @@ def create_subfile(filename: str, new_filename: str, n: int):
         new_file.write(lines[i])
 
     if (n > length):
-        print("[CREATE] generating", n - length, "new instances")
+        print(f"{tag} generating", n - length, "new instances")
         for i in range(prefix_end, n - length):
             new_file.write(mutate_instance(
                 lines[prefix_end+1], 2, rng_range=10000000000000000000))
@@ -59,7 +61,7 @@ def create_file_nInstances(deletions: int, changes: int, insertions: int, filena
         creates a new file where `insertions` instances are inserted and `deletions` instances are deleted.
     """
     print(
-        f"[CREATE] creating changed   file  {new_filename} del[{deletions}] change[{changes}] insert[{insertions}]")
+        f"{tag} creating changed   file  {new_filename} del[{deletions}] change[{changes}] insert[{insertions}]")
 
     # open source and target file
     original_file = open(filename, "r")

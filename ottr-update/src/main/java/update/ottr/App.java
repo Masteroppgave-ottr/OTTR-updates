@@ -81,9 +81,19 @@ public class App {
         TemplateManager tm = new StandardTemplateManager();
         FusekiInterface fi = new FusekiInterface(log);
 
+        // read the template file
+        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
+                templateFileName);
+        Severity severity = msgs.printMessages();
+        if (severity == Severity.ERROR) {
+            log.print(LOGTAG.ERROR, "Error while reading the template file.");
+            log.print(LOGTAG.ERROR,
+                    "Make sure the TEMPLATE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
+            System.exit(1);
+        }
+
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
         if (mode.equals("n=instances")) {
-            log.print(LOGTAG.DEBUG, "we in this N=instances mode");
             // parse extra arguments
             String[] instances = args[7].split(", ");
             String changeNr = args[8];
@@ -103,15 +113,6 @@ public class App {
         }
         if (mode.equals("blank")) {
             // initial population of the triple store
-            MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
-                    templateFileName);
-            Severity severity = msgs.printMessages();
-            if (severity == Severity.ERROR) {
-                log.print(LOGTAG.ERROR, "Error while reading the template file.");
-                log.print(LOGTAG.ERROR,
-                        "Make sure the TEMPLATE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
-                System.exit(1);
-            }
             String pathToNewInstances = tempDir + "new_" + instanceFileName;
             int inserted_triples = fi.initDB(pathToNewInstances, tm, dbURL);
             log.print(LOGTAG.FUSEKI, "Inserted " + inserted_triples + " triples into the triple store.");
