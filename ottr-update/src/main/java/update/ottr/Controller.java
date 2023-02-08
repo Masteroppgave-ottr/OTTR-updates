@@ -100,7 +100,6 @@ public class Controller {
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
                 compareGraphs("Updated", "Rebuild");
             }
-
         }
     }
 

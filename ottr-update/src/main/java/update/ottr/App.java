@@ -8,6 +8,7 @@ import xyz.ottr.lutra.system.Message.Severity;
 
 import org.apache.jena.rdf.model.Model;
 
+import java.io.FileNotFoundException;
 //java
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -45,6 +46,25 @@ public class App {
         }
 
         return newArray;
+    }
+
+    private static int populateDB(Logger log, FusekiInterface fi, String pathToNewInstances, TemplateManager tm,
+            String dbURL) {
+        int inserted_triples = fi.initDB(pathToNewInstances, tm, dbURL);
+        log.print(LOGTAG.FUSEKI, "Inserted " + inserted_triples + " triples into the triple store.");
+        if (inserted_triples == 1) {
+            log.print(LOGTAG.ERROR, "Error while inserting the initial data into the triple store.");
+            log.print(LOGTAG.ERROR,
+                    "Make sure the INSTANCE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
+            System.exit(1);
+        }
+        if (inserted_triples == 0) {
+            log.print(LOGTAG.ERROR, "Error while connecting to triple store");
+            log.print(LOGTAG.ERROR,
+                    "Make sure you have started the server correctly with the 'make init_db' command");
+            System.exit(1);
+        }
+        return inserted_triples;
     }
 
     public static void main(String[] args) {
@@ -86,6 +106,38 @@ public class App {
         }
 
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
+        if (mode.equals("default")) {
+            String old_instance_fileName = tempDir + "old_" + instanceFileName;
+            String new_instance_fileName = tempDir + "new_" + instanceFileName;
+            populateDB(log, fi, new_instance_fileName, tm, dbURL);
+
+            Diff d = new Diff(log);
+            d.readDiff(old_instance_fileName, new_instance_fileName);
+
+            String addInstancesString = null;
+            String deleteInstancesString = null;
+            try {
+                addInstancesString = d.getAddInstancesString(new_instance_fileName);
+                deleteInstancesString = d.getDeleteInstancesString(old_instance_fileName);
+            } catch (FileNotFoundException error) {
+                System.out.println("Could not old or new instance file");
+                error.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            OttrInterface jh = new OttrInterface(log);
+            // models for the old and new instance files
+            Model oldModel = jh.expandAndGetModelFromFile(old_instance_fileName, tm);
+            Model newModel = jh.expandAndGetModelFromFile(new_instance_fileName, tm);
+
+            // models for the changes
+            Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
+            Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
+
+            // INSERT YOUR CODE HERE
+        }
+
         if (mode.equals("n=instances")) {
             // parse extra arguments
             String[] instances = args[7].split(", ");
@@ -105,27 +157,13 @@ public class App {
                     instances);
         }
         if (mode.equals("blank")) {
-            // initial population of the triple store
-            String pathToNewInstances = tempDir + "new_" + instanceFileName;
-            int inserted_triples = fi.initDB(pathToNewInstances, tm, dbURL);
-            log.print(LOGTAG.FUSEKI, "Inserted " + inserted_triples + " triples into the triple store.");
-            if (inserted_triples == 1) {
-                log.print(LOGTAG.ERROR, "Error while inserting the initial data into the triple store.");
-                log.print(LOGTAG.ERROR,
-                        "Make sure the INSTANCE_FILE variable is set correctly in the Makefile, and that it is located in the TEMP_DIR");
-                System.exit(1);
-            }
-            if (inserted_triples == 0) {
-                log.print(LOGTAG.ERROR, "Error while connecting to triple store");
-                log.print(LOGTAG.ERROR,
-                        "Make sure you have started the server correctly with the 'make init_db' command");
-                System.exit(1);
-            }
-            log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
-
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
             String fullTemplateFileName = tempDir + templateFileName;
+
+            // initial population of the triple store
+            populateDB(log, fi, new_instance_fileName, tm, dbURL);
+            log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
             controller.testSingleFile(new_instance_fileName, old_instance_fileName, fullTemplateFileName);
         }
         try {
