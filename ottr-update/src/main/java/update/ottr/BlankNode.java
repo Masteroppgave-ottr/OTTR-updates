@@ -97,6 +97,10 @@ public class BlankNode {
         }
 
         builder.addWhere("?blank", "?pred", "?obj");
+
+        SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", "?blank");
+
+        builder.addUnion(newBuilder);
         builder.addGroupBy("?blank");
         try {
             builder.addHaving("?count = " + count);
