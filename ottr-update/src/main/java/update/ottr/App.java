@@ -84,7 +84,9 @@ public class App {
                 LOGTAG.DIFF,
                 LOGTAG.WARNING,
                 LOGTAG.ERROR,
-                LOGTAG.BLANK
+                LOGTAG.BLANK,
+                LOGTAG.SIMPLE,
+                LOGTAG.REBUILD
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 

@@ -8,5 +8,7 @@ public enum LOGTAG {
     DIFF,
     WARNING,
     ERROR,
-    BLANK
+    BLANK,
+    SIMPLE,
+    REBUILD
 }
