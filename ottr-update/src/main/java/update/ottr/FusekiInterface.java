@@ -160,7 +160,7 @@ public class FusekiInterface {
         con.setDoOutput(true);
         out = new DataOutputStream(con.getOutputStream());
 
-        log.print(logLevel, "Reset: " + url);
+        log.print(logLevel, "Reset: " + url + " with " + triples + " triples");
 
         RDFDataMgr.write(out, baseModel, RDFFormat.NTRIPLES);
         out.flush();
