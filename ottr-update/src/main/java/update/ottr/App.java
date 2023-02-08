@@ -77,14 +77,14 @@ public class App {
         String[] solutions = args[6].split(", ");
 
         LOGTAG[] logLevels = {
-                LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
-                LOGTAG.FUSEKI,
-                LOGTAG.OTTR,
-                LOGTAG.DIFF,
-                LOGTAG.WARNING,
-                LOGTAG.ERROR,
-                LOGTAG.BLANK
+                // LOGTAG.DEFAULT,
+                // LOGTAG.DEBUG,
+                // LOGTAG.FUSEKI,
+                // LOGTAG.OTTR,
+                // LOGTAG.DIFF,
+                // LOGTAG.WARNING,
+                // LOGTAG.ERROR,
+                // LOGTAG.BLANK
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 
