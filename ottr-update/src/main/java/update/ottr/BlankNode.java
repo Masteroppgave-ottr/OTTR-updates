@@ -3,6 +3,7 @@ package update.ottr;
 import java.io.FileNotFoundException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
@@ -72,13 +73,51 @@ public class BlankNode {
     }
 
     /**
+     * Adds all triples in the deleteModel to the where clause of the builder.
+     * If a triple contains a blank node, it is added as a variable.
+     **/
+    private String addWhereClause2(UpdateBuilder builder, Model model) {
+        StmtIterator statements = model.listStatements();
+        String lastBlank = null;
+        while (statements.hasNext()) {
+            // if the statement contains a blank node
+            Statement statement = statements.next();
+            log.print(LOGTAG.DEBUG, statement.toString());
+
+            String sub = null;
+            String obj = null;
+            if (statement.getSubject().isAnon()) {
+                sub = "?" + statement.getSubject().toString().replace("-", "_");
+            }
+
+            if (statement.getObject().isAnon()) {
+                obj = "?" + statement.getObject().toString().replace("-", "_");
+            }
+
+            if (sub != null && obj != null) {
+                builder.addDelete(sub, statement.getPredicate(), obj);
+                // TODO: handle this case later
+            } else if (sub != null) {
+                builder.addDelete(sub, statement.getPredicate(), statement.getObject());
+                lastBlank = sub;
+            } else if (obj != null) {
+                builder.addDelete(statement.getSubject(), statement.getPredicate(), obj);
+                lastBlank = obj;
+            } else {
+                builder.addDelete(statement.getSubject(), statement.getPredicate(), statement.getObject());
+            }
+        }
+        return lastBlank;
+    }
+
+    /**
      * Adds the inner sub query to the builder.
      * This finds all graphs that match the deleteModel and have a blank node.
      */
-    private void addInnerSubQuery(SelectBuilder builder, Model model) {
+    private void addInnerSubQuery(SelectBuilder builder, Model model, String blankName) {
         addWhereClause(builder, model);
         try {
-            builder.addFilter("isblank(?blank)");
+            builder.addFilter("isblank(" + blankName + ")");
         } catch (ParseException e1) {
             e1.printStackTrace();
         }
@@ -88,20 +127,19 @@ public class BlankNode {
      * Adds the outer sub query to the builder.
      * This counts the number of triples the the sub query has.
      */
-    private void addOuterSubQuery(SelectBuilder builder, Model model, int count) {
-        builder.addVar("blank");
+    private void addOuterSubQuery(SelectBuilder builder, Model model, int count, String blankName) {
+        builder.addVar(blankName);
         try {
-            builder.addVar("count(?blank)", "count");
+            builder.addVar("count(" + blankName + ")", "count");
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        builder.addWhere("?blank", "?pred", "?obj");
-
-        SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", "?blank");
-
+        builder.addWhere(blankName, "?pred", "?obj");
+        SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", blankName);
         builder.addUnion(newBuilder);
-        builder.addGroupBy("?blank");
+
+        builder.addGroupBy(blankName);
         try {
             builder.addHaving("?count = " + count);
         } catch (ParseException e) {
@@ -124,12 +162,12 @@ public class BlankNode {
 
         // create the outer sub query
         SelectBuilder outerSubBuilder = new SelectBuilder();
-        addOuterSubQuery(outerSubBuilder, deleteModel, count);
+        addOuterSubQuery(outerSubBuilder, deleteModel, count, "?blank");
 
         // create the inner sub query
         SelectBuilder innerSubBuilder = new SelectBuilder();
         innerSubBuilder.addVar("?blank");
-        addInnerSubQuery(innerSubBuilder, deleteModel);
+        addInnerSubQuery(innerSubBuilder, deleteModel, "?blank");
 
         // set sub queries
         outerSubBuilder.addSubQuery(innerSubBuilder);
@@ -138,6 +176,35 @@ public class BlankNode {
         log.print(logLevel, "top level:\n" + builder.buildString());
 
         return null;
+    }
+
+    public void createDeleteRequest(Model deleteModel) {
+        int count = countBlankNodes(deleteModel);
+        log.print(LOGTAG.DEBUG, "" + count);
+
+        // null pointer if we dont init this
+        org.apache.jena.query.ARQ.init();
+
+        // create a delete query
+        UpdateBuilder builder = new UpdateBuilder();
+        // builder.addDelete(deleteModel);
+        String blank = addWhereClause2(builder, deleteModel);
+
+        // create the outer sub query
+        SelectBuilder outerSubBuilder = new SelectBuilder();
+        addOuterSubQuery(outerSubBuilder, deleteModel, count, blank);
+
+        // create the inner sub query
+        SelectBuilder innerSubBuilder = new SelectBuilder();
+        innerSubBuilder.addVar("?blank");
+        addInnerSubQuery(innerSubBuilder, deleteModel, "?blank");
+
+        // set sub queries
+        outerSubBuilder.addSubQuery(innerSubBuilder);
+        builder.addSubQuery(outerSubBuilder);
+
+        log.print(logLevel, builder.buildRequest().toString());
+
     }
 
     // run blanknode update
@@ -177,7 +244,8 @@ public class BlankNode {
             log.print(logLevel, "delete model " + deleteModel.toString());
         }
 
-        createDelRequest(deleteModel);
-
+        // createDelRequest(deleteModel);
+        createDeleteRequest(deleteModel);
     }
+
 }
