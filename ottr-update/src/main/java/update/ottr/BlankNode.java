@@ -43,7 +43,7 @@ public class BlankNode {
      * Adds all triples in the deleteModel to the where clause of the builder.
      * If a triple contains a blank node, it is added as a variable.
      **/
-    private void addWhereClause(SelectBuilder builder, Model model) {
+    private void addWhereClauseToSelect(SelectBuilder builder, Model model) {
         StmtIterator statements = model.listStatements();
         while (statements.hasNext()) {
             // if the statement contains a blank node
@@ -76,8 +76,9 @@ public class BlankNode {
      * Adds all triples in the deleteModel to the where clause of the builder.
      * If a triple contains a blank node, it is added as a variable.
      **/
-    private String addWhereClause2(UpdateBuilder builder, Model model) {
+    private String addWhereClause(UpdateBuilder builder, Model model) {
         StmtIterator statements = model.listStatements();
+        // we store the name of the blank node so we can use it in the sub query
         String lastBlank = null;
         while (statements.hasNext()) {
             // if the statement contains a blank node
@@ -96,7 +97,8 @@ public class BlankNode {
 
             if (sub != null && obj != null) {
                 builder.addDelete(sub, statement.getPredicate(), obj);
-                // TODO: handle this case later
+                // TODO: handle multiple blank nodes later
+                throw new RuntimeException("Multiple blank nodes not supported yet");
             } else if (sub != null) {
                 builder.addDelete(sub, statement.getPredicate(), statement.getObject());
                 lastBlank = sub;
@@ -115,7 +117,7 @@ public class BlankNode {
      * This finds all graphs that match the deleteModel and have a blank node.
      */
     private void addInnerSubQuery(SelectBuilder builder, Model model, String blankName) {
-        addWhereClause(builder, model);
+        addWhereClauseToSelect(builder, model);
         try {
             builder.addFilter("isblank(" + blankName + ")");
         } catch (ParseException e1) {
@@ -147,7 +149,7 @@ public class BlankNode {
         }
     }
 
-    public UpdateRequest createDelRequest(Model deleteModel) {
+    public UpdateRequest createSelectRequest(Model deleteModel) {
         int count = countBlankNodes(deleteModel);
         log.print(LOGTAG.DEBUG, "" + count);
 
@@ -157,7 +159,7 @@ public class BlankNode {
         // create the outer query
         SelectBuilder builder = new SelectBuilder();
         builder.addVar("blank").addVar("count");
-        addWhereClause(builder, deleteModel);
+        addWhereClauseToSelect(builder, deleteModel);
         builder.setLimit(1);
 
         // create the outer sub query
@@ -188,7 +190,7 @@ public class BlankNode {
         // create a delete query
         UpdateBuilder builder = new UpdateBuilder();
         // builder.addDelete(deleteModel);
-        String blank = addWhereClause2(builder, deleteModel);
+        String blank = addWhereClause(builder, deleteModel);
 
         // create the outer sub query
         SelectBuilder outerSubBuilder = new SelectBuilder();
