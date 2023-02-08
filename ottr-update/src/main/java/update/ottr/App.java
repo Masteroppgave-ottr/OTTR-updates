@@ -162,7 +162,7 @@ public class App {
             String fullTemplateFileName = tempDir + templateFileName;
 
             // initial population of the triple store
-            populateDB(log, fi, new_instance_fileName, tm, dbURL);
+            populateDB(log, fi, old_instance_fileName, tm, dbURL);
             log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
             controller.testSingleFile(new_instance_fileName, old_instance_fileName, fullTemplateFileName);
         }

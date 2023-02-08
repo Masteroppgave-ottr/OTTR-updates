@@ -18,9 +18,11 @@ import xyz.ottr.lutra.system.MessageHandler;
 public class BlankNode {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.BLANK;
+    private String dbURL;
 
-    public BlankNode(Logger log) {
+    public BlankNode(Logger log, String dbURL) {
         this.log = log;
+        this.dbURL = dbURL;
     }
 
     /**
@@ -149,38 +151,7 @@ public class BlankNode {
         }
     }
 
-    public UpdateRequest createSelectRequest(Model deleteModel) {
-        int count = countBlankNodes(deleteModel);
-        log.print(LOGTAG.DEBUG, "" + count);
-
-        // null pointer if we dont init this
-        org.apache.jena.query.ARQ.init();
-
-        // create the outer query
-        SelectBuilder builder = new SelectBuilder();
-        builder.addVar("blank").addVar("count");
-        addWhereClauseToSelect(builder, deleteModel);
-        builder.setLimit(1);
-
-        // create the outer sub query
-        SelectBuilder outerSubBuilder = new SelectBuilder();
-        addOuterSubQuery(outerSubBuilder, deleteModel, count, "?blank");
-
-        // create the inner sub query
-        SelectBuilder innerSubBuilder = new SelectBuilder();
-        innerSubBuilder.addVar("?blank");
-        addInnerSubQuery(innerSubBuilder, deleteModel, "?blank");
-
-        // set sub queries
-        outerSubBuilder.addSubQuery(innerSubBuilder);
-        builder.addSubQuery(outerSubBuilder);
-
-        log.print(logLevel, "top level:\n" + builder.buildString());
-
-        return null;
-    }
-
-    public void createDeleteRequest(Model deleteModel) {
+    public UpdateRequest createDeleteRequest(Model deleteModel) {
         int count = countBlankNodes(deleteModel);
         log.print(LOGTAG.DEBUG, "" + count);
 
@@ -198,18 +169,18 @@ public class BlankNode {
 
         // create the inner sub query
         SelectBuilder innerSubBuilder = new SelectBuilder();
-        innerSubBuilder.addVar("?blank");
-        addInnerSubQuery(innerSubBuilder, deleteModel, "?blank");
+        innerSubBuilder.addVar(blank);
+        addInnerSubQuery(innerSubBuilder, deleteModel, blank);
 
         // set sub queries
         outerSubBuilder.addSubQuery(innerSubBuilder);
+        outerSubBuilder.setLimit(1);
         builder.addSubQuery(outerSubBuilder);
 
         log.print(logLevel, builder.buildRequest().toString());
+        return builder.buildRequest();
 
     }
-
-    // run blanknode update
 
     public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, String pathToTemplates) {
         TemplateManager tm = new StandardTemplateManager();
@@ -247,7 +218,14 @@ public class BlankNode {
         }
 
         // createDelRequest(deleteModel);
-        createDeleteRequest(deleteModel);
+        UpdateRequest delete_request = createDeleteRequest(deleteModel);
+
+        try {
+            FusekiInterface fi = new FusekiInterface(log);
+            fi.updateLocalDB(delete_request, dbURL);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

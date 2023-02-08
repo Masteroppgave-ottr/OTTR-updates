@@ -131,7 +131,7 @@ public class Controller {
     }
 
     public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String pathToTemplates) {
-        BlankNode b = new BlankNode(log);
+        BlankNode b = new BlankNode(log, dbURL);
         b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, pathToTemplates);
     }
 }
