@@ -179,7 +179,15 @@ public class BlankNode {
 
         log.print(logLevel, builder.buildRequest().toString());
         return builder.buildRequest();
+    }
 
+    public UpdateRequest createInsertRequest(Model newModel) {
+        UpdateBuilder builder = new UpdateBuilder()
+                .addInsert(newModel);
+
+        UpdateRequest request = builder.buildRequest();
+        log.print(logLevel, "Insert request:\n" + request.toString());
+        return request;
     }
 
     public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, String pathToTemplates) {
@@ -217,12 +225,16 @@ public class BlankNode {
             log.print(logLevel, "delete model " + deleteModel.toString());
         }
 
-        // createDelRequest(deleteModel);
-        UpdateRequest delete_request = createDeleteRequest(deleteModel);
-
         try {
             FusekiInterface fi = new FusekiInterface(log);
-            fi.updateLocalDB(delete_request, dbURL);
+            if (deleteModel != null) {
+                UpdateRequest deleteRequest = createDeleteRequest(deleteModel);
+                fi.updateLocalDB(deleteRequest, dbURL);
+            }
+            if (insertModel != null) {
+                UpdateRequest insertRequest = createInsertRequest(insertModel);
+                fi.updateLocalDB(insertRequest, dbURL);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
