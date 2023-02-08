@@ -10,7 +10,7 @@ import xyz.ottr.lutra.TemplateManager;
 
 public class SimpleUpdate {
     private Logger log;
-    private LOGTAG logLevel = LOGTAG.DEFAULT;
+    private LOGTAG logLevel = LOGTAG.SIMPLE;
 
     public SimpleUpdate(Logger log) {
         this.log = log;
@@ -84,10 +84,6 @@ public class SimpleUpdate {
         Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
         timer.newSplit("model", "simple solution", instances, changes);
-
-        if (deleteModel != null) {
-            log.print(logLevel, "delete model " + deleteModel.toString());
-        }
 
         try {
             FusekiInterface fi = new FusekiInterface(log);

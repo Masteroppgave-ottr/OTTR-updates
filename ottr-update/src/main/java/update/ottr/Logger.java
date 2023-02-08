@@ -48,7 +48,7 @@ public class Logger {
                 System.out.println(ANSI_CYAN + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.DIFF) {
                 System.out.println(ANSI_GREEN + "[" + tag + "]" + ANSI_RESET + message);
-            } else if (tag == LOGTAG.BLANK) {
+            } else if (tag == LOGTAG.BLANK || tag == LOGTAG.SIMPLE || tag == LOGTAG.REBUILD) {
                 System.out.println(ANSI_ORANGE + "[" + tag + "]" + ANSI_RESET + message);
             } else {
                 System.out.println("[" + tag + "] " + message);
