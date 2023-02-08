@@ -127,7 +127,6 @@ public class Controller {
                 compareGraphs("Updated", "Rebuild");
             }
         }
-
     }
 
     public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String pathToTemplates) {

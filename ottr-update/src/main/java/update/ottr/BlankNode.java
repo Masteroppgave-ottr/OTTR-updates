@@ -224,6 +224,9 @@ public class BlankNode {
         if (deleteModel != null) {
             log.print(logLevel, "delete model " + deleteModel.toString());
         }
+        if (insertModel != null) {
+            log.print(logLevel, "insert model " + insertModel.toString());
+        }
 
         try {
             FusekiInterface fi = new FusekiInterface(log);
