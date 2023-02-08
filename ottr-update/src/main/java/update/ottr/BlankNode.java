@@ -11,18 +11,18 @@ import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
-import xyz.ottr.lutra.api.StandardTemplateManager;
-import xyz.ottr.lutra.system.MessageHandler;
 
 // This solution is about removing the local blank node assumption. 
 public class BlankNode {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.BLANK;
     private String dbURL;
+    private Timer timer;
 
-    public BlankNode(Logger log, String dbURL) {
+    public BlankNode(Logger log, String dbURL, Timer timer) {
         this.log = log;
         this.dbURL = dbURL;
+        this.timer = timer;
     }
 
     /**
@@ -153,8 +153,6 @@ public class BlankNode {
 
     public UpdateRequest createDeleteRequest(Model deleteModel) {
         int count = countBlankNodes(deleteModel);
-        log.print(LOGTAG.DEBUG, "" + count);
-
         // null pointer if we dont init this
         org.apache.jena.query.ARQ.init();
 
@@ -162,7 +160,10 @@ public class BlankNode {
         UpdateBuilder builder = new UpdateBuilder();
         // builder.addDelete(deleteModel);
         String blank = addWhereClause(builder, deleteModel);
-
+        if (blank == null) {
+            log.print(LOGTAG.DEBUG, "No blank nodes found");
+            return builder.buildRequest();
+        }
         // create the outer sub query
         SelectBuilder outerSubBuilder = new SelectBuilder();
         addOuterSubQuery(outerSubBuilder, deleteModel, count, blank);
@@ -179,15 +180,20 @@ public class BlankNode {
 
         log.print(logLevel, builder.buildRequest().toString());
         return builder.buildRequest();
-
     }
 
-    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, String pathToTemplates) {
-        TemplateManager tm = new StandardTemplateManager();
-        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), pathToTemplates);
-        log.print(logLevel, "----------------");
-        msgs.printMessages();
-        log.print(logLevel, "----------------");
+    public UpdateRequest createInsertRequest(Model newModel) {
+        UpdateBuilder builder = new UpdateBuilder()
+                .addInsert(newModel);
+
+        UpdateRequest request = builder.buildRequest();
+        log.print(logLevel, "Insert request:\n" + request.toString());
+        return request;
+    }
+
+    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, TemplateManager tm, int n,
+            int changes) {
+        timer.newSplit("start", "blank solution", n, changes);
 
         Diff d = new Diff(log);
         d.readDiff(pathToOldInstances, pathToNewInstances);
@@ -205,6 +211,7 @@ public class BlankNode {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        timer.newSplit("diff", "blank solution", n, changes);
 
         log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
@@ -213,19 +220,31 @@ public class BlankNode {
         Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
         Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
+        timer.newSplit("model", "blank solution", n, changes);
+
         if (deleteModel != null) {
             log.print(logLevel, "delete model " + deleteModel.toString());
         }
-
-        // createDelRequest(deleteModel);
-        UpdateRequest delete_request = createDeleteRequest(deleteModel);
+        if (insertModel != null) {
+            log.print(logLevel, "insert model " + insertModel.toString());
+        }
 
         try {
             FusekiInterface fi = new FusekiInterface(log);
-            fi.updateLocalDB(delete_request, dbURL);
+            if (deleteModel != null) {
+                UpdateRequest deleteRequest = createDeleteRequest(deleteModel);
+                fi.updateLocalDB(deleteRequest, dbURL);
+            }
+            if (insertModel != null) {
+                UpdateRequest insertRequest = createInsertRequest(insertModel);
+                fi.updateLocalDB(insertRequest, dbURL);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        timer.newSplit("end", "blank solution", n, changes);
+
     }
 
 }

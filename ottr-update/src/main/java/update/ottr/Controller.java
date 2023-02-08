@@ -95,6 +95,11 @@ public class Controller {
                 simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
                         Integer.parseInt(n), Integer.parseInt(changes));
             }
+            if (contains(solutions, Solutions.BLANK + "")) {
+                BlankNode blankNode = new BlankNode(log, dbURL, timer);
+                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
+                        Integer.parseInt(changes));
+            }
             if (contains(solutions, Solutions.REBUILD + "")) {
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
@@ -121,17 +126,22 @@ public class Controller {
                 simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
                         Integer.parseInt(numInstances), n);
             }
+            if (contains(solutions, Solutions.BLANK + "")) {
+                BlankNode blankNode = new BlankNode(log, dbURL, timer);
+                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(numInstances),
+                        n);
+            }
             if (contains(solutions, Solutions.REBUILD + "")) {
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
                 compareGraphs("Updated", "Rebuild");
             }
         }
-
     }
 
     public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String pathToTemplates) {
-        BlankNode b = new BlankNode(log, dbURL);
-        b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, pathToTemplates);
+        BlankNode b = new BlankNode(log, dbURL, timer);
+        b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances,
+                pathToTemplates);
     }
 }
