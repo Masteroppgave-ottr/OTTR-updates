@@ -158,20 +158,5 @@ public class App {
             controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
                     instances);
         }
-        if (mode.equals("blank")) {
-            String old_instance_fileName = tempDir + "old_" + instanceFileName;
-            String new_instance_fileName = tempDir + "new_" + instanceFileName;
-            String fullTemplateFileName = tempDir + templateFileName;
-
-            // initial population of the triple store
-            populateDB(log, fi, old_instance_fileName, tm, dbURL);
-            log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
-            controller.testSingleFile(-1, -1, new_instance_fileName, old_instance_fileName, fullTemplateFileName);
-        }
-        try {
-            timer.writeSplitsToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
