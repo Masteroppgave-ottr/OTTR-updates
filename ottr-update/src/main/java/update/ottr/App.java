@@ -78,15 +78,15 @@ public class App {
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
-                LOGTAG.FUSEKI,
-                LOGTAG.OTTR,
-                LOGTAG.DIFF,
-                LOGTAG.WARNING,
-                LOGTAG.ERROR,
-                LOGTAG.BLANK,
-                LOGTAG.SIMPLE,
-                LOGTAG.REBUILD
+                // LOGTAG.DEBUG,
+                // LOGTAG.FUSEKI,
+                // LOGTAG.OTTR,
+                // LOGTAG.DIFF,
+                // LOGTAG.WARNING,
+                // LOGTAG.ERROR,
+                // LOGTAG.BLANK,
+                // LOGTAG.SIMPLE,
+                // LOGTAG.REBUILD
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 
@@ -157,21 +157,6 @@ public class App {
 
             controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
                     instances);
-        }
-        if (mode.equals("blank")) {
-            String old_instance_fileName = tempDir + "old_" + instanceFileName;
-            String new_instance_fileName = tempDir + "new_" + instanceFileName;
-            String fullTemplateFileName = tempDir + templateFileName;
-
-            // initial population of the triple store
-            populateDB(log, fi, old_instance_fileName, tm, dbURL);
-            log.print(LOGTAG.FUSEKI, "Initial population of the Original graph.");
-            controller.testSingleFile(new_instance_fileName, old_instance_fileName, fullTemplateFileName);
-        }
-        try {
-            timer.writeSplitsToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

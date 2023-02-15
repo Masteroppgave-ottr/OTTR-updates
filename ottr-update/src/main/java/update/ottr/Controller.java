@@ -139,9 +139,10 @@ public class Controller {
         }
     }
 
-    public void testSingleFile(String pathToNewInstances, String pathToOldInstances, String pathToTemplates) {
+    public void testSingleFile(int n, int changes, String pathToNewInstances, String pathToOldInstances,
+            String pathToTemplates) {
         BlankNode b = new BlankNode(log, dbURL, timer);
         b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances,
-                pathToTemplates);
+                tm, n, changes);
     }
 }
