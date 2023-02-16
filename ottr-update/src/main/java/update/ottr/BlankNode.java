@@ -50,7 +50,6 @@ public class BlankNode {
         while (statements.hasNext()) {
             // if the statement contains a blank node
             Statement statement = statements.next();
-            log.print(LOGTAG.DEBUG, statement.toString());
 
             String sub = null;
             String obj = null;
@@ -85,7 +84,6 @@ public class BlankNode {
         while (statements.hasNext()) {
             // if the statement contains a blank node
             Statement statement = statements.next();
-            log.print(LOGTAG.DEBUG, statement.toString());
 
             String sub = null;
             String obj = null;
@@ -151,6 +149,16 @@ public class BlankNode {
         }
     }
 
+    private void findBlankInstances(String deleteInstancesString, TemplateManager tm) {
+        OttrInterface jh = new OttrInterface(log);
+
+        for (String line : deleteInstancesString.split("\n")) {
+            Model m = jh.expandAndGetModelFromString(line, tm);
+            int c = countBlankNodes(m);
+            log.print(LOGTAG.DEBUG, "Count for " + line + " is " + c);
+        }
+    }
+
     public UpdateRequest createDeleteRequest(Model deleteModel) {
         int count = countBlankNodes(deleteModel);
         // null pointer if we dont init this
@@ -161,7 +169,7 @@ public class BlankNode {
         // builder.addDelete(deleteModel);
         String blank = addWhereClause(builder, deleteModel);
         if (blank == null) {
-            log.print(LOGTAG.DEBUG, "No blank nodes found");
+            log.print(LOGTAG.BLANK, "No blank nodes found");
             return builder.buildRequest();
         }
         // create the outer sub query
@@ -215,6 +223,8 @@ public class BlankNode {
 
         log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
+
+        findBlankInstances(deleteInstancesString, tm);
 
         OttrInterface jh = new OttrInterface(log);
         Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);

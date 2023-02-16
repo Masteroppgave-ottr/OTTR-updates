@@ -77,14 +77,14 @@ public class App {
         String[] solutions = args[6].split(", ");
 
         LOGTAG[] logLevels = {
-                LOGTAG.DEFAULT,
-                // LOGTAG.DEBUG,
+                // LOGTAG.DEFAULT,
+                LOGTAG.DEBUG,
                 // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
-                // LOGTAG.WARNING,
-                // LOGTAG.ERROR,
-                // LOGTAG.BLANK,
+                LOGTAG.WARNING,
+                LOGTAG.ERROR,
+                LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
         };
@@ -109,6 +109,7 @@ public class App {
 
         Controller controller = new Controller(solutions, log, timer, dbURL, tm);
         if (mode.equals("default")) {
+            System.out.println("Running default mode");
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
             populateDB(log, fi, new_instance_fileName, tm, dbURL);
