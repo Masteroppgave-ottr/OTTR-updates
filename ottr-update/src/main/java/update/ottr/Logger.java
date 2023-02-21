@@ -2,6 +2,9 @@ package update.ottr;
 
 import java.util.ArrayList;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+
 public class Logger {
     public ArrayList<LOGTAG> activeTags;
     public boolean disabled;
@@ -24,6 +27,13 @@ public class Logger {
             this.activeTags = activeTags;
         }
         this.disabled = false;
+    }
+
+    public void printModel(LOGTAG tag, Model model) {
+        // print the triples in the model each triple on a new line
+        for (Statement line : model.listStatements().toList()) {
+            print(tag, line.toString());
+        }
     }
 
     /**

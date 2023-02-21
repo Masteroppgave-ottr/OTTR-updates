@@ -28,14 +28,15 @@ public class FusekiInterface {
      * Any existing data in the Original or Updated dataset is deleted.
      * 
      */
-    public int initDB(String instanceFileName, TemplateManager tm, String dbURL) {
+    public int initDB(String oldInstanceFileName, String newInstanceFileName, TemplateManager tm, String dbURL) {
         OttrInterface ottrInterface = new OttrInterface(log);
 
-        Model baseModel = ottrInterface.expandAndGetModelFromFile(instanceFileName, tm);
+        Model baseModel = ottrInterface.expandAndGetModelFromFile(oldInstanceFileName, tm);
+        Model newModel = ottrInterface.expandAndGetModelFromFile(newInstanceFileName, tm);
 
         int triples = 0;
         try {
-            triples = resetDb(baseModel, dbURL);
+            triples = resetDb(baseModel, newModel, dbURL);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,20 +118,24 @@ public class FusekiInterface {
     /**
      * resets the database
      * 
-     * @param baseModel
-     *                  The model to put into Original and updated
+     * @param oldModel
+     *                 The model to put into Original and updated
      * @param dbURL
-     *                  The URL of the Fuseki server.
+     *                 The URL of the Fuseki server.
      * @return
      * @throws IOException
      */
-    public int resetDb(Model baseModel, String dbURL) throws IOException {
-        // check the size of the baseModel
-        long triples = baseModel.size();
+    public int resetDb(Model oldModel, Model newModel, String dbURL) throws IOException {
+        long triples = oldModel.size();
         if (triples == 0) {
             log.print(LOGTAG.WARNING, "Error, the base model is empty.");
             return 1;
         }
+
+        log.print(LOGTAG.DEBUG, "old model:");
+        log.printModel(LOGTAG.DEBUG, oldModel);
+        log.print(LOGTAG.DEBUG, "new model:");
+        log.printModel(LOGTAG.DEBUG, newModel);
 
         URL url = new URL(dbURL + "Original");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -138,12 +143,10 @@ public class FusekiInterface {
         con.setRequestProperty("Content-Type", "text/turtle");
         con.setDoOutput(true);
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
-
-        log.print(logLevel, "Reset: " + url + " with " + triples + " triples");
-
-        RDFDataMgr.write(out, baseModel, RDFFormat.NTRIPLES);
+        RDFDataMgr.write(out, oldModel, RDFFormat.NTRIPLES);
         out.flush();
         out.close();
+        log.print(logLevel, "Reset: " + url + " with " + triples + " triples");
 
         int res = con.getResponseCode();
         log.print(logLevel, "Response Code from reset Original: " + res);
@@ -159,10 +162,23 @@ public class FusekiInterface {
         con.setRequestProperty("Content-Type", "text/turtle");
         con.setDoOutput(true);
         out = new DataOutputStream(con.getOutputStream());
-
+        RDFDataMgr.write(out, oldModel, RDFFormat.NTRIPLES);
+        out.flush();
+        out.close();
         log.print(logLevel, "Reset: " + url + " with " + triples + " triples");
 
-        RDFDataMgr.write(out, baseModel, RDFFormat.NTRIPLES);
+        res = con.getResponseCode();
+        log.print(logLevel, "Response Code from reset Updated: " + res);
+
+        url = new URL(dbURL + "Rebuild");
+        con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "text/turtle");
+        con.setDoOutput(true);
+        out = new DataOutputStream(con.getOutputStream());
+        log.print(logLevel, "Reset: " + url);
+
+        RDFDataMgr.write(out, newModel, RDFFormat.NTRIPLES);
         out.flush();
         out.close();
 

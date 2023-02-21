@@ -18,11 +18,13 @@ public class BlankNode {
     private LOGTAG logLevel = LOGTAG.BLANK;
     private String dbURL;
     private Timer timer;
+    OttrInterface ottrInterface;
 
     public BlankNode(Logger log, String dbURL, Timer timer) {
         this.log = log;
         this.dbURL = dbURL;
         this.timer = timer;
+        this.ottrInterface = new OttrInterface(log);
     }
 
     /**
@@ -243,6 +245,91 @@ public class BlankNode {
             FusekiInterface fi = new FusekiInterface(log);
             if (deleteModel != null) {
                 UpdateRequest deleteRequest = createDeleteRequest(deleteModel);
+                fi.updateLocalDB(deleteRequest, dbURL);
+            }
+            if (insertModel != null) {
+                UpdateRequest insertRequest = createInsertRequest(insertModel);
+                fi.updateLocalDB(insertRequest, dbURL);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        timer.newSplit("end", "blank solution", n, changes);
+
+    }
+
+    public UpdateRequest runShit(String deleteInstancesString, TemplateManager tm) {
+        log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
+        UpdateBuilder builder = new UpdateBuilder();
+        // null pointer if we dont init this
+        org.apache.jena.query.ARQ.init();
+
+        for (String line : deleteInstancesString.split("\n")) {
+            Model m = ottrInterface.expandAndGetModelFromString(line, tm);
+
+            int blankCount = countBlankNodes(m);
+            log.print(LOGTAG.DEBUG, "Count for " + line + " is " + blankCount);
+
+            String blank = addWhereClause(builder, m);
+            // Create a sub query to match the blank node
+            if (blankCount > 0) {
+                // create the outer sub query
+                SelectBuilder outerSubBuilder = new SelectBuilder();
+                addOuterSubQuery(outerSubBuilder, m, blankCount, blank);
+
+                // create the inner sub query
+                SelectBuilder innerSubBuilder = new SelectBuilder();
+                innerSubBuilder.addVar(blank);
+                addInnerSubQuery(innerSubBuilder, m, blank);
+
+                // set sub queries
+                outerSubBuilder.addSubQuery(innerSubBuilder);
+                outerSubBuilder.setLimit(1);
+                builder.addSubQuery(outerSubBuilder);
+            }
+        }
+
+        log.print(logLevel, builder.buildRequest().toString());
+        return builder.buildRequest();
+    }
+
+    public void runBlankNodeUpdate2(String pathToOldInstances, String pathToNewInstances, TemplateManager tm, int n,
+            int changes) {
+        timer.newSplit("start", "blank solution", n, changes);
+
+        Diff d = new Diff(log);
+        d.readDiff(pathToOldInstances, pathToNewInstances);
+        log.print(logLevel, "Add linenumbers" + d.addLines.toString());
+        log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
+
+        String addInstancesString = null;
+        String deleteInstancesString = null;
+        try {
+            addInstancesString = d.getAddInstancesString(pathToNewInstances);
+            deleteInstancesString = d.getDeleteInstancesString(pathToOldInstances);
+        } catch (FileNotFoundException error) {
+            System.out.println("Could not old or new instance file");
+            error.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        timer.newSplit("diff", "blank solution", n, changes);
+
+        log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
+        log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
+
+        Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString, tm);
+        timer.newSplit("model", "blank solution", n, changes);
+
+        if (insertModel != null) {
+            log.print(logLevel, "insert model " + insertModel.toString());
+        }
+
+        try {
+            FusekiInterface fi = new FusekiInterface(log);
+            if (deleteInstancesString != "") {
+                UpdateRequest deleteRequest = runShit(deleteInstancesString, tm);
                 fi.updateLocalDB(deleteRequest, dbURL);
             }
             if (insertModel != null) {

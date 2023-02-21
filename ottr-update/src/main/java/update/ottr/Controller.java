@@ -84,8 +84,9 @@ public class Controller {
             }
 
             Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
+            Model newModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
             try {
-                fuseki.resetDb(baseModel, dbURL);
+                fuseki.resetDb(baseModel, newModel, dbURL);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -97,7 +98,7 @@ public class Controller {
             }
             if (contains(solutions, Solutions.BLANK + "")) {
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
-                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
+                blankNode.runBlankNodeUpdate2(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
                         Integer.parseInt(changes));
             }
             if (contains(solutions, Solutions.REBUILD + "")) {
@@ -113,13 +114,13 @@ public class Controller {
         OttrInterface ottrInterface = new OttrInterface(log);
         Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
         for (int n : changes) {
+            String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
+            Model newModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
             try {
-                fuseki.resetDb(baseModel, dbURL);
+                fuseki.resetDb(baseModel, newModel, dbURL);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
 
             if (contains(solutions, Solutions.SIMPLE + "")) {
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
@@ -128,7 +129,8 @@ public class Controller {
             }
             if (contains(solutions, Solutions.BLANK + "")) {
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
-                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(numInstances),
+                blankNode.runBlankNodeUpdate2(pathToOldInstances, pathToNewInstances, tm,
+                        Integer.parseInt(numInstances),
                         n);
             }
             if (contains(solutions, Solutions.REBUILD + "")) {
@@ -142,7 +144,7 @@ public class Controller {
     public void testSingleFile(int n, int changes, String pathToNewInstances, String pathToOldInstances,
             String pathToTemplates) {
         BlankNode b = new BlankNode(log, dbURL, timer);
-        b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances,
+        b.runBlankNodeUpdate2(pathToOldInstances, pathToNewInstances,
                 tm, n, changes);
     }
 }
