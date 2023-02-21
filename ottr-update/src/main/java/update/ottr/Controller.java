@@ -98,7 +98,7 @@ public class Controller {
             }
             if (contains(solutions, Solutions.BLANK + "")) {
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
-                blankNode.runBlankNodeUpdate2(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
+                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
                         Integer.parseInt(changes));
             }
             if (contains(solutions, Solutions.REBUILD + "")) {
@@ -129,7 +129,7 @@ public class Controller {
             }
             if (contains(solutions, Solutions.BLANK + "")) {
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
-                blankNode.runBlankNodeUpdate2(pathToOldInstances, pathToNewInstances, tm,
+                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm,
                         Integer.parseInt(numInstances),
                         n);
             }
@@ -144,7 +144,7 @@ public class Controller {
     public void testSingleFile(int n, int changes, String pathToNewInstances, String pathToOldInstances,
             String pathToTemplates) {
         BlankNode b = new BlankNode(log, dbURL, timer);
-        b.runBlankNodeUpdate2(pathToOldInstances, pathToNewInstances,
+        b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances,
                 tm, n, changes);
     }
 }

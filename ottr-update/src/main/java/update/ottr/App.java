@@ -141,7 +141,7 @@ public class App {
 
             // INSERT YOUR CODE HERE
             BlankNode b = new BlankNode(log, dbURL, timer);
-            b.runBlankNodeUpdate2(old_instance_fileName, new_instance_fileName, tm, 0, 0);
+            b.runBlankNodeUpdate(old_instance_fileName, new_instance_fileName, tm, 0, 0);
         }
 
         if (mode.equals("n=instances")) {

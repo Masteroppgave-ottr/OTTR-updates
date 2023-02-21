@@ -151,47 +151,6 @@ public class BlankNode {
         }
     }
 
-    private void findBlankInstances(String deleteInstancesString, TemplateManager tm) {
-        OttrInterface jh = new OttrInterface(log);
-
-        for (String line : deleteInstancesString.split("\n")) {
-            Model m = jh.expandAndGetModelFromString(line, tm);
-            int c = countBlankNodes(m);
-            log.print(LOGTAG.DEBUG, "Count for " + line + " is " + c);
-        }
-    }
-
-    public UpdateRequest createDeleteRequest(Model deleteModel) {
-        int count = countBlankNodes(deleteModel);
-        // null pointer if we dont init this
-        org.apache.jena.query.ARQ.init();
-
-        // create a delete query
-        UpdateBuilder builder = new UpdateBuilder();
-        // builder.addDelete(deleteModel);
-        String blank = addWhereClause(builder, deleteModel);
-        if (blank == null) {
-            log.print(LOGTAG.BLANK, "No blank nodes found");
-            return builder.buildRequest();
-        }
-        // create the outer sub query
-        SelectBuilder outerSubBuilder = new SelectBuilder();
-        addOuterSubQuery(outerSubBuilder, deleteModel, count, blank);
-
-        // create the inner sub query
-        SelectBuilder innerSubBuilder = new SelectBuilder();
-        innerSubBuilder.addVar(blank);
-        addInnerSubQuery(innerSubBuilder, deleteModel, blank);
-
-        // set sub queries
-        outerSubBuilder.addSubQuery(innerSubBuilder);
-        outerSubBuilder.setLimit(1);
-        builder.addSubQuery(outerSubBuilder);
-
-        log.print(logLevel, builder.buildRequest().toString());
-        return builder.buildRequest();
-    }
-
     public UpdateRequest createInsertRequest(Model newModel) {
         UpdateBuilder builder = new UpdateBuilder()
                 .addInsert(newModel);
@@ -201,65 +160,7 @@ public class BlankNode {
         return request;
     }
 
-    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, TemplateManager tm, int n,
-            int changes) {
-        timer.newSplit("start", "blank solution", n, changes);
-
-        Diff d = new Diff(log);
-        d.readDiff(pathToOldInstances, pathToNewInstances);
-        log.print(logLevel, "Add linenumbers" + d.addLines.toString());
-        log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
-
-        String addInstancesString = null;
-        String deleteInstancesString = null;
-        try {
-            addInstancesString = d.getAddInstancesString(pathToNewInstances);
-            deleteInstancesString = d.getDeleteInstancesString(pathToOldInstances);
-        } catch (FileNotFoundException error) {
-            System.out.println("Could not old or new instance file");
-            error.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        timer.newSplit("diff", "blank solution", n, changes);
-
-        log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
-        log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
-
-        findBlankInstances(deleteInstancesString, tm);
-
-        OttrInterface jh = new OttrInterface(log);
-        Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
-        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
-
-        timer.newSplit("model", "blank solution", n, changes);
-
-        if (deleteModel != null) {
-            log.print(logLevel, "delete model " + deleteModel.toString());
-        }
-        if (insertModel != null) {
-            log.print(logLevel, "insert model " + insertModel.toString());
-        }
-
-        try {
-            FusekiInterface fi = new FusekiInterface(log);
-            if (deleteModel != null) {
-                UpdateRequest deleteRequest = createDeleteRequest(deleteModel);
-                fi.updateLocalDB(deleteRequest, dbURL);
-            }
-            if (insertModel != null) {
-                UpdateRequest insertRequest = createInsertRequest(insertModel);
-                fi.updateLocalDB(insertRequest, dbURL);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        timer.newSplit("end", "blank solution", n, changes);
-
-    }
-
-    public UpdateRequest runShit(String deleteInstancesString, TemplateManager tm) {
+    public UpdateRequest createDeleteRequest(String deleteInstancesString, TemplateManager tm) {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
         UpdateBuilder builder = new UpdateBuilder();
         // null pointer if we dont init this
@@ -294,7 +195,7 @@ public class BlankNode {
         return builder.buildRequest();
     }
 
-    public void runBlankNodeUpdate2(String pathToOldInstances, String pathToNewInstances, TemplateManager tm, int n,
+    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, TemplateManager tm, int n,
             int changes) {
         timer.newSplit("start", "blank solution", n, changes);
 
@@ -329,7 +230,7 @@ public class BlankNode {
         try {
             FusekiInterface fi = new FusekiInterface(log);
             if (deleteInstancesString != "") {
-                UpdateRequest deleteRequest = runShit(deleteInstancesString, tm);
+                UpdateRequest deleteRequest = createDeleteRequest(deleteInstancesString, tm);
                 fi.updateLocalDB(deleteRequest, dbURL);
             }
             if (insertModel != null) {
