@@ -134,7 +134,7 @@ public class BlankNode {
     private void addOuterSubQuery(SelectBuilder builder, Model model, int count, String blankName) {
         builder.addVar(blankName);
         try {
-            builder.addVar("count(" + blankName + ")", "count");
+            builder.addVar("count(" + blankName + ")", "count_" + blankName.substring(1));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -145,7 +145,7 @@ public class BlankNode {
 
         builder.addGroupBy(blankName);
         try {
-            builder.addHaving("?count = " + count);
+            builder.addHaving("?count_" + blankName.substring(1) + "= " + count);
         } catch (ParseException e) {
             e.printStackTrace();
         }
