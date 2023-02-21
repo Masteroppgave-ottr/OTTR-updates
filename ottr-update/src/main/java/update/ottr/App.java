@@ -78,12 +78,13 @@ public class App {
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
-                // LOGTAG.DEBUG,
-                // LOGTAG.FUSEKI,
+                LOGTAG.DEBUG,
+                LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 // LOGTAG.WARNING,
-                // LOGTAG.ERROR,
+                LOGTAG.ERROR,
+                LOGTAG.DUPLICATE,
                 // LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
@@ -111,7 +112,7 @@ public class App {
         if (mode.equals("default")) {
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
-            populateDB(log, fi, new_instance_fileName, tm, dbURL);
+            // populateDB(log, fi, new_instance_fileName, tm, dbURL);
 
             Diff d = new Diff(log);
             d.readDiff(old_instance_fileName, new_instance_fileName);
@@ -138,6 +139,8 @@ public class App {
             Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
             // INSERT YOUR CODE HERE
+            Duplicates dup = new Duplicates(log, dbURL, timer, tm);
+            dup.insertModel(oldModel);
         }
 
         if (mode.equals("n=instances")) {

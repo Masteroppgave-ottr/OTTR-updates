@@ -9,6 +9,7 @@ public enum LOGTAG {
     WARNING,
     ERROR,
     BLANK,
+    DUPLICATE,
     SIMPLE,
     REBUILD
 }
