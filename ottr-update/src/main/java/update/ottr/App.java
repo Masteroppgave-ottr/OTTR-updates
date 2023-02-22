@@ -10,30 +10,10 @@ import org.apache.jena.rdf.model.Model;
 
 import java.io.FileNotFoundException;
 //java
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class App {
-
-    public static void buildRebuildSet(String pathToNewInstances, TemplateManager tm, Logger log,
-            Timer timer, String dbURL, String instances, String changes) {
-        OttrInterface ottrInterface = new OttrInterface(log);
-        FusekiInterface fi = new FusekiInterface(log);
-
-        timer.newSplit("start", "rebuild set", Integer.parseInt(instances), Integer.parseInt(changes));
-
-        Model model = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
-        try {
-            fi.rebuild(model, dbURL);
-            timer.newSplit("end", "rebuild set", Integer.parseInt(instances), Integer.parseInt(changes));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     private static int[] combineStringNumberArrays(String[] arr1, String[] arr2, String[] arr3) {
         if (arr1.length != arr2.length || arr1.length != arr3.length) {
@@ -78,14 +58,14 @@ public class App {
         String[] solutions = args[6].split(", ");
 
         LOGTAG[] logLevels = {
-                // LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
+                LOGTAG.DEFAULT,
+                // LOGTAG.DEBUG,
                 LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 LOGTAG.WARNING,
                 LOGTAG.ERROR,
-                LOGTAG.BLANK,
+                // LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
         };
