@@ -137,11 +137,6 @@ public class FusekiInterface {
             return 1;
         }
 
-        log.print(LOGTAG.DEBUG, "old model:");
-        log.printModel(LOGTAG.DEBUG, oldModel);
-        log.print(LOGTAG.DEBUG, "new model:");
-        log.printModel(LOGTAG.DEBUG, newModel);
-
         int res = 0;
 
         res = putModel(oldModel, dbURL, "Original");

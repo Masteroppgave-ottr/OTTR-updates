@@ -134,6 +134,8 @@ public class BlankNode {
     private void addOuterSubQuery(SelectBuilder builder, Model model, int count, String blankName) {
         builder.addVar(blankName);
         try {
+            // we give count a unique name in order to avoid name clashes with other
+            // sub-queries
             builder.addVar("count(" + blankName + ")", "count_" + blankName.substring(1));
         } catch (ParseException e) {
             e.printStackTrace();
@@ -166,6 +168,7 @@ public class BlankNode {
         // null pointer if we dont init this
         org.apache.jena.query.ARQ.init();
 
+        // we expand one instance at a time
         for (String line : deleteInstancesString.split("\n")) {
             Model m = ottrInterface.expandAndGetModelFromString(line, tm);
 
