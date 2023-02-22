@@ -105,21 +105,26 @@ public class Controller {
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
                 compareGraphs("Updated", "Rebuild");
             }
+
+            try {
+                timer.writeSplitsToFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances) {
         String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
         OttrInterface ottrInterface = new OttrInterface(log);
-        Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
         for (int n : changes) {
+            String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
+            Model newModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
             try {
-                fuseki.resetDb(baseModel, dbURL);
+                fuseki.resetDb(newModel, dbURL);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
 
             if (contains(solutions, Solutions.SIMPLE + "")) {
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
@@ -128,13 +133,20 @@ public class Controller {
             }
             if (contains(solutions, Solutions.BLANK + "")) {
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
-                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(numInstances),
+                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm,
+                        Integer.parseInt(numInstances),
                         n);
             }
             if (contains(solutions, Solutions.REBUILD + "")) {
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
                 compareGraphs("Updated", "Rebuild");
+            }
+
+            try {
+                timer.writeSplitsToFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
