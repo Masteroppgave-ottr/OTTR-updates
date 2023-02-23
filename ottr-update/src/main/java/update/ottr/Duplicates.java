@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
+import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
@@ -36,7 +39,11 @@ public class Duplicates {
       model.add(innerTriple, countPredicate, "1^^xsd:integer");
     }
 
-    UpdateRequest request = new UpdateBuilder().addInsert(model).buildRequest();
+    UpdateBuilder updateBuilder = new UpdateBuilder();
+    Node withGraph = NodeFactory.createURI("localhost:3030/updated/count");
+    updateBuilder.addInsert(withGraph, model);
+    UpdateRequest request = updateBuilder.buildRequest();
+
     try {
       fi.updateLocalDB(request, dbURL);
     } catch (MalformedURLException e) {
