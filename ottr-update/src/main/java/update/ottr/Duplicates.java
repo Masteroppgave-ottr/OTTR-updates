@@ -6,10 +6,8 @@ import java.net.MalformedURLException;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.impl.ResourceImpl;
 import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
@@ -36,7 +34,6 @@ public class Duplicates {
       Property countPredicate = model.getProperty("http://example.org/count");
       Resource innerTriple = model.createResource(statement);
       model.add(innerTriple, countPredicate, "1^^xsd:integer");
-
     }
 
     UpdateRequest request = new UpdateBuilder().addInsert(model).buildRequest();
