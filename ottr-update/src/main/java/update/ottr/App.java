@@ -58,13 +58,14 @@ public class App {
         String[] solutions = args[6].split(", ");
 
         LOGTAG[] logLevels = {
-                LOGTAG.DEFAULT,
+                // LOGTAG.DEFAULT,
+                LOGTAG.TEST,
                 // LOGTAG.DEBUG,
-                LOGTAG.FUSEKI,
+                // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
-                LOGTAG.WARNING,
-                LOGTAG.ERROR,
+                // LOGTAG.WARNING,
+                // LOGTAG.ERROR,
                 // LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD

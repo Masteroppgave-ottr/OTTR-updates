@@ -8,6 +8,8 @@ changes_idex = 1
 solution_index = 2
 tag_index = 3
 time_index = 4
+color_hexes = ["#4A6BE5",
+               "#D73181", "#E4A612", "#37B5AE"]
 
 
 def find_all_solution_names(timestamp_list: list[list[str]]) -> list[str]:
@@ -70,7 +72,7 @@ def get_time(timestamp_list: list[list[str]]) -> list[int]:
 
 def find_interval(timestamp_list: list[list[str]], solution: str, start_tag: str, end_tag: str, field=instances_index) -> list[list[str]]:
     """
-    For a given solution, find every timestamp in the interval between `start_tag` and `end_tag` 
+    For a given solution, find every timestamp in the interval between `start_tag` and `end_tag`
 
     Returns:
         list[list[str]]: list of timestamps in the interval
@@ -140,7 +142,7 @@ def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["d
     counter = 0
     instances = [-1]
     changes = [-1]
-    for solution in solutions:
+    for i, solution in enumerate(solutions):
         # skip the rebuild set solution
         if (solution == "rebuild set"):
             continue
@@ -159,20 +161,21 @@ def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["d
 
         # create bar for the solution
         if (len(solutions) == 1):
-            plt.bar(x, solutionTimes, width=width, label=solution)
+            plt.bar(x, solutionTimes, width=width,
+                    label=solution, color=color_hexes[0])
         elif (counter % 2 == 0):
             plt.bar(x+((width/2)*(counter-1)),
-                    solutionTimes, width=width, label=solution)
+                    solutionTimes, width=width, label=solution, color=color_hexes[counter])
         else:
             plt.bar(x-((width/2)*counter),
-                    solutionTimes, width=width, label=solution)
+                    solutionTimes, width=width, label=solution, color=color_hexes[counter])
 
     plt.xticks(x, plot_labels)
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.title(f"Instances = {instances[0]} | Changes = {changes[0]}")
     print("[PLOT] Creating bar chart")
-    plt.savefig("./temp/bar.png")
+    plt.savefig("./temp/bar.png", dpi=500)
 
 
 def create_line_graph_nInstances(timestamp_list: list[list[str]]) -> None:
@@ -180,19 +183,21 @@ def create_line_graph_nInstances(timestamp_list: list[list[str]]) -> None:
     Create a line graph for the given solution, The time is between the start and end tag.
     """
     solutions = find_all_solution_names(timestamp_list)
-    for solution in solutions:
+    for i, solution in enumerate(solutions):
         n, changes, time = get_instance_change_time_lists(
             timestamp_list, solution, "start", "end", instances_index)
 
-        plt.plot(n, time, label=solution)
+        # plot with the lines smooth
+        plt.plot(n, time, label=solution,
+                 color=color_hexes[i], marker="o", markersize=4, linewidth=2, antialiased=True, markerfacecolor="white", markeredgewidth=2)
 
     plt.xlabel("number of instances")
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.title(
         f"Runtime | Number of changes = {changes[0]}")
-    print("[PLOT] Creating line graph")
-    plt.savefig("./temp/line.png")
+    print("[PLOT] Creating line graph Æ")
+    plt.savefig("./temp/line.png", dpi=500)
 
 
 def create_line_graph_nChanges(timestamp_list: list[list[str]]) -> None:
@@ -200,11 +205,12 @@ def create_line_graph_nChanges(timestamp_list: list[list[str]]) -> None:
     Create a line graph for the given solution, The time is between the start and end tag.
     """
     solutions = find_all_solution_names(timestamp_list)
-    for solution in solutions:
+    for i, solution in enumerate(solutions):
         instances, changes, time = get_instance_change_time_lists(
             timestamp_list, solution, "start", "end", changes_idex)
 
-        plt.plot(changes, time, label=solution)
+        plt.plot(changes, time, label=solution,  color=color_hexes[i], marker="o", markersize=4,
+                 linewidth=2, antialiased=True, markerfacecolor="white", markeredgewidth=2)
 
     plt.xlabel("number of changes")
     plt.ylabel("Time in nano seconds")
@@ -212,7 +218,7 @@ def create_line_graph_nChanges(timestamp_list: list[list[str]]) -> None:
     plt.title(
         f"Runtime | Number of Instances = {instances[0]}")
     print("[PLOT] Creating line graph")
-    plt.savefig("./temp/line.png")
+    plt.savefig("./temp/line.png", dpi=500)
 
 
 def has_multiple_n(timestamp_list: list[list[str]], field=instances_index) -> bool:

@@ -10,5 +10,6 @@ public enum LOGTAG {
     ERROR,
     BLANK,
     SIMPLE,
-    REBUILD
+    REBUILD,
+    TEST
 }

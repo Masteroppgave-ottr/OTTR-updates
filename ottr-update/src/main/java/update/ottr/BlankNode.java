@@ -232,7 +232,7 @@ public class BlankNode {
 
         try {
             FusekiInterface fi = new FusekiInterface(log);
-            if (deleteInstancesString != "") {
+            if (deleteInstancesString != null) {
                 UpdateRequest deleteRequest = createDeleteRequest(deleteInstancesString, tm);
                 fi.updateLocalDB(deleteRequest, dbURL);
             }
