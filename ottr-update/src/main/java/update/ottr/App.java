@@ -58,14 +58,14 @@ public class App {
         String[] solutions = args[6].split(", ");
 
         LOGTAG[] logLevels = {
-                // LOGTAG.DEFAULT,
-                LOGTAG.TEST,
-                // LOGTAG.DEBUG,
-                // LOGTAG.FUSEKI,
+                LOGTAG.DEFAULT,
+                LOGTAG.DEBUG,
+                LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 // LOGTAG.WARNING,
-                // LOGTAG.ERROR,
+                LOGTAG.ERROR,
+                LOGTAG.DUPLICATE,
                 // LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
@@ -94,7 +94,7 @@ public class App {
             System.out.println("Running default mode");
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
-            populateDB(log, fi, old_instance_fileName, new_instance_fileName, tm, dbURL);
+            // populateDB(log, fi, new_instance_fileName, tm, dbURL);
 
             Diff d = new Diff(log);
             d.readDiff(old_instance_fileName, new_instance_fileName);
@@ -121,8 +121,8 @@ public class App {
             Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
             // INSERT YOUR CODE HERE
-            BlankNode b = new BlankNode(log, dbURL, timer);
-            b.runBlankNodeUpdate(old_instance_fileName, new_instance_fileName, tm, 0, 0);
+            Duplicates dup = new Duplicates(log, dbURL, timer, tm);
+            dup.insertModel(oldModel);
         }
 
         if (mode.equals("n=instances")) {

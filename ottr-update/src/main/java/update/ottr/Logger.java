@@ -19,6 +19,7 @@ public class Logger {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_ORANGE = "\u001B[38;5;208m";
+    public static final String ANSI_TURQUOISE = "\u001B[38;5;51m";
     public static final String ANSI_GREY = "\u001B[38;5;244m";
 
     public Logger(ArrayList<LOGTAG> activeTags) {
@@ -61,6 +62,8 @@ public class Logger {
                 System.out.println(ANSI_GREEN + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.BLANK || tag == LOGTAG.SIMPLE || tag == LOGTAG.REBUILD) {
                 System.out.println(ANSI_ORANGE + "[" + tag + "]" + ANSI_RESET + message);
+            } else if (tag == LOGTAG.DUPLICATE) {
+                System.out.println(ANSI_TURQUOISE + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.TEST) {
                 System.out.println(ANSI_GREY + "[" + tag + "]" + ANSI_RESET + message);
             } else {
