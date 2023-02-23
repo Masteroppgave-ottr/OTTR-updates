@@ -196,7 +196,7 @@ def create_line_graph_nInstances(timestamp_list: list[list[str]]) -> None:
     plt.legend(solutions)
     plt.title(
         f"Runtime | Number of changes = {changes[0]}")
-    print("[PLOT] Creating line graph Æ")
+    print("[PLOT] Creating line graph")
     plt.savefig("./temp/line.png", dpi=500)
 
 
