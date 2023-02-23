@@ -33,24 +33,10 @@ public class Duplicates {
   public void insertModel(Model model) {
 
     for (Statement statement : model.listStatements().toList()) {
-      log.print(logLevel, statement + "");
-    }
+      Property countPredicate = model.getProperty("http://example.org/count");
+      Resource innerTriple = model.createResource(statement);
+      model.add(innerTriple, countPredicate, "1^^xsd:integer");
 
-    for (Statement statement : model.listStatements().toList()) {
-      Resource subject = statement.getSubject();
-      Property predicate = statement.getPredicate();
-      RDFNode object = statement.getObject();
-      // log.print(logLevel, statement + "");
-
-      Resource r = new ResourceImpl("<" + subject + " " + predicate + " " + object + ">");
-      model.add(r, predicate, object);
-
-    }
-
-    log.print(logLevel, "after:");
-
-    for (Statement statement : model.listStatements().toList()) {
-      log.print(logLevel, statement + "");
     }
 
     UpdateRequest request = new UpdateBuilder().addInsert(model).buildRequest();
