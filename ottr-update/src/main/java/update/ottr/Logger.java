@@ -2,6 +2,9 @@ package update.ottr;
 
 import java.util.ArrayList;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
+
 public class Logger {
     public ArrayList<LOGTAG> activeTags;
     public boolean disabled;
@@ -17,6 +20,7 @@ public class Logger {
     public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_ORANGE = "\u001B[38;5;208m";
     public static final String ANSI_TURQUOISE = "\u001B[38;5;51m";
+    public static final String ANSI_GREY = "\u001B[38;5;244m";
 
     public Logger(ArrayList<LOGTAG> activeTags) {
         if (activeTags == null) {
@@ -25,6 +29,13 @@ public class Logger {
             this.activeTags = activeTags;
         }
         this.disabled = false;
+    }
+
+    public void printModel(LOGTAG tag, Model model) {
+        // print the triples in the model each triple on a new line
+        for (Statement line : model.listStatements().toList()) {
+            print(tag, line.toString());
+        }
     }
 
     /**
@@ -53,6 +64,8 @@ public class Logger {
                 System.out.println(ANSI_ORANGE + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.DUPLICATE) {
                 System.out.println(ANSI_TURQUOISE + "[" + tag + "]" + ANSI_RESET + message);
+            } else if (tag == LOGTAG.TEST) {
+                System.out.println(ANSI_GREY + "[" + tag + "]" + ANSI_RESET + message);
             } else {
                 System.out.println("[" + tag + "] " + message);
             }

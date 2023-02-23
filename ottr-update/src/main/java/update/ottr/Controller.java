@@ -13,7 +13,7 @@ public class Controller {
     String dbURL;
     TemplateManager tm;
     String baseDBFileName;
-    LOGTAG logLevel = LOGTAG.BLANK;
+    LOGTAG logLevel = LOGTAG.TEST;
     FusekiInterface fuseki;
 
     private boolean contains(String[] arr, String targetValue) {
@@ -91,19 +91,31 @@ public class Controller {
             }
 
             if (this.contains(solutions, Solutions.SIMPLE + "")) {
+                log.print(logLevel, "START simple update for " + n + " instances");
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
                 simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
                         Integer.parseInt(n), Integer.parseInt(changes));
+                log.print(logLevel, "DONE  simple update for " + n + " instances");
             }
             if (contains(solutions, Solutions.BLANK + "")) {
+                log.print(logLevel, "START blank node update for " + n + " instances");
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
                 blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
                         Integer.parseInt(changes));
+                log.print(logLevel, "DONE  blank node update for " + n + " instances");
             }
             if (contains(solutions, Solutions.REBUILD + "")) {
+                log.print(logLevel, "START rebuild update for " + n + " instances");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
                 compareGraphs("Updated", "Rebuild");
+                log.print(logLevel, "DONE  rebuild update for " + n + " instances");
+            }
+
+            try {
+                timer.writeSplitsToFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -111,30 +123,42 @@ public class Controller {
     public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances) {
         String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
         OttrInterface ottrInterface = new OttrInterface(log);
-        Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
         for (int n : changes) {
+            String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
+            Model newModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
             try {
-                fuseki.resetDb(baseModel, dbURL);
+                fuseki.resetDb(newModel, dbURL);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
-
             if (contains(solutions, Solutions.SIMPLE + "")) {
+                log.print(logLevel, "START simple update for " + n + " changes");
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
                 simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
                         Integer.parseInt(numInstances), n);
+                log.print(logLevel, "DONE  simple update for " + n + " changes");
             }
             if (contains(solutions, Solutions.BLANK + "")) {
+                log.print(logLevel, "START blank node update for " + n + " changes");
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
-                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(numInstances),
+                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm,
+                        Integer.parseInt(numInstances),
                         n);
+                log.print(logLevel, "DONE  blank node update for " + n + " changes");
             }
             if (contains(solutions, Solutions.REBUILD + "")) {
+                log.print(logLevel, "START rebuild update for " + n + " changes");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
                 compareGraphs("Updated", "Rebuild");
+                log.print(logLevel, "DONE  rebuild update for " + n + " changes");
+            }
+
+            try {
+                timer.writeSplitsToFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

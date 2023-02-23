@@ -11,5 +11,6 @@ public enum LOGTAG {
     BLANK,
     DUPLICATE,
     SIMPLE,
-    REBUILD
+    REBUILD,
+    TEST
 }
