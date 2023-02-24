@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.RDFDataMgr;
@@ -41,6 +42,29 @@ public class FusekiInterface {
             e.printStackTrace();
         }
         return triples;
+    }
+
+    public int queryLocalDB(Query query, String dbURL) throws IOException {
+        URL url = new URL(dbURL + "Updated/get");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/sparql-update");
+
+        con.setDoOutput(true);
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+
+        log.print(logLevel, "Sending to endpoint " + url);
+        log.print(logLevel, query.toString());
+
+        // write query to output stream
+        out.writeBytes(query.toString());
+
+        out.flush();
+        out.close();
+
+        int res = con.getResponseCode();
+        log.print(logLevel, "Response Code : " + res);
+        return res;
     }
 
     /**
