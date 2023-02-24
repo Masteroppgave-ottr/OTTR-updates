@@ -49,11 +49,10 @@ public class Duplicates {
     selectBuilder.addValueVar("?subject");
     selectBuilder.addValueVar("?predicate");
     selectBuilder.addValueVar("?object");
-    Var subject = Var.alloc("geir");
-    Var predicate = Var.alloc("is");
-    Var object = Var.alloc("old");
-    selectBuilder.addValueRow(subject, predicate, object);
-    selectBuilder.addValueRow(subject, predicate, object);
+
+    for (Statement statement : model.listStatements().toList()) {
+      selectBuilder.addValueRow(statement.getSubject(), statement.getPredicate(), statement.getObject());
+    }
     Query query = selectBuilder.build();
 
     try {
