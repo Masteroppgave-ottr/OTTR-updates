@@ -45,7 +45,7 @@ public class FusekiInterface {
     }
 
     public int queryLocalDB(Query query, String dbURL) throws IOException {
-        URL url = new URL(dbURL + "Updated/get");
+        URL url = new URL(dbURL + "Updated");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/sparql-update");

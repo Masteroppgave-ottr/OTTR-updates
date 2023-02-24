@@ -44,20 +44,17 @@ public class Duplicates {
         .addVar("subject")
         .addVar("predicate")
         .addVar("object")
-        .addWhere("?s", "?p", "?o");
+        .addWhere("?subject", "?predicate", "?object");
 
-    // selectBuilder.addWhereValueRow("?s", "?p", "?o", "?count");
-    // create a var
+    selectBuilder.addValueVar("?subject");
+    selectBuilder.addValueVar("?predicate");
+    selectBuilder.addValueVar("?object");
     Var subject = Var.alloc("geir");
-    Var predicate = Var.alloc("predicate");
-    Var object = Var.alloc("object");
-    selectBuilder.addValueVar(subject);
-    selectBuilder.addValueVar(predicate);
-    selectBuilder.addValueVar(object);
+    Var predicate = Var.alloc("is");
+    Var object = Var.alloc("old");
+    selectBuilder.addValueRow(subject, predicate, object);
     selectBuilder.addValueRow(subject, predicate, object);
     Query query = selectBuilder.build();
-
-    // create
 
     try {
       fi.queryLocalDB(query, dbURL);
