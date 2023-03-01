@@ -77,6 +77,7 @@ public class App {
         Timer timer = new Timer(tempDir + timerFileName);
         TemplateManager tm = new StandardTemplateManager();
         FusekiInterface fi = new FusekiInterface(log);
+        org.apache.jena.query.ARQ.init();
 
         // read the template file
         MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
@@ -94,7 +95,7 @@ public class App {
             System.out.println("Running default mode");
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
-            // populateDB(log, fi, new_instance_fileName, tm, dbURL);
+            populateDB(log, fi, old_instance_fileName, new_instance_fileName, tm, dbURL);
 
             Diff d = new Diff(log);
             d.readDiff(old_instance_fileName, new_instance_fileName);

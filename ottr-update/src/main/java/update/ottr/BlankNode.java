@@ -165,8 +165,6 @@ public class BlankNode {
     public UpdateRequest createDeleteRequest(String deleteInstancesString, TemplateManager tm) {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
         UpdateBuilder builder = new UpdateBuilder();
-        // null pointer if we dont init this
-        org.apache.jena.query.ARQ.init();
 
         // we expand one instance at a time
         for (String line : deleteInstancesString.split("\n")) {

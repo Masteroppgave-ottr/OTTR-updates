@@ -2,13 +2,9 @@ package update.ottr;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.arq.querybuilder.handlers.ValuesHandler;
-import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
@@ -16,9 +12,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.sparql.core.TriplePath;
-import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.path.Path;
 import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
@@ -40,28 +33,32 @@ public class Duplicates {
   }
 
   public void findDuplicates(Model model) {
-    SelectBuilder selectBuilder = new SelectBuilder()
-        .addVar("subject")
-        .addVar("predicate")
-        .addVar("object")
+    ConstructBuilder constructBuilder = new ConstructBuilder()
+        .addConstruct("?subject", "?predicate", "?object")
+        .addValueVar("subject")
+        .addValueVar("predicate")
+        .addValueVar("object")
         .addWhere("?subject", "?predicate", "?object");
 
-    selectBuilder.addValueVar("?subject");
-    selectBuilder.addValueVar("?predicate");
-    selectBuilder.addValueVar("?object");
+    constructBuilder.addValueVar("?subject");
+    constructBuilder.addValueVar("?predicate");
+    constructBuilder.addValueVar("?object");
 
     for (Statement statement : model.listStatements().toList()) {
-      selectBuilder.addValueRow(statement.getSubject(), statement.getPredicate(), statement.getObject());
+      constructBuilder.addValueRow(statement.getSubject(), statement.getPredicate(), statement.getObject());
     }
-    Query query = selectBuilder.build();
+    Query query = constructBuilder.build();
 
+    Model existingTriples = null;
     try {
-      fi.queryLocalDB(query, dbURL);
+      existingTriples = fi.queryLocalDB(query, dbURL);
     } catch (MalformedURLException e) {
       e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    log.printModel(logLevel, existingTriples);
   }
 
   public void insertModel(Model model) {

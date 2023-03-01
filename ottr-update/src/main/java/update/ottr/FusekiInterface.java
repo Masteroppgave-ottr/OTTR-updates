@@ -1,15 +1,12 @@
 package update.ottr;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.jena.atlas.json.io.parser.JSONParser;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -49,34 +46,22 @@ public class FusekiInterface {
         return triples;
     }
 
-    /**
-     * Read the response from a GET request to the Fuseki server.
-     * The response is parsed into a JSON object.
-     */
-    private void parseGetToJson(HttpURLConnection connection) throws IOException {
-        InputStream is = connection.getInputStream();
-        JSONParser parser = new JSONParser();
-        parser.parse(is);
-
-    }
-
     /*
-     * Read the response from a GET request to the Fuseki server.
+     * Read the response from a CONSTRUCT request to the Fuseki server.
      * The response is parsed into a Jena Model.
      */
-    private Model parseGetRequest(HttpURLConnection connection) throws IOException {
-        org.apache.jena.query.ARQ.init();
-
-        InputStream is = connection.getInputStream();
-        // add the string "@Context { " to the beginning of the response to make it a
-        // valid JSON-LD file
-
+    private Model parseConstructRequest(HttpURLConnection connection) throws IOException {
         Model model = ModelFactory.createDefaultModel();
-        RDFDataMgr.read(model, connection.getInputStream(), Lang.JSONLD);
+        InputStream is = connection.getInputStream();
+        RDFDataMgr.read(model, is, Lang.TTL);
         return model;
     }
 
-    public int queryLocalDB(Query query, String dbURL) throws IOException {
+    /*
+     * Send a SPARQL CONSTRUCT request to the Fuseki server.
+     * The response is parsed into a Model and returned.
+     */
+    public Model queryLocalDB(Query query, String dbURL) throws IOException {
         URL url = new URL(dbURL + "Updated");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
@@ -97,17 +82,7 @@ public class FusekiInterface {
         int res = con.getResponseCode();
         log.print(logLevel, "Response Code : " + res);
 
-        // Model answer = parseGetRequest(con);
-        // log.print(logLevel, answer.toString());
-
-        // print the response body
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-        for (String inputLine = in.readLine(); inputLine != null; inputLine = in.readLine()) {
-            System.out.println(inputLine);
-        }
-
-        return res;
+        return parseConstructRequest(con);
     }
 
     /**
@@ -158,7 +133,7 @@ public class FusekiInterface {
         out.close();
 
         int res = con.getResponseCode();
-        log.print(logLevel, "Reset: " + url + datasetName + "| Response Code: " + res);
+        log.print(logLevel, "Reset: " + url + "| Response Code: " + res);
 
         if (res >= 400) {
             log.print(LOGTAG.WARNING, "Error, response from " + url.toString() + " resulted in a status code " + res
