@@ -18,8 +18,11 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.riot.system.PrefixMap;
+import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.apache.jena.sparql.util.NodeFactoryExtra;
 import org.apache.jena.update.UpdateRequest;
 import org.h2.expression.Variable;
 
@@ -102,19 +105,20 @@ public class Duplicates {
       Resource innerTriple = model.createResource(statement);
       Property countPredicate = model.getProperty("http://example.org/count");
 
-      updateBuilder.addDelete(counterGraph, "k:1", countPredicate, "?old_count");
+      updateBuilder.addDelete(counterGraph, innerTriple, countPredicate, "?old_count");
       updateBuilder.addInsert(counterGraph, innerTriple, countPredicate, "?new_count");
       try {
-        whereBuilder.addBind("IF (BOUND (?old_count), ?old_count + 1, 1)",
+        whereBuilder.addBind("IF (BOUND (?old_count), ?old_count + 1, 3)",
             "?new_count");
         // create a URI from innerTriple
 
         log.print(LOGTAG.DEBUG, statement.toString());
 
+        // TODO this should not be a string! This is a hack!
         Resource innerTripleString = model.createResource("< <" +
             statement.getSubject().toString() + "> <"
-            + statement.getPredicate().toString() + "> \""
-            + statement.getObject().toString() + "\" >");
+            + statement.getPredicate().toString() + "> <"
+            + statement.getObject() + "> >");
 
         log.print(LOGTAG.DEBUG, "inner triple        " + innerTriple.toString());
         log.print(LOGTAG.DEBUG, "inner triple string " +
@@ -130,6 +134,14 @@ public class Duplicates {
     updateBuilder.addWhere(whereBuilder);
     UpdateRequest request = updateBuilder.buildRequest();
     log.print(LOGTAG.DEBUG, "request:\n" + request.toString());
+
+    try {
+      fi.updateLocalDB(request, dbURL);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public void insertModel(Model model) {
