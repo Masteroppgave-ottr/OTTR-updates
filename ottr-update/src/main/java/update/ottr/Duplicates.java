@@ -106,12 +106,9 @@ public class Duplicates {
       Property countPredicate = model.getProperty("http://example.org/count");
 
       updateBuilder.addDelete(counterGraph, innerTriple, countPredicate, "?old_count");
-      updateBuilder.addInsert(counterGraph, innerTriple, countPredicate, "?new_count");
+      updateBuilder.addInsert(counterGraph, innerTriple, countPredicate,
+          "?new_count");
       try {
-        whereBuilder.addBind("IF (BOUND (?old_count), ?old_count + 1, 3)",
-            "?new_count");
-        // create a URI from innerTriple
-
         log.print(LOGTAG.DEBUG, statement.toString());
 
         // TODO this should not be a string! This is a hack!
@@ -125,6 +122,8 @@ public class Duplicates {
             innerTripleString.toString());
 
         whereBuilder.addOptional(innerTripleString, countPredicate, "?old_count");
+        whereBuilder.addBind("IF (BOUND (?old_count), ?old_count + 1, 1)",
+            "?new_count");
       } catch (ParseException e) {
         e.printStackTrace();
         System.exit(1);
@@ -132,6 +131,7 @@ public class Duplicates {
     }
 
     updateBuilder.addWhere(whereBuilder);
+
     UpdateRequest request = updateBuilder.buildRequest();
     log.print(LOGTAG.DEBUG, "request:\n" + request.toString());
 
