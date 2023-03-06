@@ -3,14 +3,12 @@ package update.ottr;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.arq.querybuilder.clauses.WhereClause;
-import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -18,14 +16,8 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.riot.system.PrefixMap;
-import org.apache.jena.shared.PrefixMapping;
-import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import org.apache.jena.sparql.util.NodeFactoryExtra;
 import org.apache.jena.update.UpdateRequest;
-import org.h2.expression.Variable;
-
 import xyz.ottr.lutra.TemplateManager;
 
 public class Duplicates {
@@ -104,9 +96,9 @@ public class Duplicates {
 
       Resource innerTriple = model.createResource(statement);
       Property countPredicate = model.getProperty("http://example.org/count");
-
-      updateBuilder.addDelete(counterGraph, innerTriple, countPredicate, "?old_count");
-      updateBuilder.addInsert(counterGraph, innerTriple, countPredicate,
+      updateBuilder.with(counterGraph);
+      updateBuilder.addDelete(innerTriple, countPredicate, "?old_count");
+      updateBuilder.addInsert(innerTriple, countPredicate,
           "?new_count");
       try {
         log.print(LOGTAG.DEBUG, statement.toString());
@@ -115,14 +107,13 @@ public class Duplicates {
         Resource innerTripleString = model.createResource("< <" +
             statement.getSubject().toString() + "> <"
             + statement.getPredicate().toString() + "> <"
-            + statement.getObject() + "> >");
+            + statement.getObject() + "> >"); // vi vet ikke at dette er et tall
 
         log.print(LOGTAG.DEBUG, "inner triple        " + innerTriple.toString());
         log.print(LOGTAG.DEBUG, "inner triple string " +
             innerTripleString.toString());
-
         whereBuilder.addOptional(innerTripleString, countPredicate, "?old_count");
-        whereBuilder.addBind("IF (BOUND (?old_count), ?old_count + 1, 1)",
+        whereBuilder.addBind("IF (BOUND(?old_count), ?old_count + 1, 2)",
             "?new_count");
       } catch (ParseException e) {
         e.printStackTrace();
@@ -146,7 +137,7 @@ public class Duplicates {
 
   public void insertModel(Model model) {
     Model duplicateModel = findDuplicates(model);
-    if (duplicateModel != null) {
+    if (duplicateModel != null) { //This will never be null
       log.print(logLevel, "duplicates found");
       findCounterTriples2(duplicateModel);
     }

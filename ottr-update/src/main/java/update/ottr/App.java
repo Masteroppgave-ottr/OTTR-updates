@@ -95,7 +95,7 @@ public class App {
             System.out.println("Running default mode");
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
-            // populateDB(log, fi, old_instance_fileName, new_instance_fileName, tm, dbURL);
+            populateDB(log, fi, old_instance_fileName, new_instance_fileName, tm, dbURL);
 
             Diff d = new Diff(log);
             d.readDiff(old_instance_fileName, new_instance_fileName);
