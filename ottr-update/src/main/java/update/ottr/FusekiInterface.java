@@ -13,6 +13,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
@@ -184,6 +185,10 @@ public class FusekiInterface {
         res = putModel(oldModel, dbURL, "Original");
         res = putModel(oldModel, dbURL, "Updated");
         res = putModel(newModel, dbURL, "Updated");
+
+        UpdateRequest update = UpdateFactory.create("INSERT DATA { GRAPH <localhost:3030/updated/count> { <http://example.com/ignoreMe> <http://example.com/ignoreMe> <http://example.com/ignoreMe> } }");
+
+        updateLocalDB(update, dbURL);
 
         return res;
 

@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# load variables
-source temp/variables
+port=$1
+path_to_db=$2
 
-# Create rdf file with lutra
-cd "$temp_files"
-java -jar "$lutra" --mode expand --library "$templates" --libraryFormat stottr --inputFormat stottr "$old_instances" -o "$output"
+# load variables
+# source temp/variables
 
 # create datasets if not defined and load data after server is started
 sleep 5 &&
@@ -15,15 +14,11 @@ curl --location --request POST "http://localhost:$port/$/datasets?dbName=Rebuild
 
 curl --location --request POST "http://localhost:$port/$/datasets?dbName=Updated&dbType=mem" &&
 
-curl --location --request PUT "http://localhost:$port/Original" \
---header 'Content-Type: text/turtle' \
---data-binary "@$temp_files/$output"&&
-
-
-curl --location --request PUT "http://localhost:$port/Updated" \
---header 'Content-Type: text/turtle' \
---data-binary "@$temp_files/$output"&
-
+"$path_to_db"/bin/s-update --service=http://localhost:$port/Updated "INSERT DATA {
+    GRAPH <localhost:3030/updated/count> {
+        <http://example.org/ignoreMe> <http://example.org/ignoreMe> <http://example.org/ignoreMe> .
+    }
+}" &
 # start fuseki-server on port 3030
 cd "$path_to_db"
 ./fuseki-server --port $port --update 

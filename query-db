@@ -8,5 +8,6 @@ if [ "$1" != "Original" ] && [ "$1" != "Rebuild" ] && [ "$1" != "Updated" ]; the
     exit 1
 fi
 
+# "$path_to_bin"/s-update --service=http://localhost:$port/$1 --update="$temp_files/$updateQuery"
 "$path_to_bin"/s-query --service=http://localhost:$port/$1 --query="$temp_files/$query"
 
