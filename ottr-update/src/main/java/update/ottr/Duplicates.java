@@ -8,12 +8,9 @@ import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -36,6 +33,10 @@ public class Duplicates {
     this.fi = new FusekiInterface(log);
   }
 
+  /**
+   * Queries the triple store for all triples in the model.
+   * The triples that already exist in the triple store are returned in a model.
+   */
   public Model findDuplicates(Model model) {
     ConstructBuilder constructBuilder = new ConstructBuilder()
         .addConstruct("?subject", "?predicate", "?object")
@@ -66,27 +67,30 @@ public class Duplicates {
     return duplicateModel;
   }
 
-  private void findCounterTriples(Model model) {
-    Model counterModel = ModelFactory.createDefaultModel();
-    for (Statement statement : model.listStatements().toList()) {
-      log.print(logLevel, "handling statement: " + statement);
-      Property countPredicate = model.getProperty("http://example.org/count");
-      Resource innerTriple = model.createResource(statement);
-      RDFNode countVariable = model.createResource("?count");
-      counterModel.add(innerTriple, countPredicate, countVariable);
+  /**
+   * Turns a statement into a resource that with string manipulation
+   * WARNING: This is a hack and does not take blank nodes into consideration.
+   */
+  private Resource createStringResourceFromStatement(Statement statement, Model model) {
+    String object = statement.getObject().toString();
+    if (statement.getObject().isLiteral()) {
+      object = "'" + statement.getObject().asLiteral().getLexicalForm() + "'";
+    } else {
+      object = "<" + object + ">";
     }
 
-    UpdateBuilder updateBuilder = new UpdateBuilder();
-    Node withGraph = NodeFactory.createURI("localhost:3030/updated/count");
-    updateBuilder.addDelete(withGraph, counterModel);
-    updateBuilder.addInsert(withGraph, counterModel);
-    updateBuilder.addWhere("?s", "?p", "?o");
-    UpdateRequest request = updateBuilder.buildRequest();
-
-    log.print(LOGTAG.DEBUG, "request:\n" + request.toString());
+    return model.createResource("< <" + statement.getSubject().toString() + "> <"
+        + statement.getPredicate().toString() + "> " + object + " >");
   }
 
-  private void findCounterTriples2(Model model) {
+  /**
+   * Increments the counter of triples that already exist in the triple store.
+   * If no counter exists, it is created and set to 2.
+   * 
+   * @param model the model containing the triples that already exist in the
+   *              triple store
+   */
+  private void incrementCounterTriples(Model model) {
     UpdateBuilder updateBuilder = new UpdateBuilder();
     Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
     WhereBuilder whereBuilder = new WhereBuilder();
@@ -103,11 +107,7 @@ public class Duplicates {
       try {
         log.print(LOGTAG.DEBUG, statement.toString());
 
-        // TODO this should not be a string! This is a hack!
-        Resource innerTripleString = model.createResource("< <" +
-            statement.getSubject().toString() + "> <"
-            + statement.getPredicate().toString() + "> <"
-            + statement.getObject() + "> >"); // vi vet ikke at dette er et tall
+        Resource innerTripleString = createStringResourceFromStatement(statement, model);
 
         log.print(LOGTAG.DEBUG, "inner triple        " + innerTriple.toString());
         log.print(LOGTAG.DEBUG, "inner triple string " +
@@ -135,31 +135,29 @@ public class Duplicates {
     }
   }
 
+  /**
+   * Inserts a model into the triple store.
+   * If the model contains triples that already exist in the triple store,
+   * the counter of these triples is incremented.
+   * 
+   * @param model the model to be inserted into the triple store
+   */
   public void insertModel(Model model) {
+    // look for duplicates and increment their counter if necessary
     Model duplicateModel = findDuplicates(model);
-    if (duplicateModel != null) { //This will never be null
+    if (duplicateModel != null && duplicateModel.size() > 0) {
       log.print(logLevel, "duplicates found");
-      findCounterTriples2(duplicateModel);
+      incrementCounterTriples(duplicateModel);
+    } else {
+      log.print(logLevel, "no duplicates found");
     }
 
-    // for (Statement statement : model.listStatements().toList()) {
-    // Property countPredicate = model.getProperty("http://example.org/count");
-    // Resource innerTriple = model.createResource(statement);
-    // model.add(innerTriple, countPredicate, "1^^xsd:integer");
-    // }
-
-    // UpdateBuilder updateBuilder = new UpdateBuilder();
-    // Node withGraph = NodeFactory.createURI("localhost:3030/updated/count");
-    // updateBuilder.addInsert(withGraph, model);
-    // UpdateRequest request = updateBuilder.buildRequest();
-
-    // try {
-    // fi.updateLocalDB(request, dbURL);
-    // } catch (MalformedURLException e) {
-    // e.printStackTrace();
-    // } catch (IOException e) {
-    // e.printStackTrace();
-    // }
-
+    // insert the model into the triple store
+    UpdateRequest request = new UpdateBuilder().addInsert(model).buildRequest();
+    try {
+      fi.updateLocalDB(request, dbURL);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }
