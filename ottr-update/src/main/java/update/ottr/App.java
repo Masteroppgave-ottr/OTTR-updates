@@ -124,7 +124,8 @@ public class App {
             // INSERT YOUR CODE HERE
             Duplicates dup = new Duplicates(log, dbURL, timer, tm);
             // dup.findDuplicates(oldModel);
-            dup.insertModel(oldModel);
+            // dup.insertModel(oldModel);
+            dup.deleteModel(oldModel);
         }
 
         if (mode.equals("n=instances")) {

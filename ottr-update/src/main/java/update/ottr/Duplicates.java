@@ -4,15 +4,20 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.arq.querybuilder.ExprFactory;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.arq.querybuilder.clauses.WhereClause;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 import xyz.ottr.lutra.TemplateManager;
@@ -160,4 +165,68 @@ public class Duplicates {
       e.printStackTrace();
     }
   }
+
+  /**
+   * Given a model of triples find the triples that already has a counter in the
+   * triple store.
+   */
+  private Model findCounterTriples(Model model) {
+    ConstructBuilder constructBuilder = new ConstructBuilder()
+        .addConstruct("?subject", "?predicate", "?object")
+        .addWhere("?subject", "?predicate", "?object")
+        .from("localhost:3030/updated/count");
+
+    String tripleString = "";
+    for (Statement statement : model.listStatements().toList()) {
+      Resource innerTriple = createStringResourceFromStatement(statement, model);
+      tripleString += "<" + innerTriple.toString() + "> ,";
+    }
+    tripleString = tripleString.substring(0, tripleString.length() - 1);
+
+    log.print(LOGTAG.DEBUG, tripleString);
+    try {
+      constructBuilder.addFilter("?subject IN (" + tripleString + ")");
+    } catch (ParseException e) {
+      log.print(LOGTAG.ERROR, "error while creating the filter part of the query");
+      e.printStackTrace();
+    }
+
+    Query query = constructBuilder.build();
+    log.print(LOGTAG.DEBUG, "query:\n" + query.toString());
+
+    Model duplicateModel = null;
+    try {
+      duplicateModel = fi.queryLocalDB(query, dbURL);
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    log.printModel(logLevel, duplicateModel);
+    return duplicateModel;
+  }
+
+  private Model rdfRdfStarSetDifference(Model rdfModel, Model rdfStarModel) {
+    Model differenceModel = ModelFactory.createDefaultModel();
+    differenceModel.add(rdfModel);
+    differenceModel.remove(rdfStarModel);
+    return differenceModel;
+  }
+
+  /**
+   * @param model the model to be deleted from the triple store
+   */
+  public void deleteModel(Model model) {
+    // find counter triples
+    Model counterModel = findCounterTriples(model);
+
+    // decrement counter-triples
+
+    // find non-counted triples
+
+    // delete non-counted triples
+
+  }
+
 }
