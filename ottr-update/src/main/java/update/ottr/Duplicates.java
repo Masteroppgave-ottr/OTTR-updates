@@ -251,8 +251,6 @@ public class Duplicates {
 
     String tripleString = "";
     for (Statement statement : model.listStatements().toList()) {
-      // log.print(LOGTAG.DEBUG, statement.toString());
-      // log.print(LOGTAG.DEBUG, statement.getSubject().getStmtTerm().toString());
       Resource innerTriple = createStringResourceFromStatement(statement.getSubject().getStmtTerm(), model);
       tripleString += "<" + innerTriple + "> ,";
     }
