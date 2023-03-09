@@ -248,10 +248,15 @@ public class Duplicates {
     // decrement counter-triples
 
     // find non-counted triples
-    Model toDeleteModel = rdfRdfStarSetDifference(model, counterModel);
+    Model nonDuplicatesModel = rdfRdfStarSetDifference(model, counterModel);
 
     // delete non-counted triples
-
+    UpdateRequest request = new UpdateBuilder().addDelete(nonDuplicatesModel).buildRequest();
+    try {
+      fi.updateLocalDB(request, dbURL);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
 }
