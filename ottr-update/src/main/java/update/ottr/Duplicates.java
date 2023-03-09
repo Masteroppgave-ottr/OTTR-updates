@@ -238,6 +238,70 @@ public class Duplicates {
     return differenceModel;
   }
 
+  private void decrementCounterTriples(Model model) {
+    UpdateBuilder updateBuilder = new UpdateBuilder();
+    WhereBuilder whereBuilder = new WhereBuilder();
+
+    log.print(LOGTAG.DEBUG, "model:\n" + model.toString());
+
+    String tripleString = "";
+    for (Statement statement : model.listStatements().toList()) {
+      // log.print(LOGTAG.DEBUG, statement.toString());
+      // log.print(LOGTAG.DEBUG, statement.getSubject().getStmtTerm().toString());
+      Resource innerTriple = createStringResourceFromStatement(statement.getSubject().getStmtTerm(), model);
+      tripleString += "<" + innerTriple + "> ,";
+    }
+    tripleString = tripleString.substring(0, tripleString.length() - 1);
+    log.print(LOGTAG.DEBUG, "the STRING ");
+    log.print(LOGTAG.DEBUG, tripleString);
+
+    try {
+      whereBuilder.addWhere("?subject", "?predicate", "?old_count")
+          .addFilter("?subject IN (" + tripleString + ")")
+          .addBind("?old_count - 1", "?new_count");
+    } catch (ParseException e) {
+      log.print(LOGTAG.ERROR, "could not create the filter part of the query");
+      e.printStackTrace();
+    }
+
+    Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
+    updateBuilder.with(
+        counterGraph)
+        .addDelete("?subject", "?predicate", "?old_count")
+        .addInsert("?subject", "?predicate", "?new_count")
+        .addWhere(whereBuilder);
+
+    UpdateRequest request = updateBuilder.buildRequest();
+
+    log.print(LOGTAG.DEBUG, "request:\n" + request.toString());
+
+    try {
+      fi.updateLocalDB(request, dbURL);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    // delete all triples from the counter graph that have a counter less than 2
+    UpdateBuilder deleteBuilder = new UpdateBuilder();
+    try {
+      deleteBuilder.with(counterGraph)
+          .addDelete("?subject", "?predicate", "?duplicates")
+          .addWhere("?subject", "?predicate", "?duplicates")
+          .addFilter("?duplicates < 2");
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    UpdateRequest deleteRequest = deleteBuilder.buildRequest();
+    log.print(LOGTAG.DEBUG, "deleteRequest:\n" + deleteRequest.toString());
+
+    try {
+      fi.updateLocalDB(deleteRequest, dbURL);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
   /**
    * @param model the model to be deleted from the triple store
    */
@@ -246,17 +310,19 @@ public class Duplicates {
     Model counterModel = findCounterTriples(model);
 
     // decrement counter-triples
+    decrementCounterTriples(counterModel);
 
     // find non-counted triples
-    Model nonDuplicatesModel = rdfRdfStarSetDifference(model, counterModel);
+    // Model nonDuplicatesModel = rdfRdfStarSetDifference(model, counterModel);
 
-    // delete non-counted triples
-    UpdateRequest request = new UpdateBuilder().addDelete(nonDuplicatesModel).buildRequest();
-    try {
-      fi.updateLocalDB(request, dbURL);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    // // delete non-counted triples
+    // UpdateRequest request = new UpdateBuilder().addDelete(nonDuplicatesModel)
+    // .buildRequest();
+    // try {
+    // fi.updateLocalDB(request, dbURL);
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
   }
 
 }
