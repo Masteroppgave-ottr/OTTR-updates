@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
-import org.apache.jena.arq.querybuilder.ExprFactory;
-import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.arq.querybuilder.clauses.WhereClause;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
@@ -18,10 +15,8 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
-import org.apache.jena.vocabulary.RDF;
 
 import xyz.ottr.lutra.TemplateManager;
 
@@ -313,7 +308,9 @@ public class Duplicates {
     Model counterModel = findCounterTriples(model);
 
     // decrement counter-triples
-    decrementCounterTriples(counterModel);
+    if (counterModel.size() > 0) {
+      decrementCounterTriples(counterModel);
+    }
 
     // find non-counted triples and delete them
     Model nonDuplicatesModel = rdfRdfStarSetDifference(model, counterModel);

@@ -8,10 +8,12 @@ import xyz.ottr.lutra.system.Message.Severity;
 
 import org.apache.jena.rdf.model.Model;
 
-import java.io.FileNotFoundException;
 //java
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class App {
 
@@ -48,6 +50,11 @@ public class App {
         return inserted_triples;
     }
 
+    private static void userBreakpoint(Scanner scanner) {
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine();
+    }
+
     public static void main(String[] args) {
         String mode = args[0];
         String tempDir = args[1];
@@ -56,6 +63,7 @@ public class App {
         String timerFileName = args[4];
         String dbURL = args[5];
         String[] solutions = args[6].split(", ");
+        Scanner scanner = new Scanner(System.in);
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
@@ -96,6 +104,11 @@ public class App {
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
             // populateDB(log, fi, old_instance_fileName, new_instance_fileName, tm, dbURL);
+            // try {
+            // fi.clearDb(dbURL);
+            // } catch (IOException e) {
+            // e.printStackTrace();
+            // }
 
             Diff d = new Diff(log);
             d.readDiff(old_instance_fileName, new_instance_fileName);
@@ -122,10 +135,16 @@ public class App {
             Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
             // INSERT YOUR CODE HERE
+
             Duplicates dup = new Duplicates(log, dbURL, timer, tm);
-            // dup.findDuplicates(oldModel);
+            dup.insertModel(oldModel);
+            userBreakpoint(scanner);
+            dup.insertModel(oldModel);
+
             // dup.insertModel(oldModel);
-            dup.deleteModel(oldModel);
+            // dup.insertModel(oldModel);
+            // dup.insertModel(oldModel);
+
         }
 
         if (mode.equals("n=instances")) {
