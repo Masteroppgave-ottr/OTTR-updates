@@ -233,6 +233,24 @@ public class Duplicates {
     return differenceModel;
   }
 
+  private void deleteCountersLessThan(String n, Node graph) throws MalformedURLException, IOException {
+    UpdateBuilder deleteBuilder = new UpdateBuilder();
+
+    try {
+      deleteBuilder.with(graph)
+          .addDelete("?subject", "?predicate", "?duplicates")
+          .addWhere("?subject", "?predicate", "?duplicates")
+          .addFilter("?duplicates < " + n);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    UpdateRequest deleteRequest = deleteBuilder.buildRequest();
+    log.print(LOGTAG.DEBUG, "deleteRequest:\n" + deleteRequest.toString());
+
+    fi.updateLocalDB(deleteRequest, dbURL);
+  }
+
   /**
    * Decrements the counter of the triples in the model.
    * If the count is decremented to 1, the triple is removed from the triple
@@ -280,22 +298,10 @@ public class Duplicates {
     }
 
     // delete all triples from the counter graph that have a counter less than 2
-    UpdateBuilder deleteBuilder = new UpdateBuilder();
     try {
-      deleteBuilder.with(counterGraph)
-          .addDelete("?subject", "?predicate", "?duplicates")
-          .addWhere("?subject", "?predicate", "?duplicates")
-          .addFilter("?duplicates < 2");
-    } catch (ParseException e) {
-      e.printStackTrace();
-    }
-
-    UpdateRequest deleteRequest = deleteBuilder.buildRequest();
-    log.print(LOGTAG.DEBUG, "deleteRequest:\n" + deleteRequest.toString());
-
-    try {
-      fi.updateLocalDB(deleteRequest, dbURL);
+      deleteCountersLessThan("2", counterGraph);
     } catch (IOException e) {
+      log.print(LOGTAG.ERROR, "Error while deleting triples with count < 2 from the counter graph");
       e.printStackTrace();
     }
   }
