@@ -238,6 +238,11 @@ public class Duplicates {
     return differenceModel;
   }
 
+  /**
+   * Decrements the counter of the triples in the model.
+   * If the count is decremented to 1, the triple is removed from the triple
+   * store.
+   */
   private void decrementCounterTriples(Model model) {
     UpdateBuilder updateBuilder = new UpdateBuilder();
     WhereBuilder whereBuilder = new WhereBuilder();
@@ -312,17 +317,15 @@ public class Duplicates {
     // decrement counter-triples
     decrementCounterTriples(counterModel);
 
-    // find non-counted triples
-    // Model nonDuplicatesModel = rdfRdfStarSetDifference(model, counterModel);
-
-    // // delete non-counted triples
-    // UpdateRequest request = new UpdateBuilder().addDelete(nonDuplicatesModel)
-    // .buildRequest();
-    // try {
-    // fi.updateLocalDB(request, dbURL);
-    // } catch (IOException e) {
-    // e.printStackTrace();
-    // }
+    // find non-counted triples and delete them
+    Model nonDuplicatesModel = rdfRdfStarSetDifference(model, counterModel);
+    UpdateRequest request = new UpdateBuilder().addDelete(nonDuplicatesModel)
+        .buildRequest();
+    try {
+      fi.updateLocalDB(request, dbURL);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
 }
