@@ -17,9 +17,12 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.jena.vocabulary.RDF;
+
 import xyz.ottr.lutra.TemplateManager;
 
 public class Duplicates {
@@ -208,9 +211,30 @@ public class Duplicates {
   }
 
   private Model rdfRdfStarSetDifference(Model rdfModel, Model rdfStarModel) {
+
+    // create a model from only the subject of all triples in rdfStarModel
+    Model subjectModel = ModelFactory.createDefaultModel();
+    StmtIterator rdfStarStmtIterator = rdfStarModel.listStatements();
+    while (rdfStarStmtIterator.hasNext()) {
+      Statement rdfStarStatement = rdfStarStmtIterator.next();
+
+      Resource subjectResource = rdfStarStatement.getSubject();
+      Statement subjectStatement = subjectResource.getStmtTerm();
+      log.print(LOGTAG.DEBUG, subjectStatement.toString());
+      subjectModel.add(subjectStatement);
+    }
+
+    log.print(LOGTAG.DEBUG, "subjectModel:");
+    log.printModel(LOGTAG.DEBUG, subjectModel);
+    log.print(LOGTAG.DEBUG, "rdfModel:");
+    log.printModel(LOGTAG.DEBUG, rdfModel);
+
     Model differenceModel = ModelFactory.createDefaultModel();
     differenceModel.add(rdfModel);
-    differenceModel.remove(rdfStarModel);
+    differenceModel.remove(subjectModel);
+    log.print(LOGTAG.DEBUG, "differenceModel:");
+    log.printModel(LOGTAG.DEBUG, differenceModel);
+
     return differenceModel;
   }
 
@@ -224,6 +248,7 @@ public class Duplicates {
     // decrement counter-triples
 
     // find non-counted triples
+    Model toDeleteModel = rdfRdfStarSetDifference(model, counterModel);
 
     // delete non-counted triples
 
