@@ -223,7 +223,6 @@ public class Duplicates {
     }
     tripleString = tripleString.substring(0, tripleString.length() - 1);
 
-    log.print(LOGTAG.DEBUG, tripleString);
     try {
       constructBuilder.addFilter("?subject IN (" + tripleString + ")");
     } catch (ParseException e) {
@@ -232,7 +231,6 @@ public class Duplicates {
     }
 
     Query query = constructBuilder.build();
-    log.print(LOGTAG.DEBUG, "query:\n" + query.toString());
 
     Model duplicateModel = null;
     try {
@@ -257,20 +255,12 @@ public class Duplicates {
 
       Resource subjectResource = rdfStarStatement.getSubject();
       Statement subjectStatement = subjectResource.getStmtTerm();
-      log.print(LOGTAG.DEBUG, subjectStatement.toString());
       subjectModel.add(subjectStatement);
     }
-
-    log.print(LOGTAG.DEBUG, "subjectModel:");
-    log.printModel(LOGTAG.DEBUG, subjectModel);
-    log.print(LOGTAG.DEBUG, "rdfModel:");
-    log.printModel(LOGTAG.DEBUG, rdfModel);
 
     Model differenceModel = ModelFactory.createDefaultModel();
     differenceModel.add(rdfModel);
     differenceModel.remove(subjectModel);
-    log.print(LOGTAG.DEBUG, "differenceModel:");
-    log.printModel(LOGTAG.DEBUG, differenceModel);
 
     return differenceModel;
   }
@@ -288,7 +278,6 @@ public class Duplicates {
     }
 
     UpdateRequest deleteRequest = deleteBuilder.buildRequest();
-    log.print(LOGTAG.DEBUG, "deleteRequest:\n" + deleteRequest.toString());
 
     fi.updateLocalDB(deleteRequest, dbURL);
   }
@@ -302,16 +291,12 @@ public class Duplicates {
     UpdateBuilder updateBuilder = new UpdateBuilder();
     WhereBuilder whereBuilder = new WhereBuilder();
 
-    log.print(LOGTAG.DEBUG, "model:\n" + model.toString());
-
     String tripleString = "";
     for (Statement statement : model.listStatements().toList()) {
       Resource innerTriple = createStringResourceFromStatement(statement.getSubject().getStmtTerm(), model);
       tripleString += "<" + innerTriple + "> ,";
     }
     tripleString = tripleString.substring(0, tripleString.length() - 1);
-    log.print(LOGTAG.DEBUG, "the STRING ");
-    log.print(LOGTAG.DEBUG, tripleString);
 
     try {
       whereBuilder.addWhere("?subject", "?predicate", "?old_count")
@@ -330,8 +315,6 @@ public class Duplicates {
         .addWhere(whereBuilder);
 
     UpdateRequest request = updateBuilder.buildRequest();
-
-    log.print(LOGTAG.DEBUG, "request:\n" + request.toString());
 
     try {
       fi.updateLocalDB(request, dbURL);
