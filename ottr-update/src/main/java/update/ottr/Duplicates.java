@@ -16,6 +16,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -131,9 +132,8 @@ public class Duplicates {
     optionalBindString = optionalBindString.substring(10);
     insertDeleteString += "\n" + optionalBindString;
 
-    log.print(LOGTAG.DEBUG, insertDeleteString);
-
     UpdateRequest request = UpdateFactory.create(insertDeleteString);
+    log.print(logLevel, "incrementing/creating counter triples");
     try {
       fi.updateLocalDB(request, dbURL);
     } catch (IOException e) {
@@ -159,6 +159,7 @@ public class Duplicates {
     }
 
     // insert the model into the triple store
+    log.print(logLevel, "inserting " + model.size() + " triples");
     UpdateRequest request = new UpdateBuilder().addInsert(model).buildRequest();
     try {
       fi.updateLocalDB(request, dbURL);
@@ -202,7 +203,12 @@ public class Duplicates {
       e.printStackTrace();
     }
 
-    log.printModel(logLevel, duplicateModel);
+    if (duplicateModel.size() > 0) {
+      log.print(logLevel, "Found the following duplicates:");
+      log.printModel(logLevel, duplicateModel);
+    } else {
+      log.print(logLevel, "No duplicates found");
+    }
     return duplicateModel;
   }
 
@@ -276,7 +282,7 @@ public class Duplicates {
         .addWhere(whereBuilder);
 
     UpdateRequest request = updateBuilder.buildRequest();
-
+    log.print(logLevel, "decrementing counter triples");
     try {
       fi.updateLocalDB(request, dbURL);
     } catch (IOException e) {
@@ -308,6 +314,8 @@ public class Duplicates {
     Model nonDuplicatesModel = rdfRdfStarSetDifference(model, counterModel);
     UpdateRequest request = new UpdateBuilder().addDelete(nonDuplicatesModel)
         .buildRequest();
+
+    log.print(logLevel, "deleting " + nonDuplicatesModel.size() + " non-duplicates");
     try {
       fi.updateLocalDB(request, dbURL);
     } catch (IOException e) {
@@ -317,6 +325,12 @@ public class Duplicates {
 
   public void runDuplicateUpdate(String pathToOldInstances, String pathToNewInstances, int n,
       int changes) {
+
+    // Insert the old instances and insure that the count is correct before starting
+    log.print(logLevel, "inserting instances from the old Instance file to prepare for the update");
+    Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
+    insertModel(oldModel);
+
     timer.newSplit("start", "duplicate solution", n, changes);
 
     Diff d = new Diff(log);
@@ -343,10 +357,6 @@ public class Duplicates {
     Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString, tm);
     Model deletModel = ottrInterface.expandAndGetModelFromString(deleteInstancesString, tm);
     timer.newSplit("model", "duplicate solution", n, changes);
-
-    if (insertModel != null) {
-      log.print(logLevel, "insert model " + insertModel.toString());
-    }
 
     try {
       if (deleteInstancesString != null) {
