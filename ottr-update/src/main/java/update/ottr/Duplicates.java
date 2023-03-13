@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
@@ -180,6 +181,36 @@ public class Duplicates {
     }
   }
 
+  private void incrementCounterTriples3(Model model) {
+    Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
+    UpdateBuilder updateBuilder = new UpdateBuilder()
+        .addDelete("?subject", "<http://example.org/count>", "?old_count")
+        .addInsert("?subject", "<http://example.org/count>", "?new_count")
+        .with(counterGraph);
+
+    WhereBuilder whereBuilder = new WhereBuilder();
+    whereBuilder.addWhereValueVar("subject");
+    for (Statement statement : model.listStatements().toList()) {
+      whereBuilder.addWhereValueRow(statement.getSubject());
+    }
+
+    try {
+      whereBuilder
+          .addOptional("?subject", "<http://example.org/count>",
+              "?old_count")
+          .addBind("IF (BOUND(?old_count), ?old_count + 1, 2)", "?new_count");
+    } catch (ParseException e) {
+      log.print(LOGTAG.ERROR, "could not create the BIND part of the query");
+      e.printStackTrace();
+    }
+
+    updateBuilder.addWhere(whereBuilder);
+
+    log.print(LOGTAG.DEBUG, "where part:\n" + whereBuilder.build());
+    UpdateRequest query = updateBuilder.buildRequest();
+    log.print(LOGTAG.DEBUG, "query:\n" + query.toString());
+  }
+
   /**
    * Inserts a model into the triple store.
    * If the model contains triples that already exist in the triple store,
@@ -192,7 +223,7 @@ public class Duplicates {
     Model duplicateModel = findDuplicates(model);
     if (duplicateModel != null && duplicateModel.size() > 0) {
       log.print(logLevel, "duplicates found");
-      incrementCounterTriples2(duplicateModel);
+      incrementCounterTriples3(duplicateModel);
     } else {
       log.print(logLevel, "no duplicates found");
     }
