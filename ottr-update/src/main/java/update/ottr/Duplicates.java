@@ -12,11 +12,9 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -325,12 +323,6 @@ public class Duplicates {
 
   public void runDuplicateUpdate(String pathToOldInstances, String pathToNewInstances, int n,
       int changes) {
-
-    // Insert the old instances and insure that the count is correct before starting
-    log.print(logLevel, "inserting instances from the old Instance file to prepare for the update");
-    Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
-    insertModel(oldModel);
-
     timer.newSplit("start", "duplicate solution", n, changes);
 
     Diff d = new Diff(log);

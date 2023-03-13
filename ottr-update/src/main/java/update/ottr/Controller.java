@@ -104,6 +104,23 @@ public class Controller {
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE  blank node update for " + n + " instances");
             }
+            if (contains(solutions, Solutions.DUPLICATE + "")) {
+                log.print(logLevel, "START duplicate update for " + n + " instances");
+                Duplicates duplicates = new Duplicates(log, dbURL, timer, tm);
+
+                // reset the database to the old instances with a correct counter
+                try {
+                    fuseki.clearDb(dbURL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
+                duplicates.insertModel(oldModel);
+
+                duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
+                        Integer.parseInt(changes));
+                log.print(logLevel, "DONE duplicate update for " + n + " instances");
+            }
             if (contains(solutions, Solutions.REBUILD + "")) {
                 log.print(logLevel, "START rebuild update for " + n + " instances");
                 Rebuild rebuild = new Rebuild();
@@ -147,6 +164,23 @@ public class Controller {
                         n);
                 log.print(logLevel, "DONE  blank node update for " + n + " changes");
             }
+            if (contains(solutions, Solutions.DUPLICATE + "")) {
+                log.print(logLevel, "START duplicate update for " + n + " instances");
+                Duplicates duplicates = new Duplicates(log, dbURL, timer, tm);
+
+                // reset the database to the old instances with a correct counter
+                try {
+                    fuseki.clearDb(dbURL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
+                duplicates.insertModel(oldModel);
+
+                duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(numInstances),
+                        n);
+                log.print(logLevel, "DONE duplicate update for " + n + " instances");
+            }
             if (contains(solutions, Solutions.REBUILD + "")) {
                 log.print(logLevel, "START rebuild update for " + n + " changes");
                 Rebuild rebuild = new Rebuild();
@@ -154,7 +188,6 @@ public class Controller {
                 compareGraphs("Updated", "Rebuild");
                 log.print(logLevel, "DONE  rebuild update for " + n + " changes");
             }
-
             try {
                 timer.writeSplitsToFile();
             } catch (IOException e) {

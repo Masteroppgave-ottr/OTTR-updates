@@ -6,7 +6,11 @@ import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.system.MessageHandler;
 import xyz.ottr.lutra.system.Message.Severity;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ResourceFactory;
 
 //java
 import java.io.FileNotFoundException;
@@ -68,7 +72,7 @@ public class App {
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
                 LOGTAG.DEBUG,
-                LOGTAG.FUSEKI,
+                // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 // LOGTAG.WARNING,
@@ -135,15 +139,6 @@ public class App {
             Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
             // INSERT YOUR CODE HERE
-
-            Duplicates dup = new Duplicates(log, dbURL, timer, tm);
-            dup.insertModel(oldModel);
-            userBreakpoint(scanner);
-            dup.insertModel(oldModel);
-
-            // dup.insertModel(oldModel);
-            // dup.insertModel(oldModel);
-            // dup.insertModel(oldModel);
 
         }
 
