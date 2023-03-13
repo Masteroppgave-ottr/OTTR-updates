@@ -1,10 +1,10 @@
 package update.ottr;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
-import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
@@ -17,6 +17,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
@@ -28,6 +29,7 @@ public class Duplicates {
   private TemplateManager tm;
   private LOGTAG logLevel = LOGTAG.DUPLICATE;
   private FusekiInterface fi;
+  private OttrInterface ottrInterface;
 
   public Duplicates(Logger log, String dbURL, Timer timer, TemplateManager tm) {
     this.log = log;
@@ -35,6 +37,7 @@ public class Duplicates {
     this.timer = timer;
     this.tm = tm;
     this.fi = new FusekiInterface(log);
+    this.ottrInterface = new OttrInterface(log);
   }
 
   /**
@@ -87,101 +90,7 @@ public class Duplicates {
         + statement.getPredicate().toString() + "> " + object + " >");
   }
 
-  /**
-   * Increments the counter of triples that already exist in the triple store.
-   * If no counter exists, it is created and set to 2.
-   * 
-   * @param model the model containing the triples that already exist in the
-   *              triple store
-   */
   private void incrementCounterTriples(Model model) {
-    UpdateBuilder updateBuilder = new UpdateBuilder();
-    Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
-    WhereBuilder whereBuilder = new WhereBuilder();
-
-    for (Statement statement : model.listStatements().toList()) {
-      log.print(logLevel, "handling statement: " + statement);
-
-      Resource innerTriple = model.createResource(statement);
-      Property countPredicate = model.getProperty("http://example.org/count");
-      updateBuilder.with(counterGraph);
-      updateBuilder.addDelete(innerTriple, countPredicate, "?old_count");
-      updateBuilder.addInsert(innerTriple, countPredicate,
-          "?new_count");
-      try {
-        log.print(LOGTAG.DEBUG, statement.toString());
-
-        Resource innerTripleString = createStringResourceFromStatement(statement, model);
-
-        log.print(LOGTAG.DEBUG, "inner triple        " + innerTriple.toString());
-        log.print(LOGTAG.DEBUG, "inner triple string " +
-            innerTripleString.toString());
-        whereBuilder.addOptional(innerTripleString, countPredicate, "?old_count");
-        whereBuilder.addBind("IF (BOUND(?old_count), ?old_count + 1, 2)",
-            "?new_count");
-      } catch (ParseException e) {
-        e.printStackTrace();
-        System.exit(1);
-      }
-    }
-
-    updateBuilder.addWhere(whereBuilder);
-
-    UpdateRequest request = updateBuilder.buildRequest();
-    log.print(LOGTAG.DEBUG, "request:\n" + request.toString());
-
-    try {
-      fi.updateLocalDB(request, dbURL);
-    } catch (MalformedURLException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void incrementCounterTriples2(Model model) {
-    UpdateBuilder updateBuilder = new UpdateBuilder();
-    WhereBuilder whereBuilder = new WhereBuilder();
-
-    log.print(LOGTAG.DEBUG, "model:\n" + model.toString());
-
-    String tripleString = "";
-    for (Statement statement : model.listStatements().toList()) {
-      Resource innerTriple = createStringResourceFromStatement(statement, model);
-      tripleString += "<" + innerTriple.toString() + "> ,";
-    }
-    tripleString = tripleString.substring(0, tripleString.length() - 1);
-    log.print(LOGTAG.DEBUG, "the STRING ");
-    log.print(LOGTAG.DEBUG, tripleString);
-
-    try {
-      whereBuilder.addWhere("?subject", "?predicate", "?old_count")
-          .addFilter("?subject IN (" + tripleString + ")")
-          .addBind("IF( BOUND(?old_count), ?old_count + 1, 2)", "?new_count");
-    } catch (ParseException e) {
-      log.print(LOGTAG.ERROR, "could not create the filter part of the query");
-      e.printStackTrace();
-    }
-
-    Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
-    updateBuilder.with(
-        counterGraph)
-        .addDelete("?subject", "?predicate", "?old_count")
-        .addInsert("?subject", "?predicate", "?new_count")
-        .addWhere(whereBuilder);
-
-    UpdateRequest request = updateBuilder.buildRequest();
-
-    log.print(LOGTAG.DEBUG, "request:\n" + request.toString());
-
-    try {
-      fi.updateLocalDB(request, dbURL);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void incrementCounterTriples3(Model model) {
     Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
     UpdateBuilder updateBuilder = new UpdateBuilder()
         .addDelete("?subject", "<http://example.org/count>", "?old_count")
@@ -191,11 +100,13 @@ public class Duplicates {
     WhereBuilder whereBuilder = new WhereBuilder();
     whereBuilder.addWhereValueVar("subject");
     for (Statement statement : model.listStatements().toList()) {
-      whereBuilder.addWhereValueRow(statement.getSubject());
+      Resource innerTriple = createStringResourceFromStatement(statement, model);
+      whereBuilder.addWhereValueRow(innerTriple);
     }
 
+    WhereBuilder optionalBindBuilder = new WhereBuilder();
     try {
-      whereBuilder
+      optionalBindBuilder
           .addOptional("?subject", "<http://example.org/count>",
               "?old_count")
           .addBind("IF (BOUND(?old_count), ?old_count + 1, 2)", "?new_count");
@@ -204,11 +115,30 @@ public class Duplicates {
       e.printStackTrace();
     }
 
-    updateBuilder.addWhere(whereBuilder);
+    updateBuilder.addWhere("?subject", "?predicate", "?object");
+    String insertDeleteString = updateBuilder.buildRequest().toString();
 
-    log.print(LOGTAG.DEBUG, "where part:\n" + whereBuilder.build());
-    UpdateRequest query = updateBuilder.buildRequest();
-    log.print(LOGTAG.DEBUG, "query:\n" + query.toString());
+    // remove the WHERE part
+    insertDeleteString = insertDeleteString.substring(0,
+        insertDeleteString.indexOf("WHERE"));
+    // add the WHERE part from the whereBuilder
+    insertDeleteString += whereBuilder.build().toString();
+    // remove the last curly bracket
+    insertDeleteString = insertDeleteString.substring(0,
+        insertDeleteString.length() - 2);
+    // remove the "WHERE {"" part of the optionalBindBuilder
+    String optionalBindString = optionalBindBuilder.build().toString();
+    optionalBindString = optionalBindString.substring(10);
+    insertDeleteString += "\n" + optionalBindString;
+
+    log.print(LOGTAG.DEBUG, insertDeleteString);
+
+    UpdateRequest request = UpdateFactory.create(insertDeleteString);
+    try {
+      fi.updateLocalDB(request, dbURL);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -223,7 +153,7 @@ public class Duplicates {
     Model duplicateModel = findDuplicates(model);
     if (duplicateModel != null && duplicateModel.size() > 0) {
       log.print(logLevel, "duplicates found");
-      incrementCounterTriples3(duplicateModel);
+      incrementCounterTriples(duplicateModel);
     } else {
       log.print(logLevel, "no duplicates found");
     }
@@ -385,4 +315,51 @@ public class Duplicates {
     }
   }
 
+  public void runDuplicateUpdate(String pathToOldInstances, String pathToNewInstances, int n,
+      int changes) {
+    timer.newSplit("start", "duplicate solution", n, changes);
+
+    Diff d = new Diff(log);
+    d.readDiff(pathToOldInstances, pathToNewInstances);
+    log.print(logLevel, "Add linenumbers" + d.addLines.toString());
+    log.print(logLevel, "delete linenumbers" + d.deleteLines.toString());
+
+    String addInstancesString = null;
+    String deleteInstancesString = null;
+    try {
+      addInstancesString = d.getAddInstancesString(pathToNewInstances);
+      deleteInstancesString = d.getDeleteInstancesString(pathToOldInstances);
+    } catch (FileNotFoundException error) {
+      System.out.println("Could not old or new instance file");
+      error.printStackTrace();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    timer.newSplit("diff", "duplicate solution", n, changes);
+
+    log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
+    log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
+
+    Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString, tm);
+    Model deletModel = ottrInterface.expandAndGetModelFromString(deleteInstancesString, tm);
+    timer.newSplit("model", "duplicate solution", n, changes);
+
+    if (insertModel != null) {
+      log.print(logLevel, "insert model " + insertModel.toString());
+    }
+
+    try {
+      if (deleteInstancesString != null) {
+        deleteModel(deletModel);
+      }
+      if (insertModel != null) {
+        insertModel(insertModel);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    timer.newSplit("end", "duplicate solution", n, changes);
+
+  }
 }
