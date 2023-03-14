@@ -159,6 +159,24 @@ public class FusekiInterface {
         return putModel(rebuiltModel, dbURL, "Rebuild");
     }
 
+    /*
+     * Resets the database by deleting all data from the Original, Rebuild and
+     * Updated datasets.
+     * Updated count Graph is added a triple
+     */
+    public void clearDb(String dbURL) throws MalformedURLException, IOException {
+        putModel(ModelFactory.createDefaultModel(), dbURL, "Original");
+        putModel(ModelFactory.createDefaultModel(), dbURL, "Rebuild");
+        putModel(ModelFactory.createDefaultModel(), dbURL, "Updated");
+
+        // add a triple to the count graph in the Updated dataset. This creates the
+        // graph and makes it possible to query it.
+        UpdateRequest update = UpdateFactory.create(
+                "INSERT DATA { GRAPH <localhost:3030/updated/count> { <http://example.com/ignoreMe> <http://example.com/ignoreMe> <http://example.com/ignoreMe> } }");
+
+        updateLocalDB(update, dbURL);
+    }
+
     public int resetDb(Model oldModel, String dbURL) throws MalformedURLException, IOException {
         return putModel(oldModel, dbURL, "Updated");
     }
@@ -186,7 +204,10 @@ public class FusekiInterface {
         res = putModel(oldModel, dbURL, "Updated");
         res = putModel(newModel, dbURL, "Updated");
 
-        UpdateRequest update = UpdateFactory.create("INSERT DATA { GRAPH <localhost:3030/updated/count> { <http://example.com/ignoreMe> <http://example.com/ignoreMe> <http://example.com/ignoreMe> } }");
+        // add a triple to the count graph in the Updated dataset. This creates the
+        // graph and makes it possible to query it.
+        UpdateRequest update = UpdateFactory.create(
+                "INSERT DATA { GRAPH <localhost:3030/updated/count> { <http://example.com/ignoreMe> <http://example.com/ignoreMe> <http://example.com/ignoreMe> } }");
 
         updateLocalDB(update, dbURL);
 

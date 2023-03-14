@@ -1,5 +1,5 @@
 package update.ottr;
 
 public enum Solutions {
-    SIMPLE, REBUILD, BLANK
+    SIMPLE, REBUILD, BLANK, DUPLICATE
 }

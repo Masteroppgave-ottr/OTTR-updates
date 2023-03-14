@@ -47,7 +47,8 @@ def mutate_instance(instance: str, arg_nr: int, new_value: str = None, rng_range
         NB the argument at position `arg_nr` is assumed to be a string
     """
     if new_value is None:
-        new_value = "'new text here" + str(random.randint(0, rng_range)) + "'"
+        new_value = '"new text here' + \
+            str(random.randint(0, rng_range)) + '"'
 
     split = instance.split(", ")
 
