@@ -1,10 +1,12 @@
 package update.ottr;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -30,17 +32,32 @@ public class BlankNode {
     /**
      * Count the number of triples containing one or more blank nodes in the model.
      **/
-    private int countBlankNodes(Model model) {
-        int count = 0;
+    private HashMap<RDFNode, Integer> countBlankNodes(Model model) {
+
+        // create a hashmap to store blank nodes and their count
+        HashMap<RDFNode, Integer> blankNodes = new HashMap<RDFNode, Integer>();
+
         StmtIterator statements = model.listStatements();
         while (statements.hasNext()) {
             Statement statement = statements.next();
-            // if the statement contains a blank node
-            if (statement.getSubject().isAnon() || statement.getObject().isAnon()) {
-                count++;
+
+            if (statement.getSubject().isAnon()) {
+                if (blankNodes.containsKey(statement.getSubject())) {
+                    blankNodes.put(statement.getSubject(), blankNodes.get(statement.getSubject()) + 1);
+                } else {
+                    blankNodes.put(statement.getSubject(), 1);
+                }
+            }
+            if (statement.getObject().isAnon()) {
+                if (blankNodes.containsKey(statement.getObject())) {
+                    blankNodes.put(statement.getObject(), blankNodes.get(statement.getObject()) + 1);
+                } else {
+                    blankNodes.put(statement.getObject(), 1);
+                }
             }
         }
-        return count;
+        // return count;
+        return blankNodes;
     }
 
     /**
@@ -79,7 +96,7 @@ public class BlankNode {
      * Adds all triples in the deleteModel to the where clause of the builder.
      * If a triple contains a blank node, it is added as a variable.
      **/
-    private String addWhereClause(UpdateBuilder builder, Model model) {
+    private String addDeleteClause(UpdateBuilder builder, Model model) {
         StmtIterator statements = model.listStatements();
         // we store the name of the blank node so we can use it in the sub query
         String lastBlank = null;
@@ -170,20 +187,29 @@ public class BlankNode {
         for (String line : deleteInstancesString.split("\n")) {
             Model m = ottrInterface.expandAndGetModelFromString(line, tm);
 
-            int blankCount = countBlankNodes(m);
-            log.print(LOGTAG.DEBUG, "Count for " + line + " is " + blankCount);
+            HashMap<RDFNode, Integer> blankNodeCounts = countBlankNodes(m);
 
-            String blank = addWhereClause(builder, m);
-            // Create a sub query to match the blank node
-            if (blankCount > 0) {
+            log.print(LOGTAG.DEBUG, "Count for line " + line + " is :");
+            for (RDFNode key : blankNodeCounts.keySet()) {
+                log.print(LOGTAG.DEBUG, key + " : " + blankNodeCounts.get(key));
+            }
+
+            // TODO: må noe gjøres med denne funksjonen?
+            addDeleteClause(builder, m);
+
+            // create a sub query for each blank node
+            for (RDFNode key : blankNodeCounts.keySet()) {
+                String blankName = "?" + key.toString().replace("-", "_");
+                log.print(LOGTAG.DEBUG, "key: " + key.toString() + " count: " + blankNodeCounts.get(key));
                 // create the outer sub query
                 SelectBuilder outerSubBuilder = new SelectBuilder();
-                addOuterSubQuery(outerSubBuilder, m, blankCount, blank);
+                addOuterSubQuery(outerSubBuilder, m, blankNodeCounts.get(key), blankName);
 
                 // create the inner sub query
                 SelectBuilder innerSubBuilder = new SelectBuilder();
-                innerSubBuilder.addVar(blank);
-                addInnerSubQuery(innerSubBuilder, m, blank);
+                innerSubBuilder.addVar(blankName);
+                // TODO: don't add everything
+                addInnerSubQuery(innerSubBuilder, m, blankName);
 
                 // set sub queries
                 outerSubBuilder.addSubQuery(innerSubBuilder);

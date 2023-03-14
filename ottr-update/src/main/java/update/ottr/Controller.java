@@ -31,7 +31,6 @@ public class Controller {
         this.dbURL = dbURL;
         this.tm = tm;
         this.fuseki = new FusekiInterface(log);
-
     }
 
     /**
