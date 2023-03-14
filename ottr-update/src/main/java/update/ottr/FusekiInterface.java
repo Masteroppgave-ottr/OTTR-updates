@@ -204,6 +204,8 @@ public class FusekiInterface {
         res = putModel(oldModel, dbURL, "Updated");
         res = putModel(newModel, dbURL, "Updated");
 
+        // add a triple to the count graph in the Updated dataset. This creates the
+        // graph and makes it possible to query it.
         UpdateRequest update = UpdateFactory.create(
                 "INSERT DATA { GRAPH <localhost:3030/updated/count> { <http://example.com/ignoreMe> <http://example.com/ignoreMe> <http://example.com/ignoreMe> } }");
 

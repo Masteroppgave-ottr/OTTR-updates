@@ -185,7 +185,7 @@ public class Controller {
                 log.print(logLevel, "START rebuild update for " + n + " changes");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
-                compareGraphs("Updated", "Rebuild");
+                // compareGraphs("Updated", "Rebuild");
                 log.print(logLevel, "DONE  rebuild update for " + n + " changes");
             }
             try {
