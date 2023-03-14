@@ -9,7 +9,9 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
+import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.apache.jena.sparql.pfunction.library.bag;
 import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
@@ -74,16 +76,16 @@ public class BlankNode {
             String obj = null;
             if (statement.getSubject().isAnon()) {
                 sub = "?" + statement.getSubject().toString().replace("-", "_");
-                if (!blankName.equals(sub)) {
-                    sub = null;
-                }
             }
 
             if (statement.getObject().isAnon()) {
                 obj = "?" + statement.getObject().toString().replace("-", "_");
-                if (!blankName.equals(obj)) {
-                    obj = null;
-                }
+            }
+
+            if (!blankName.equals(sub) && !blankName.equals(obj)) {
+                log.print(LOGTAG.DEBUG, "no match for " + blankName + " in " + sub + " or " + obj);
+                log.print(LOGTAG.DEBUG, "eq? " + !blankName.equals(sub));
+                continue;
             }
 
             if (sub != null && obj != null) {
@@ -92,8 +94,6 @@ public class BlankNode {
                 builder.addWhere(sub, statement.getPredicate(), statement.getObject());
             } else if (obj != null) {
                 builder.addWhere(statement.getSubject(), statement.getPredicate(), obj);
-            } else {
-                continue;
             }
         }
     }
@@ -122,8 +122,6 @@ public class BlankNode {
 
             if (sub != null && obj != null) {
                 builder.addDelete(sub, statement.getPredicate(), obj);
-                // TODO: handle multiple blank nodes later
-                throw new RuntimeException("Multiple blank nodes not supported yet");
             } else if (sub != null) {
                 builder.addDelete(sub, statement.getPredicate(), statement.getObject());
                 lastBlank = sub;
