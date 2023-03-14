@@ -64,7 +64,7 @@ public class BlankNode {
      * Adds all triples in the deleteModel to the where clause of the builder.
      * If a triple contains a blank node, it is added as a variable.
      **/
-    private void addWhereClauseToSelect(SelectBuilder builder, Model model) {
+    private void addWhereClauseToSelect(SelectBuilder builder, Model model, String blankName) {
         StmtIterator statements = model.listStatements();
         while (statements.hasNext()) {
             // if the statement contains a blank node
@@ -74,10 +74,16 @@ public class BlankNode {
             String obj = null;
             if (statement.getSubject().isAnon()) {
                 sub = "?" + statement.getSubject().toString().replace("-", "_");
+                if (!blankName.equals(sub)) {
+                    sub = null;
+                }
             }
 
             if (statement.getObject().isAnon()) {
                 obj = "?" + statement.getObject().toString().replace("-", "_");
+                if (!blankName.equals(obj)) {
+                    obj = null;
+                }
             }
 
             if (sub != null && obj != null) {
@@ -87,7 +93,7 @@ public class BlankNode {
             } else if (obj != null) {
                 builder.addWhere(statement.getSubject(), statement.getPredicate(), obj);
             } else {
-                builder.addWhere(statement.getSubject(), statement.getPredicate(), statement.getObject());
+                continue;
             }
         }
     }
@@ -136,7 +142,7 @@ public class BlankNode {
      * This finds all graphs that match the deleteModel and have a blank node.
      */
     private void addInnerSubQuery(SelectBuilder builder, Model model, String blankName) {
-        addWhereClauseToSelect(builder, model);
+        addWhereClauseToSelect(builder, model, blankName);
         try {
             builder.addFilter("isblank(" + blankName + ")");
         } catch (ParseException e1) {
