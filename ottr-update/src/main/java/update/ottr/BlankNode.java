@@ -9,9 +9,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import org.apache.jena.sparql.pfunction.library.bag;
 import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
@@ -50,7 +48,8 @@ public class BlankNode {
                     blankNodes.put(statement.getSubject(), 1);
                 }
             }
-            if (statement.getObject().isAnon()) {
+            // avoid counting the same blank node twice if it is the subject and object
+            if (statement.getObject().isAnon() && !statement.getObject().equals(statement.getSubject())) {
                 if (blankNodes.containsKey(statement.getObject())) {
                     blankNodes.put(statement.getObject(), blankNodes.get(statement.getObject()) + 1);
                 } else {
@@ -58,7 +57,6 @@ public class BlankNode {
                 }
             }
         }
-        // return count;
         return blankNodes;
     }
 
