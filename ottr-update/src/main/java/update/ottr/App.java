@@ -71,14 +71,15 @@ public class App {
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
+                // LOGTAG.DEBUG,
                 // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 // LOGTAG.WARNING,
                 LOGTAG.ERROR,
+                LOGTAG.TEST,
                 // LOGTAG.DUPLICATE,
-                LOGTAG.BLANK,
+                // LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
         };
@@ -108,11 +109,11 @@ public class App {
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
             // populateDB(log, fi, old_instance_fileName, new_instance_fileName, tm, dbURL);
-            // try {
-            // fi.clearDb(dbURL);
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
+            try {
+                fi.clearDb(dbURL);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             Diff d = new Diff(log);
             d.readDiff(old_instance_fileName, new_instance_fileName);
@@ -139,12 +140,23 @@ public class App {
             Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
             // INSERT YOUR CODE HERE
-            BlankNode bn = new BlankNode(log, dbURL, timer);
-            bn.createDeleteRequest(deleteInstancesString, tm);
+            Duplicates dup = new Duplicates(log, dbURL, timer, tm);
+            dup.insertModel(oldModel);
+            dup.insertModel(oldModel);
+            userBreakpoint(scanner);
+            dup.deleteModel(deleteModel);
+            userBreakpoint(scanner);
+            dup.insertModel(oldModel);
+            userBreakpoint(scanner);
+            dup.deleteModel(deleteModel);
+            userBreakpoint(scanner);
+            dup.deleteModel(deleteModel);
 
         }
 
-        if (mode.equals("n=instances")) {
+        if (mode.equals("n=instances"))
+
+        {
             // parse extra arguments
             String[] instances = args[7].split(", ");
             String changeNr = args[8];

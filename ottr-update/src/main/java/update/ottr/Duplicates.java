@@ -313,11 +313,13 @@ public class Duplicates {
     UpdateRequest request = new UpdateBuilder().addDelete(nonDuplicatesModel)
         .buildRequest();
 
-    log.print(logLevel, "deleting " + nonDuplicatesModel.size() + " non-duplicates");
-    try {
-      fi.updateLocalDB(request, dbURL);
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (nonDuplicatesModel.size() > 0) {
+      log.print(logLevel, "deleting " + nonDuplicatesModel.size() + " non-duplicates");
+      try {
+        fi.updateLocalDB(request, dbURL);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 

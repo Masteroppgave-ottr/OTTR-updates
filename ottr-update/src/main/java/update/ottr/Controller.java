@@ -1,6 +1,7 @@
 package update.ottr;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 import org.apache.jena.rdf.model.Model;
 
@@ -15,6 +16,7 @@ public class Controller {
     String baseDBFileName;
     LOGTAG logLevel = LOGTAG.TEST;
     FusekiInterface fuseki;
+    Scanner scanner;
 
     private boolean contains(String[] arr, String targetValue) {
         for (String s : arr) {
@@ -24,6 +26,11 @@ public class Controller {
         return false;
     }
 
+    private void userBreakpoint() {
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine();
+    }
+
     public Controller(String[] solutions, Logger log, Timer timer, String dbURL, TemplateManager tm) {
         this.solutions = solutions;
         this.log = log;
@@ -31,6 +38,7 @@ public class Controller {
         this.dbURL = dbURL;
         this.tm = tm;
         this.fuseki = new FusekiInterface(log);
+        this.scanner = new Scanner(System.in);
     }
 
     /**
@@ -119,13 +127,14 @@ public class Controller {
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE duplicate update for " + n + " instances");
+                // userBreakpoint();
             }
             if (contains(solutions, Solutions.REBUILD + "")) {
                 log.print(logLevel, "START rebuild update for " + n + " instances");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
-                compareDataset("Updated", "Rebuild");
                 log.print(logLevel, "DONE  rebuild update for " + n + " instances");
+                compareDataset("Updated", "Rebuild");
             }
 
             try {
@@ -184,8 +193,8 @@ public class Controller {
                 log.print(logLevel, "START rebuild update for " + n + " changes");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
-                compareDataset("Updated", "Rebuild");
                 log.print(logLevel, "DONE  rebuild update for " + n + " changes");
+                compareDataset("Updated", "Rebuild");
             }
             try {
                 timer.writeSplitsToFile();
