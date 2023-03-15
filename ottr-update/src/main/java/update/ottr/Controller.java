@@ -39,11 +39,9 @@ public class Controller {
      */
     private boolean compareDataset(String datasetName1, String datasetName2) {
         boolean isIsomorphic = false;
-        log.print(LOGTAG.DEBUG, "Comparing graphs " + datasetName1 + " and " + datasetName2);
         try {
             Model updated = fuseki.getDataset(dbURL, datasetName1);
             Model rebuild = fuseki.getDataset(dbURL, datasetName2);
-            log.print(LOGTAG.DEBUG, "Got graphs\n" + updated + "\nand\n" + rebuild);
             isIsomorphic = updated.isIsomorphicWith(rebuild);
             if (isIsomorphic) {
                 log.print(LOGTAG.DEFAULT, "Graphs are isomorphic");
