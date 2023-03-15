@@ -172,6 +172,15 @@ public class BlankNode {
         return request;
     }
 
+    /**
+     * Creates an update request for deleting instances in a template. This delete
+     * takes the counter triples into account
+     * 
+     * @param deleteInstancesString String containing the instances to delete
+     * @param tm                    TemplateManager for the template
+     * @return UpdateRequest containing the update request for deleting the
+     *         instances
+     */
     public UpdateRequest createDeleteRequest(String deleteInstancesString, TemplateManager tm) {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
         UpdateBuilder builder = new UpdateBuilder();
