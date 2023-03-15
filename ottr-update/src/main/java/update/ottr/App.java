@@ -77,8 +77,8 @@ public class App {
                 // LOGTAG.DIFF,
                 // LOGTAG.WARNING,
                 LOGTAG.ERROR,
-                LOGTAG.DUPLICATE,
-                // LOGTAG.BLANK,
+                // LOGTAG.DUPLICATE,
+                LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
         };
@@ -139,6 +139,8 @@ public class App {
             Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
             // INSERT YOUR CODE HERE
+            BlankNode bn = new BlankNode(log, dbURL, timer);
+            bn.createDeleteRequest(deleteInstancesString, tm);
 
         }
 

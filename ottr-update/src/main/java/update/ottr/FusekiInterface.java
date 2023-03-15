@@ -116,9 +116,18 @@ public class FusekiInterface {
         return res;
     }
 
-    public Model getGraph(String dbURL, String graphName) throws IOException {
+    /**
+     * Get the default graph from the specified dataset
+     */
+    public Model getDataset(String dbURL, String datasetName) throws IOException {
         Model model = ModelFactory.createDefaultModel();
-        model.read(dbURL + graphName, "TURTLE");
+
+        URL url = new URL(dbURL + datasetName + "/data?graph=default");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("Content-Type", "application/sparql-query");
+        model.read(con.getInputStream(), null, "TTL");
+
         return model;
     }
 
@@ -177,8 +186,12 @@ public class FusekiInterface {
         updateLocalDB(update, dbURL);
     }
 
-    public int resetDb(Model oldModel, String dbURL) throws MalformedURLException, IOException {
-        return putModel(oldModel, dbURL, "Updated");
+    public void resetDb(Model oldModel, String dbURL) throws MalformedURLException, IOException {
+        putModel(oldModel, dbURL, "Updated");
+        UpdateRequest update = UpdateFactory.create(
+                "INSERT DATA { GRAPH <localhost:3030/updated/count> { <http://example.com/ignoreMe> <http://example.com/ignoreMe> <http://example.com/ignoreMe> } }");
+
+        updateLocalDB(update, dbURL);
     }
 
     /**

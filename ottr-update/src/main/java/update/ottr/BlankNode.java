@@ -1,10 +1,12 @@
 package update.ottr;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -12,7 +14,6 @@ import org.apache.jena.update.UpdateRequest;
 
 import xyz.ottr.lutra.TemplateManager;
 
-// This solution is about removing the local blank node assumption. 
 public class BlankNode {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.BLANK;
@@ -30,24 +31,38 @@ public class BlankNode {
     /**
      * Count the number of triples containing one or more blank nodes in the model.
      **/
-    private int countBlankNodes(Model model) {
-        int count = 0;
+    private HashMap<RDFNode, Integer> countBlankNodes(Model model) {
+
+        HashMap<RDFNode, Integer> blankNodeCounts = new HashMap<RDFNode, Integer>();
+
         StmtIterator statements = model.listStatements();
         while (statements.hasNext()) {
             Statement statement = statements.next();
-            // if the statement contains a blank node
-            if (statement.getSubject().isAnon() || statement.getObject().isAnon()) {
-                count++;
+
+            if (statement.getSubject().isAnon()) {
+                if (blankNodeCounts.containsKey(statement.getSubject())) {
+                    blankNodeCounts.put(statement.getSubject(), blankNodeCounts.get(statement.getSubject()) + 1);
+                } else {
+                    blankNodeCounts.put(statement.getSubject(), 1);
+                }
+            }
+            // avoid counting the same blank node twice if it is the subject and object
+            if (statement.getObject().isAnon() && !statement.getObject().equals(statement.getSubject())) {
+                if (blankNodeCounts.containsKey(statement.getObject())) {
+                    blankNodeCounts.put(statement.getObject(), blankNodeCounts.get(statement.getObject()) + 1);
+                } else {
+                    blankNodeCounts.put(statement.getObject(), 1);
+                }
             }
         }
-        return count;
+        return blankNodeCounts;
     }
 
     /**
      * Adds all triples in the deleteModel to the where clause of the builder.
      * If a triple contains a blank node, it is added as a variable.
      **/
-    private void addWhereClauseToSelect(SelectBuilder builder, Model model) {
+    private void addWhereClauseToSelect(SelectBuilder builder, Model model, String blankName) {
         StmtIterator statements = model.listStatements();
         while (statements.hasNext()) {
             // if the statement contains a blank node
@@ -63,14 +78,17 @@ public class BlankNode {
                 obj = "?" + statement.getObject().toString().replace("-", "_");
             }
 
+            // if the blank node is not in the triple, we don't add it to the where clause
+            if (!blankName.equals(sub) && !blankName.equals(obj)) {
+                continue;
+            }
+
             if (sub != null && obj != null) {
                 builder.addWhere(sub, statement.getPredicate(), obj);
             } else if (sub != null) {
                 builder.addWhere(sub, statement.getPredicate(), statement.getObject());
             } else if (obj != null) {
                 builder.addWhere(statement.getSubject(), statement.getPredicate(), obj);
-            } else {
-                builder.addWhere(statement.getSubject(), statement.getPredicate(), statement.getObject());
             }
         }
     }
@@ -79,12 +97,9 @@ public class BlankNode {
      * Adds all triples in the deleteModel to the where clause of the builder.
      * If a triple contains a blank node, it is added as a variable.
      **/
-    private String addWhereClause(UpdateBuilder builder, Model model) {
+    private void addDeleteClause(UpdateBuilder builder, Model model) {
         StmtIterator statements = model.listStatements();
-        // we store the name of the blank node so we can use it in the sub query
-        String lastBlank = null;
         while (statements.hasNext()) {
-            // if the statement contains a blank node
             Statement statement = statements.next();
 
             String sub = null;
@@ -99,19 +114,14 @@ public class BlankNode {
 
             if (sub != null && obj != null) {
                 builder.addDelete(sub, statement.getPredicate(), obj);
-                // TODO: handle multiple blank nodes later
-                throw new RuntimeException("Multiple blank nodes not supported yet");
             } else if (sub != null) {
                 builder.addDelete(sub, statement.getPredicate(), statement.getObject());
-                lastBlank = sub;
             } else if (obj != null) {
                 builder.addDelete(statement.getSubject(), statement.getPredicate(), obj);
-                lastBlank = obj;
             } else {
                 builder.addDelete(statement.getSubject(), statement.getPredicate(), statement.getObject());
             }
         }
-        return lastBlank;
     }
 
     /**
@@ -119,7 +129,7 @@ public class BlankNode {
      * This finds all graphs that match the deleteModel and have a blank node.
      */
     private void addInnerSubQuery(SelectBuilder builder, Model model, String blankName) {
-        addWhereClauseToSelect(builder, model);
+        addWhereClauseToSelect(builder, model, blankName);
         try {
             builder.addFilter("isblank(" + blankName + ")");
         } catch (ParseException e1) {
@@ -162,6 +172,15 @@ public class BlankNode {
         return request;
     }
 
+    /**
+     * Creates an update request for deleting instances in a template. This delete
+     * takes the counter triples into account
+     * 
+     * @param deleteInstancesString String containing the instances to delete
+     * @param tm                    TemplateManager for the template
+     * @return UpdateRequest containing the update request for deleting the
+     *         instances
+     */
     public UpdateRequest createDeleteRequest(String deleteInstancesString, TemplateManager tm) {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
         UpdateBuilder builder = new UpdateBuilder();
@@ -169,21 +188,21 @@ public class BlankNode {
         // we expand one instance at a time
         for (String line : deleteInstancesString.split("\n")) {
             Model m = ottrInterface.expandAndGetModelFromString(line, tm);
+            HashMap<RDFNode, Integer> blankNodeCounts = countBlankNodes(m);
+            addDeleteClause(builder, m);
 
-            int blankCount = countBlankNodes(m);
-            log.print(LOGTAG.DEBUG, "Count for " + line + " is " + blankCount);
+            // create a sub query for each blank node
+            for (RDFNode key : blankNodeCounts.keySet()) {
+                String blankName = "?" + key.toString().replace("-", "_");
 
-            String blank = addWhereClause(builder, m);
-            // Create a sub query to match the blank node
-            if (blankCount > 0) {
                 // create the outer sub query
                 SelectBuilder outerSubBuilder = new SelectBuilder();
-                addOuterSubQuery(outerSubBuilder, m, blankCount, blank);
+                addOuterSubQuery(outerSubBuilder, m, blankNodeCounts.get(key), blankName);
 
                 // create the inner sub query
                 SelectBuilder innerSubBuilder = new SelectBuilder();
-                innerSubBuilder.addVar(blank);
-                addInnerSubQuery(innerSubBuilder, m, blank);
+                innerSubBuilder.addVar(blankName);
+                addInnerSubQuery(innerSubBuilder, m, blankName);
 
                 // set sub queries
                 outerSubBuilder.addSubQuery(innerSubBuilder);

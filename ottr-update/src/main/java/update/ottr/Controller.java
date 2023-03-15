@@ -31,18 +31,17 @@ public class Controller {
         this.dbURL = dbURL;
         this.tm = tm;
         this.fuseki = new FusekiInterface(log);
-
     }
 
     /**
      * Check if two graphs are isomorphic.
      * The result logged to the user
      */
-    private boolean compareGraphs(String graphName1, String graphName2) {
+    private boolean compareDataset(String datasetName1, String datasetName2) {
         boolean isIsomorphic = false;
         try {
-            Model updated = fuseki.getGraph(dbURL, graphName1);
-            Model rebuild = fuseki.getGraph(dbURL, graphName2);
+            Model updated = fuseki.getDataset(dbURL, datasetName1);
+            Model rebuild = fuseki.getDataset(dbURL, datasetName2);
             isIsomorphic = updated.isIsomorphicWith(rebuild);
             if (isIsomorphic) {
                 log.print(LOGTAG.DEFAULT, "Graphs are isomorphic");
@@ -125,7 +124,7 @@ public class Controller {
                 log.print(logLevel, "START rebuild update for " + n + " instances");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
-                compareGraphs("Updated", "Rebuild");
+                compareDataset("Updated", "Rebuild");
                 log.print(logLevel, "DONE  rebuild update for " + n + " instances");
             }
 
@@ -185,7 +184,7 @@ public class Controller {
                 log.print(logLevel, "START rebuild update for " + n + " changes");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, numInstances, n + "");
-                // compareGraphs("Updated", "Rebuild");
+                compareDataset("Updated", "Rebuild");
                 log.print(logLevel, "DONE  rebuild update for " + n + " changes");
             }
             try {
