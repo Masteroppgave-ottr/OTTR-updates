@@ -89,27 +89,47 @@ public class Controller {
                 log.print(LOGTAG.ERROR, "File " + pathToOldInstances + " does not exist");
                 System.exit(0);
             }
-
+            
             Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
-            try {
-                fuseki.resetDb(baseModel, dbURL);
-            } catch (IOException e) {
-                e.printStackTrace();
+            
+            
+            if (contains(solutions, Solutions.REBUILD + "")) {
+                log.print(logLevel, "START rebuild update for " + n + " instances");
+                Rebuild rebuild = new Rebuild();
+                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
+                log.print(logLevel, "DONE  rebuild update for " + n + " instances");
             }
-
             if (this.contains(solutions, Solutions.SIMPLE + "")) {
+                try {
+                    fuseki.resetUpdatedDataset(baseModel, dbURL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 log.print(logLevel, "START simple update for " + n + " instances");
                 SimpleUpdate simpleUpdate = new SimpleUpdate(log);
                 simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
                         Integer.parseInt(n), Integer.parseInt(changes));
                 log.print(logLevel, "DONE  simple update for " + n + " instances");
+                if (contains(solutions, Solutions.REBUILD + "")) {
+                    compareDataset("Updated", "Rebuild");
+                }
             }
             if (contains(solutions, Solutions.BLANK + "")) {
+                try {
+                    fuseki.resetUpdatedDataset(baseModel, dbURL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                
                 log.print(logLevel, "START blank node update for " + n + " instances");
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
                 blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE  blank node update for " + n + " instances");
+                if (contains(solutions, Solutions.REBUILD + "")) {
+                    compareDataset("Updated", "Rebuild");
+                }
             }
             if (contains(solutions, Solutions.DUPLICATE + "")) {
                 log.print(logLevel, "START duplicate update for " + n + " instances");
@@ -117,7 +137,7 @@ public class Controller {
 
                 // reset the database to the old instances with a correct counter
                 try {
-                    fuseki.clearDb(dbURL);
+                    fuseki.clearUpdated(dbURL);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -127,14 +147,9 @@ public class Controller {
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE duplicate update for " + n + " instances");
-                // userBreakpoint();
-            }
-            if (contains(solutions, Solutions.REBUILD + "")) {
-                log.print(logLevel, "START rebuild update for " + n + " instances");
-                Rebuild rebuild = new Rebuild();
-                rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
-                log.print(logLevel, "DONE  rebuild update for " + n + " instances");
-                compareDataset("Updated", "Rebuild");
+                if (contains(solutions, Solutions.REBUILD + "")) {
+                    compareDataset("Updated", "Rebuild");
+                }
             }
 
             try {
@@ -152,7 +167,7 @@ public class Controller {
             String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
             Model newModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
             try {
-                fuseki.resetDb(newModel, dbURL);
+                fuseki.resetUpdatedDataset(newModel, dbURL);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -178,7 +193,7 @@ public class Controller {
 
                 // reset the database to the old instances with a correct counter
                 try {
-                    fuseki.clearDb(dbURL);
+                    fuseki.clearUpdated(dbURL);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

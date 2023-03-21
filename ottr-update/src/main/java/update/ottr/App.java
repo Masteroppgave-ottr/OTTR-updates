@@ -111,7 +111,7 @@ public class App {
             String new_instance_fileName = tempDir + "new_" + instanceFileName;
             // populateDB(log, fi, old_instance_fileName, new_instance_fileName, tm, dbURL);
             try {
-                fi.clearDb(dbURL);
+                fi.clearUpdated(dbURL);
             } catch (IOException e) {
                 e.printStackTrace();
             }
