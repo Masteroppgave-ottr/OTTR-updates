@@ -159,7 +159,7 @@ public class App {
         {
             // parse extra arguments
             String[] instances = args[7].split(", ");
-            String changeNr = args[8];
+            String changeNr = Integer.parseInt(args[8]) + Integer.parseInt(args[9]) + Integer.parseInt(args[10]) + "";
             controller.nInstances(instances, tempDir + "generated/", instanceFileName,
                     changeNr);
         }
