@@ -1,0 +1,22 @@
+
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix leif: <http://leifhka.org/in5800/data/templates/library/astronomy/> .
+@prefix ottr: <http://ns.ottr.xyz/0.4/> .
+@prefix ex-o: <http://example.org/ont/> .
+@prefix ottr: <http://ns.ottr.xyz/0.4/> .
+@prefix o-rdf: <http://tpl.ottr.xyz/rdf/0.1/> .
+@prefix o-rdfs: <http://tpl.ottr.xyz/rdfs/0.2/> .
+
+leif:Planet [
+    ottr:IRI ?iri,
+    xsd:string ?name,
+    ottr:IRI ?star,
+    ? xsd:string ?starName,
+    ? xsd:decimal ?mass
+] :: {
+    o-rdf:Type(?iri, ex-o:Planet),
+    o-rdfs:Label(?iri, ?name),
+    ottr:Triple(?iri, ex-o:orbitsStar, ?star),
+    o-rdfs:Label(?star, ?starName),
+    ottr:Triple(?iri, ex-o:hasMass, ?mass)
+} .
