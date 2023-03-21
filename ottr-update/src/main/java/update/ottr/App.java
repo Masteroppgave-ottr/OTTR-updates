@@ -93,7 +93,8 @@ public class App {
         org.apache.jena.query.ARQ.init();
 
         // read the template file
-        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
+        MessageHandler msgs = tm.fetchMissingDependencies();
+        msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
                 templateFileName);
         Severity severity = msgs.printMessages();
         if (severity == Severity.ERROR) {
