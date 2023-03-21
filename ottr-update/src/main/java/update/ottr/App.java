@@ -6,11 +6,7 @@ import xyz.ottr.lutra.TemplateManager;
 import xyz.ottr.lutra.system.MessageHandler;
 import xyz.ottr.lutra.system.Message.Severity;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ResourceFactory;
 
 //java
 import java.io.FileNotFoundException;
@@ -155,9 +151,7 @@ public class App {
 
         }
 
-        if (mode.equals("n=instances"))
-
-        {
+        if (mode.equals("n=instances")) {
             // parse extra arguments
             String[] instances = args[7].split(", ");
             String changeNr = Integer.parseInt(args[8]) + Integer.parseInt(args[9]) + Integer.parseInt(args[10]) + "";
