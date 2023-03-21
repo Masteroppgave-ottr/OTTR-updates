@@ -7,6 +7,8 @@ import xyz.ottr.lutra.system.MessageHandler;
 import xyz.ottr.lutra.system.Message.Severity;
 
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
 
 //java
 import java.io.FileNotFoundException;
@@ -137,18 +139,6 @@ public class App {
             Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
 
             // INSERT YOUR CODE HERE
-            Duplicates dup = new Duplicates(log, dbURL, timer, tm);
-            dup.insertModel(oldModel);
-            dup.insertModel(oldModel);
-            userBreakpoint(scanner);
-            dup.deleteModel(deleteModel);
-            userBreakpoint(scanner);
-            dup.insertModel(oldModel);
-            userBreakpoint(scanner);
-            dup.deleteModel(deleteModel);
-            userBreakpoint(scanner);
-            dup.deleteModel(deleteModel);
-
         }
 
         if (mode.equals("n=instances")) {
