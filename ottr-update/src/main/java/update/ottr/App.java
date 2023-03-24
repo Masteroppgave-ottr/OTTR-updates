@@ -71,16 +71,16 @@ public class App {
 
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
-                // LOGTAG.DEBUG,
+                LOGTAG.DEBUG,
                 // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 // LOGTAG.WARNING,
                 LOGTAG.ERROR,
                 LOGTAG.TEST,
-                // LOGTAG.DUPLICATE,
-                // LOGTAG.BLANK,
-                // LOGTAG.SIMPLE,
+                LOGTAG.DUPLICATE,
+                LOGTAG.BLANK,
+                LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
