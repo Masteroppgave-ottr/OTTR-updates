@@ -6,7 +6,6 @@ from TestDataCreator import insert
 
 tag = "\033[93m[CREATE]\033[0m"
 
-
 def _next_in_list(l: list[int]):
     if len(l) > 0:
         return l.pop(0)
@@ -37,14 +36,14 @@ def create_subfile(filename: str, new_filename: str, n: int):
     if (n > length):
         print(f"{tag} generating", n - length, "new instances")
         for i in range(prefix_end, n - length):
-            new_file.write(mutate_instance(
-                lines[prefix_end+1], 2, rng_range=10000000000000000000))
+            new_file.write(mutate_instance_1st_IRI(
+                lines[prefix_end+1], 1, rng_range=10000000000000000000))
 
 
 def mutate_instance(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 100000000):
     """
         mutates argument `arg_nr` in instance `line`.
-        NB the argument at position `arg_nr` is assumed to be a string
+        NB the argument at position `arg_nr` is assumed to be an IRI
     """
     if new_value is None:
         new_value = '"new text here' + \
@@ -55,6 +54,22 @@ def mutate_instance(instance: str, arg_nr: int, new_value: str = None, rng_range
     combo = split[:arg_nr-1] + [new_value] + split[arg_nr:]
 
     return ", ".join(combo)
+
+def mutate_instance_1st_IRI(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 10000000000000000000):
+    # assuming the first argument is an IRI, and that there are several arguments 
+    front = instance[:instance.find("(")+1]
+    end = instance[instance.find("."):]
+    arguments = instance[instance.find("(")+1:instance.find(")")]
+    first_arg = arguments[arguments.find("<"):arguments.find(",")]
+    restArgs = arguments[arguments.find(","):]
+
+    if new_value is None:
+        new_value = '<http://example.org/newID' + \
+            str(random.randint(0, rng_range)) + '>'
+        
+    new_instance = (front + new_value + restArgs + end)
+    return new_instance
+
 
 
 def create_file_nInstances(deletions: int, changes: int, insertions: int, filename: str, new_filename: str):
@@ -101,13 +116,13 @@ def create_file_nInstances(deletions: int, changes: int, insertions: int, filena
 
         # change instance
         if line_nr == next_change_line:
-            new_file.write(mutate_instance(line, 2))
+            new_file.write(mutate_instance_1st_IRI(line, 1))
             next_change_line = _next_in_list(change_line_numbers)
 
         # insert instance
         if line_nr == next_insert_line:
             while line_nr == next_insert_line:
-                new_file.write(mutate_instance(line, 2))
+                new_file.write(mutate_instance_1st_IRI(line, 1))
                 next_insert_line = _next_in_list(insert_line_numbers)
 
     original_file.close()
