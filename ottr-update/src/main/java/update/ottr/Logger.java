@@ -68,7 +68,7 @@ public class Logger {
             } else if (tag == LOGTAG.TEST) {
                 System.out.println(ANSI_GREY + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.SUCCESS) {
-                System.out.println(ANSI_GREEN + "[" + tag + "]" + ANSI_RESET + message);
+                System.out.println(ANSI_GREEN + "[" + tag + "]" + ANSI_RESET + message + "\n");
             } else {
                 System.out.println("[" + tag + "] " + message);
             }
