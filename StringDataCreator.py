@@ -58,9 +58,8 @@ def mutate_instance(instance: str, arg_nr: int, new_value: str = None, rng_range
 def mutate_instance_1st_IRI(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 10000000000000000000):
     # assuming the first argument is an IRI, and that there are several arguments 
     front = instance[:instance.find("(")+1]
-    end = instance[instance.find("."):]
+    end = instance[instance.find(")"):]
     arguments = instance[instance.find("(")+1:instance.find(")")]
-    first_arg = arguments[arguments.find("<"):arguments.find(",")]
     restArgs = arguments[arguments.find(","):]
 
     if new_value is None:
