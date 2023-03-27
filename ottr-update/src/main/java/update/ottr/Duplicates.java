@@ -157,7 +157,7 @@ public class Duplicates {
     }
 
     // insert the model into the triple store
-    log.print(logLevel, "inserting " + model.size() + " triples");
+    // log.print(logLevel, "inserting " + model.size() + " triples");
     UpdateRequest request = new UpdateBuilder().addInsert(model).buildRequest();
     try {
       fi.updateLocalDB(request, dbURL);
@@ -345,8 +345,8 @@ public class Duplicates {
     }
     timer.newSplit("diff", "duplicate solution", n, changes);
 
-    log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
-    log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
+    // log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
+    // log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
     Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString, tm);
     Model deletModel = ottrInterface.expandAndGetModelFromString(deleteInstancesString, tm);
