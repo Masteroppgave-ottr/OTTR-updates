@@ -21,6 +21,7 @@ public class Logger {
     public static final String ANSI_ORANGE = "\u001B[38;5;208m";
     public static final String ANSI_TURQUOISE = "\u001B[38;5;51m";
     public static final String ANSI_GREY = "\u001B[38;5;244m";
+    public static final String ANSI_PINK = "\u001B[38;5;198m";
 
     public Logger(ArrayList<LOGTAG> activeTags) {
         if (activeTags == null) {
@@ -59,13 +60,15 @@ public class Logger {
             } else if (tag == LOGTAG.OTTR) {
                 System.out.println(ANSI_CYAN + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.DIFF) {
-                System.out.println(ANSI_GREEN + "[" + tag + "]" + ANSI_RESET + message);
+                System.out.println(ANSI_PINK + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.BLANK || tag == LOGTAG.SIMPLE || tag == LOGTAG.REBUILD) {
                 System.out.println(ANSI_ORANGE + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.DUPLICATE) {
                 System.out.println(ANSI_TURQUOISE + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.TEST) {
                 System.out.println(ANSI_GREY + "[" + tag + "]" + ANSI_RESET + message);
+            } else if (tag == LOGTAG.SUCCESS) {
+                System.out.println(ANSI_GREEN + "[" + tag + "]" + ANSI_RESET + message);
             } else {
                 System.out.println("[" + tag + "] " + message);
             }

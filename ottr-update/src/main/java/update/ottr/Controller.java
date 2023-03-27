@@ -52,7 +52,7 @@ public class Controller {
             Model rebuild = fuseki.getDataset(dbURL, datasetName2);
             isIsomorphic = updated.isIsomorphicWith(rebuild);
             if (isIsomorphic) {
-                log.print(LOGTAG.DEFAULT, "Graphs are isomorphic");
+                log.print(LOGTAG.SUCCESS, "Graphs are isomorphic");
             } else {
                 log.print(LOGTAG.ERROR, "Graphs are not isomorphic");
             }
@@ -97,7 +97,7 @@ public class Controller {
                 log.print(logLevel, "START rebuild update for " + n + " instances");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
-                log.print(logLevel, "DONE  rebuild update for " + n + " instances");
+                log.print(logLevel, "DONE  rebuild update for " + n + " instances\n");
             }
             if (this.contains(solutions, Solutions.SIMPLE + "")) {
                 try {
@@ -149,7 +149,6 @@ public class Controller {
                 log.print(logLevel, "DONE duplicate update for " + n + " instances");
                 if (contains(solutions, Solutions.REBUILD + "")) {
                     compareDataset("Updated", "Rebuild");
-                    userBreakpoint();
                 }
             }
 
