@@ -76,10 +76,11 @@ public class App {
                 // LOGTAG.WARNING,
                 LOGTAG.ERROR,
                 LOGTAG.TEST,
-                LOGTAG.DUPLICATE,
-                LOGTAG.BLANK,
-                LOGTAG.SIMPLE,
+                // LOGTAG.DUPLICATE,
+                // LOGTAG.BLANK,
+                // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
+                LOGTAG.SUCCESS
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
 
