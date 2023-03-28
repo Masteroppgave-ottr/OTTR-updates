@@ -129,6 +129,7 @@ public class BlankNode {
      * This finds all graphs that match the deleteModel and have a blank node.
      */
     private void addInnerSubQuery(SelectBuilder builder, Model model, String blankName) {
+        builder.addVar(blankName);
         addWhereClauseToSelect(builder, model, blankName);
         try {
             builder.addFilter("isblank(" + blankName + ")");
@@ -140,6 +141,8 @@ public class BlankNode {
     /**
      * Adds the outer sub query to the builder.
      * This counts the number of triples the the sub query has.
+     * 
+     * @return
      */
     private void addOuterSubQuery(SelectBuilder builder, Model model, int count, String blankName) {
         builder.addVar(blankName);
@@ -151,16 +154,21 @@ public class BlankNode {
             e.printStackTrace();
         }
 
-        builder.addWhere(blankName, "?pred", "?obj");
-        SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", blankName);
-        builder.addUnion(newBuilder);
-
         builder.addGroupBy(blankName);
         try {
             builder.addHaving("?count_" + blankName.substring(1) + "= " + count);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        builder.setLimit(1);
+    }
+
+    private void addMiddleSubQuery(SelectBuilder builder, String blankName) {
+        builder.setDistinct(true);
+        builder.addVar("*");
+        builder.addWhere(blankName, "?pred", "?obj");
+        SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", blankName);
+        builder.addUnion(newBuilder);
     }
 
     public UpdateRequest createInsertRequest(Model newModel) {
@@ -199,14 +207,17 @@ public class BlankNode {
                 SelectBuilder outerSubBuilder = new SelectBuilder();
                 addOuterSubQuery(outerSubBuilder, m, blankNodeCounts.get(key), blankName);
 
+                // create the middle sub query
+                SelectBuilder middleSubBilder = new SelectBuilder();
+                addMiddleSubQuery(middleSubBilder, blankName);
+
                 // create the inner sub query
                 SelectBuilder innerSubBuilder = new SelectBuilder();
-                innerSubBuilder.addVar(blankName);
                 addInnerSubQuery(innerSubBuilder, m, blankName);
 
                 // set sub queries
-                outerSubBuilder.addSubQuery(innerSubBuilder);
-                outerSubBuilder.setLimit(1);
+                middleSubBilder.addSubQuery(innerSubBuilder);
+                outerSubBuilder.addSubQuery(middleSubBilder);
                 builder.addSubQuery(outerSubBuilder);
             }
         }
