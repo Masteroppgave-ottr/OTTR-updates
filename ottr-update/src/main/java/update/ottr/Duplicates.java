@@ -241,8 +241,7 @@ public class Duplicates {
    * 
    * @param model the model to be inserted into the triple store
    */
-  public void insertModelFromString(String instancesString) {
-
+  public void insertFromString(String instancesString) {
     // look for duplicates between the instanceString and the triple store
     Model model = ottrInterface.expandAndGetModelFromString(instancesString, tm);
     log.print(logLevel, "size of model: " + model.size());
@@ -250,15 +249,20 @@ public class Duplicates {
     log.print(logLevel, "we have " + duplicateModel.size() + " duplicates between the model and the triple store");
 
     // look for duplicates inside the instanceString
-    HashMap<Statement, Integer> countedStatements = ottrInterface.expandAndGetCountedStatementsFromFile(instancesString,
+    HashMap<Statement, Integer> countedStatements = ottrInterface.expandAndGetCountedStatementsFromString(
+        instancesString,
         tm);
-    log.print(logLevel, "We have " + countedStatements.size() + " duplicated statements inside the instanceString");
+    log.print(logLevel, "We have " + countedStatements.size() + " statements inside the instanceString");
     // print the contents of the countedStatements map
     for (Statement s : countedStatements.keySet()) {
       log.print(logLevel, s.toString() + " " + countedStatements.get(s));
     }
 
     HashMap<Statement, Integer> duplicateStatementMap = combineAndGetDuplicates(duplicateModel, countedStatements);
+    log.print(logLevel, "We have " + duplicateStatementMap.size() + " duplicates");
+    for (Statement s : duplicateStatementMap.keySet()) {
+      log.print(logLevel, s.toString() + " " + duplicateStatementMap.get(s));
+    }
 
     incrementCounterTriples2(duplicateStatementMap);
 
@@ -278,7 +282,7 @@ public class Duplicates {
    * 
    * @param instanceFileName the name of the instance file
    */
-  public void insertModelFromFile(String instanceFileName) {
+  public void insertFromFile(String instanceFileName) {
 
     // look for duplicates between the instanceString and the triple store
     Model model = ottrInterface.expandAndGetModelFromFile(instanceFileName, tm);
@@ -498,7 +502,6 @@ public class Duplicates {
     // log.print(logLevel, "String containing instances to delete\n'" +
     // deleteInstancesString + "'");
 
-    Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString, tm);
     Model deletModel = ottrInterface.expandAndGetModelFromString(deleteInstancesString, tm);
     timer.newSplit("model", "duplicate solution", n, changes);
 
@@ -506,8 +509,8 @@ public class Duplicates {
       if (deleteInstancesString != null) {
         deleteModel(deletModel);
       }
-      if (insertModel != null) {
-        // insertModel(insertModel);
+      if (addInstancesString != "") {
+        insertFromString(addInstancesString);
       }
     } catch (Exception e) {
       e.printStackTrace();

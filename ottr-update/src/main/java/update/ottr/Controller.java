@@ -89,10 +89,9 @@ public class Controller {
                 log.print(LOGTAG.ERROR, "File " + pathToOldInstances + " does not exist");
                 System.exit(0);
             }
-            
+
             Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
-            
-            
+
             if (contains(solutions, Solutions.REBUILD + "")) {
                 log.print(logLevel, "START rebuild update for " + n + " instances");
                 Rebuild rebuild = new Rebuild();
@@ -121,7 +120,7 @@ public class Controller {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                
+
                 log.print(logLevel, "START blank node update for " + n + " instances");
                 BlankNode blankNode = new BlankNode(log, dbURL, timer);
                 blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
@@ -137,12 +136,12 @@ public class Controller {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                
+
                 log.print(logLevel, "START duplicate update for " + n + " instances");
                 Duplicates duplicates = new Duplicates(log, dbURL, timer, tm);
 
                 // reset the database to the old instances with a correct counter
-                duplicates.insertModel(baseModel);
+                duplicates.insertFromString(pathToOldInstances);
 
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
@@ -216,7 +215,7 @@ public class Controller {
                     e.printStackTrace();
                 }
                 Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
-                duplicates.insertModel(oldModel);
+                duplicates.insertFromString(pathToOldInstances);
 
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(numInstances),
                         n);

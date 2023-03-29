@@ -118,4 +118,30 @@ public class OttrInterface {
 
         return countedStatements;
     }
+
+    public HashMap<Statement, Integer> expandAndGetCountedStatementsFromString(String instanceString,
+            TemplateManager tm) {
+
+        HashMap<Statement, Integer> countedStatements = new HashMap<Statement, Integer>();
+
+        for (String line : instanceString.split("\\r?\\n")) {
+            log.print(LOGTAG.DEBUG, "line: " + line);
+            if (line.length() > 0 && line.charAt(0) != '@') {
+                Model m = expandAndGetModelFromString(line, tm);
+                for (Statement s : m.listStatements().toList()) {
+                    if (countedStatements.containsKey(s)) {
+                        countedStatements.put(s, countedStatements.get(s) + 1);
+                    } else {
+                        countedStatements.put(s, 1);
+                    }
+                }
+            }
+        }
+
+        for (Object key : countedStatements.keySet().toArray()) {
+            log.print(LOGTAG.DEBUG, key + " " + countedStatements.get(key));
+        }
+
+        return countedStatements;
+    }
 }
