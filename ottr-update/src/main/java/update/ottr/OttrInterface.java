@@ -9,11 +9,16 @@ import xyz.ottr.lutra.wottr.writer.WInstanceWriter;
 
 //jena
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
 
 //java
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+// import the file reader
+import java.io.FileReader;
 
 public class OttrInterface {
     private Logger log;
@@ -81,4 +86,36 @@ public class OttrInterface {
         return writer.writeToModel();
     }
 
+    public HashMap<Statement, Integer> expandAndGetCountedStatementsFromFile(String pathToInstances,
+            TemplateManager tm) {
+
+        HashMap<Statement, Integer> countedStatements = new HashMap<Statement, Integer>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(pathToInstances));
+            String line = reader.readLine();
+            while (line != null) {
+                log.print(LOGTAG.DEBUG, "line: " + line);
+                if (line.length() > 0 && line.charAt(0) != '@') {
+                    Model m = expandAndGetModelFromString(line, tm);
+                    for (Statement s : m.listStatements().toList()) {
+                        if (countedStatements.containsKey(s)) {
+                            countedStatements.put(s, countedStatements.get(s) + 1);
+                        } else {
+                            countedStatements.put(s, 1);
+                        }
+                    }
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (Object key : countedStatements.keySet().toArray()) {
+            log.print(LOGTAG.DEBUG, key + " " + countedStatements.get(key));
+        }
+
+        return countedStatements;
+    }
 }
