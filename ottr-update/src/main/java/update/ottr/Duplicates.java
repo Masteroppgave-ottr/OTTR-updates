@@ -404,60 +404,96 @@ public class Duplicates {
    * If the count is decremented to 1, the triple is removed from the triple
    * store.
    */
-  private void decrementCounterTriples(Model model) {
-    UpdateBuilder updateBuilder = new UpdateBuilder();
-    WhereBuilder whereBuilder = new WhereBuilder();
-
-    String tripleString = "";
-    for (Statement statement : model.listStatements().toList()) {
-      Resource innerTriple = createStringResourceFromStatement(statement.getSubject().getStmtTerm(), model);
-      tripleString += "<" + innerTriple + "> ,";
-    }
-    tripleString = tripleString.substring(0, tripleString.length() - 1);
-
-    try {
-      whereBuilder.addWhere("?subject", "?predicate", "?old_count")
-          .addFilter("?subject IN (" + tripleString + ")")
-          .addBind("?old_count - 1", "?new_count");
-    } catch (ParseException e) {
-      log.print(LOGTAG.ERROR, "could not create the filter part of the query");
-      e.printStackTrace();
+  private void decrementCounterTriples(HashMap<Statement, Integer> statementCountMap) {
+    // find max value of statementCountMap
+    int maxCount = 0;
+    for (Statement s : statementCountMap.keySet()) {
+      int count = statementCountMap.get(s);
+      if (count > maxCount) {
+        maxCount = count;
+      }
     }
 
-    Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
-    updateBuilder.with(
-        counterGraph)
-        .addDelete("?subject", "?predicate", "?old_count")
-        .addInsert("?subject", "?predicate", "?new_count")
-        .addWhere(whereBuilder);
+    Model emptyModel = ModelFactory.createDefaultModel();
+    for (int i = 1; i < maxCount; i++) {
+      log.print(LOGTAG.DEBUG, "round " + i + " of decrementing");
+      UpdateBuilder updateBuilder = new UpdateBuilder();
+      WhereBuilder whereBuilder = new WhereBuilder();
 
-    UpdateRequest request = updateBuilder.buildRequest();
-    log.print(logLevel, "decrementing counter triples");
-    try {
-      fi.updateLocalDB(request, dbURL);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+      String tripleString = "";
+      for (Statement s : statementCountMap.keySet()) {
+        if (statementCountMap.get(s) > i) {
+          Resource innerTriple = createStringResourceFromStatement(s, emptyModel);
+          tripleString += "<" + innerTriple + "> ,";
+        }
+      }
+      tripleString = tripleString.substring(0, tripleString.length() - 1);
 
-    // delete all triples from the counter graph that have a counter less than 2
-    try {
-      deleteCountersLessThan("2", counterGraph);
-    } catch (IOException e) {
-      log.print(LOGTAG.ERROR, "Error while deleting triples with count < 2 from the counter graph");
-      e.printStackTrace();
+      try {
+        whereBuilder.addWhere("?subject", "?predicate", "?old_count")
+            .addFilter("?subject IN (" + tripleString + ")")
+            .addBind("?old_count - 1", "?new_count");
+      } catch (ParseException e) {
+        log.print(LOGTAG.ERROR, "could not create the filter part of the query");
+        e.printStackTrace();
+      }
+
+      Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
+      updateBuilder.with(
+          counterGraph)
+          .addDelete("?subject", "?predicate", "?old_count")
+          .addInsert("?subject", "?predicate", "?new_count")
+          .addWhere(whereBuilder);
+
+      UpdateRequest request = updateBuilder.buildRequest();
+      log.print(logLevel, "decrementing counter triples");
+      try {
+        fi.updateLocalDB(request, dbURL);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      // delete all triples from the counter graph that have a counter less than 2
+      try {
+        deleteCountersLessThan("2", counterGraph);
+      } catch (IOException e) {
+        log.print(LOGTAG.ERROR, "Error while deleting triples with count < 2 from the counter graph");
+        e.printStackTrace();
+      }
     }
   }
 
   /**
    * @param model the model to be deleted from the triple store
    */
-  public void deleteModel(Model model) {
-    // find counter triples
+  public void deleteFromString(String instanceString) {
+    Model model = ottrInterface.expandAndGetModelFromString(instanceString, tm);
     Model counterModel = findCounterTriples(model);
+
+    log.print(LOGTAG.DEBUG, "Counter model is ");
+    log.printModel(LOGTAG.DEBUG, counterModel);
+
+    HashMap<Statement, Integer> statementCountMap = ottrInterface
+        .expandAndGetCountedStatementsFromString(instanceString, tm);
+
+    for (Statement statement : counterModel.listStatements().toList()) {
+      log.print(LOGTAG.DEBUG, "Statement is " + statement);
+      Statement innerStatement = statement.getSubject().getStmtTerm();
+      if (statementCountMap.containsKey(innerStatement)) {
+        statementCountMap.put(innerStatement, statementCountMap.get(innerStatement) + 1);
+      } else {
+        statementCountMap.put(innerStatement, 2);
+      }
+    }
+
+    log.print(LOGTAG.DEBUG, "\n\nStatement count map is ");
+    for (Statement s : statementCountMap.keySet()) {
+      log.print(LOGTAG.DEBUG, "Statement " + s + " has count " + statementCountMap.get(s));
+    }
 
     // decrement counter-triples
     if (counterModel.size() > 0) {
-      decrementCounterTriples(counterModel);
+      decrementCounterTriples(statementCountMap);
     }
 
     // find non-counted triples and delete them
@@ -502,12 +538,12 @@ public class Duplicates {
     // log.print(logLevel, "String containing instances to delete\n'" +
     // deleteInstancesString + "'");
 
-    Model deletModel = ottrInterface.expandAndGetModelFromString(deleteInstancesString, tm);
+    // TODO: do something about this timing
     timer.newSplit("model", "duplicate solution", n, changes);
 
     try {
       if (deleteInstancesString != null) {
-        deleteModel(deletModel);
+        deleteFromString(deleteInstancesString);
       }
       if (addInstancesString != "") {
         insertFromString(addInstancesString);
