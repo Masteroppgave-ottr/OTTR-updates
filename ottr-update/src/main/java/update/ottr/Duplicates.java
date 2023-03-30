@@ -342,7 +342,7 @@ public class Duplicates {
    * If the count is decremented to 1, the triple is removed from the triple
    * store.
    */
-  private void decrementCounterTriples(HashMap<Statement, Integer> statementCountMap) {
+  private void decrementCounterTriples(HashMap<Statement, Integer> statementCountMap, Model counterModel) {
     // find max value of statementCountMap
     int maxCount = 0;
     for (Statement s : statementCountMap.keySet()) {
@@ -352,17 +352,25 @@ public class Duplicates {
       }
     }
 
-    Model emptyModel = ModelFactory.createDefaultModel();
-    for (int i = 1; i < maxCount; i++) {
+    for (int i = 0; i < maxCount; i++) {
+      log.print(LOGTAG.DEBUG, "Runde " + i);
       UpdateBuilder updateBuilder = new UpdateBuilder();
       WhereBuilder whereBuilder = new WhereBuilder();
 
+      // create a string of all triples that has a counter of i
       String tripleString = "";
-      for (Statement s : statementCountMap.keySet()) {
-        if (statementCountMap.get(s) > i) {
-          Resource innerTriple = createStringResourceFromStatement(s, emptyModel);
+      for (Statement s : counterModel.listStatements().toList()) {
+        Statement triple = s.getSubject().getStmtTerm();
+        Resource innerTriple = createStringResourceFromStatement(triple, counterModel);
+        log.print(LOGTAG.DEBUG,
+            "inner triple: " + innerTriple.toString() + " " + statementCountMap.getOrDefault(triple, -1));
+        if (statementCountMap.getOrDefault(triple, -1) >= i) {
           tripleString += "<" + innerTriple + "> ,";
         }
+      }
+
+      if (tripleString.length() == 0) {
+        continue;
       }
       tripleString = tripleString.substring(0, tripleString.length() - 1);
 
@@ -404,32 +412,44 @@ public class Duplicates {
    * @param model the model to be deleted from the triple store
    */
   public void deleteFromString(String instanceString) {
-    Model model = ottrInterface.expandAndGetModelFromString(instanceString);
-    Model counterModel = findCounterTriples(model);
+    Model deleteModel = ottrInterface.expandAndGetModelFromString(instanceString);
+    // find all triples that have an existing counter-triple
+    Model counterModel = findCounterTriples(deleteModel);
+    // count the number of occurrences of each triple to be deleted
     HashMap<Statement, Integer> statementCountMap = ottrInterface
         .expandAndGetCountedStatementsFromString(instanceString);
 
-    for (Statement statement : counterModel.listStatements().toList()) {
-      Statement innerStatement = statement.getSubject().getStmtTerm();
+    log.print(logLevel, "The following triples will be deleted the following number of times:");
+    for (Statement s : statementCountMap.keySet()) {
+      log.print(logLevel, s.toString() + " : " + statementCountMap.get(s));
+    }
+
+    // decrement all counter triples
+    log.print(logLevel, "decrementing counter triples if necessary");
+    if (counterModel.size() > 0) {
+      decrementCounterTriples(statementCountMap, counterModel);
+    }
+
+    // Remove the statements that have an existing count greater than the number of
+    // deletes
+    for (Statement s : counterModel.listStatements().toList()) {
+      Resource innerTriple = s.getSubject();
+      int count = s.getObject().asLiteral().getInt();
+      Statement innerStatement = innerTriple.getStmtTerm();
       if (statementCountMap.containsKey(innerStatement)) {
-        statementCountMap.put(innerStatement, statementCountMap.get(innerStatement) + 1);
-      } else {
-        statementCountMap.put(innerStatement, 2);
+        if (statementCountMap.get(innerStatement) <= count) {
+          deleteModel.remove(innerStatement);
+        }
       }
     }
 
-    // decrement counter-triples
-    if (counterModel.size() > 0) {
-      decrementCounterTriples(statementCountMap);
-    }
-
-    // find non-counted triples and delete them
-    Model nonDuplicatesModel = rdfRdfStarSetDifference(model, counterModel);
-    UpdateRequest request = new UpdateBuilder().addDelete(nonDuplicatesModel)
+    log.print(logLevel, "The following triples will be deleted:");
+    log.printModel(logLevel, deleteModel);
+    UpdateRequest request = new UpdateBuilder().addDelete(deleteModel)
         .buildRequest();
 
-    if (nonDuplicatesModel.size() > 0) {
-      log.print(logLevel, "deleting " + nonDuplicatesModel.size() + " non-duplicates");
+    if (deleteModel.size() > 0) {
+      log.print(logLevel, "deleting " + deleteModel.size() + " non-duplicates");
       try {
         fi.updateLocalDB(request, dbURL);
       } catch (IOException e) {
