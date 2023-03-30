@@ -27,6 +27,7 @@ public class Controller {
         return false;
     }
 
+    @SuppressWarnings("unused")
     private void userBreakpoint() {
         System.out.println("Press Enter to continue...");
         scanner.nextLine();
@@ -108,8 +109,8 @@ public class Controller {
                 }
 
                 log.print(logLevel, "START simple update for " + n + " instances");
-                SimpleUpdate simpleUpdate = new SimpleUpdate(log);
-                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
+                SimpleUpdate simpleUpdate = new SimpleUpdate(log, tm);
+                simpleUpdate.runSimpleUpdate(log, pathToNewInstances, pathToOldInstances, dbURL, timer,
                         Integer.parseInt(n), Integer.parseInt(changes));
                 log.print(logLevel, "DONE  simple update for " + n + " instances");
                 if (contains(solutions, Solutions.REBUILD + "")) {
@@ -181,8 +182,8 @@ public class Controller {
                     e.printStackTrace();
                 }
                 log.print(logLevel, "START simple update for " + n + " changes");
-                SimpleUpdate simpleUpdate = new SimpleUpdate(log);
-                simpleUpdate.runSimpleUpdate(tm, log, pathToNewInstances, pathToOldInstances, dbURL, timer,
+                SimpleUpdate simpleUpdate = new SimpleUpdate(log, tm);
+                simpleUpdate.runSimpleUpdate(log, pathToNewInstances, pathToOldInstances, dbURL, timer,
                         Integer.parseInt(numInstances), n);
                 log.print(logLevel, "DONE  simple update for " + n + " changes");
                 if (contains(solutions, Solutions.REBUILD + "")) {

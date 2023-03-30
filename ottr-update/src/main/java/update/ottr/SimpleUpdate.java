@@ -11,9 +11,11 @@ import xyz.ottr.lutra.TemplateManager;
 public class SimpleUpdate {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.SIMPLE;
+    private TemplateManager tm;
 
-    public SimpleUpdate(Logger log) {
+    public SimpleUpdate(Logger log, TemplateManager tm) {
         this.log = log;
+        this.tm = tm;
     }
 
     public UpdateRequest createDeleteRequest(Model oldModel) {
@@ -50,7 +52,7 @@ public class SimpleUpdate {
         return request;
     }
 
-    public void runSimpleUpdate(TemplateManager tm, Logger log, String pathToNewInstances,
+    public void runSimpleUpdate(Logger log, String pathToNewInstances,
             String pathToOldInstances,
             String dbURL,
             Timer timer,

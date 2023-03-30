@@ -68,15 +68,15 @@ public class App {
         Scanner scanner = new Scanner(System.in);
 
         LOGTAG[] logLevels = {
-                LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
-                LOGTAG.FUSEKI,
+                // LOGTAG.DEFAULT,
+                // LOGTAG.DEBUG,
+                // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
-                // LOGTAG.WARNING,
+                LOGTAG.WARNING,
                 LOGTAG.ERROR,
                 LOGTAG.TEST,
-                LOGTAG.DUPLICATE,
+                // LOGTAG.DUPLICATE,
                 // LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
@@ -143,10 +143,23 @@ public class App {
             // INSERT YOUR CODE HERE
             Duplicates dup = new Duplicates(log, dbURL, timer, ottrInterface);
             dup.insertFromFile(old_instance_fileName);
-            // dup.insertFromFile(old_instance_fileName);
             userBreakpoint(scanner);
-            log.print(LOGTAG.DEBUG, "We are deleting: \n" + deleteInstancesString);
-            dup.deleteFromString(deleteInstancesString);
+            dup.runDuplicateUpdate(old_instance_fileName, new_instance_fileName, 1, 1);
+
+            Rebuild r = new Rebuild();
+            FusekiInterface fuseki = new FusekiInterface(log);
+            r.buildRebuildSet(new_instance_fileName, tm, log, timer, dbURL, "1", "1");
+            try {
+                Model updated = fuseki.getDataset(dbURL, "Updated");
+                Model rebuild = fuseki.getDataset(dbURL, "Rebuild");
+                if (updated.isIsomorphicWith(rebuild)) {
+                    log.print(LOGTAG.SUCCESS, "Graphs are isomorphic");
+                } else {
+                    log.print(LOGTAG.ERROR, "Graphs are not isomorphic");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         if (mode.equals("n=instances")) {

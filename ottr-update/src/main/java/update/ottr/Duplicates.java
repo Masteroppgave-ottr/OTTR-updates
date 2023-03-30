@@ -15,7 +15,6 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -300,26 +299,6 @@ public class Duplicates {
     return duplicateModel;
   }
 
-  private Model rdfRdfStarSetDifference(Model rdfModel, Model rdfStarModel) {
-
-    // create a model from only the subject of all triples in rdfStarModel
-    Model subjectModel = ModelFactory.createDefaultModel();
-    StmtIterator rdfStarStmtIterator = rdfStarModel.listStatements();
-    while (rdfStarStmtIterator.hasNext()) {
-      Statement rdfStarStatement = rdfStarStmtIterator.next();
-
-      Resource subjectResource = rdfStarStatement.getSubject();
-      Statement subjectStatement = subjectResource.getStmtTerm();
-      subjectModel.add(subjectStatement);
-    }
-
-    Model differenceModel = ModelFactory.createDefaultModel();
-    differenceModel.add(rdfModel);
-    differenceModel.remove(subjectModel);
-
-    return differenceModel;
-  }
-
   private void deleteCountersLessThan(String n, Node graph) throws MalformedURLException, IOException {
     UpdateBuilder deleteBuilder = new UpdateBuilder();
 
@@ -481,11 +460,6 @@ public class Duplicates {
       e.printStackTrace();
     }
     timer.newSplit("diff", "duplicate solution", n, changes);
-
-    // log.print(logLevel, "String containing instances to add\n'" +
-    // addInstancesString + "'");
-    // log.print(logLevel, "String containing instances to delete\n'" +
-    // deleteInstancesString + "'");
 
     // TODO: do something about this timing
     timer.newSplit("model", "duplicate solution", n, changes);
