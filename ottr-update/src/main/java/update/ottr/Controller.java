@@ -140,7 +140,7 @@ public class Controller {
                 }
 
                 log.print(logLevel, "START duplicate update for " + n + " instances");
-                Duplicates duplicates = new Duplicates(log, dbURL, timer, tm);
+                Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
 
                 // reset the database to the old instances with a correct counter
                 duplicates.insertFromString(pathToOldInstances);
@@ -207,7 +207,7 @@ public class Controller {
             }
             if (contains(solutions, Solutions.DUPLICATE + "")) {
                 log.print(logLevel, "START duplicate update for " + n + " instances");
-                Duplicates duplicates = new Duplicates(log, dbURL, timer, tm);
+                Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
 
                 // reset the database to the old instances with a correct counter
                 try {

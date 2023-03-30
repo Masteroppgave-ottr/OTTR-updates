@@ -26,18 +26,16 @@ public class Duplicates {
   private Logger log;
   private String dbURL;
   private Timer timer;
-  private TemplateManager tm;
   private LOGTAG logLevel = LOGTAG.DUPLICATE;
   private FusekiInterface fi;
   private OttrInterface ottrInterface;
 
-  public Duplicates(Logger log, String dbURL, Timer timer, TemplateManager tm) {
+  public Duplicates(Logger log, String dbURL, Timer timer, OttrInterface ottrInterface) {
     this.log = log;
     this.dbURL = dbURL;
     this.timer = timer;
-    this.tm = tm;
     this.fi = new FusekiInterface(log);
-    this.ottrInterface = new OttrInterface(log, tm);
+    this.ottrInterface = ottrInterface;
   }
 
   /**
@@ -196,8 +194,7 @@ public class Duplicates {
 
     // look for duplicates inside the instanceString
     HashMap<Statement, Integer> countedStatements = ottrInterface.expandAndGetCountedStatementsFromString(
-        instancesString,
-        tm);
+        instancesString);
     log.print(logLevel, "We have " + countedStatements.size() + " statements inside the instanceString");
     // print the contents of the countedStatements map
     for (Statement s : countedStatements.keySet()) {
@@ -237,8 +234,7 @@ public class Duplicates {
 
     // look for duplicates inside the instanceString
     HashMap<Statement, Integer> countedStatements = ottrInterface.expandAndGetCountedStatementsFromFile(
-        instanceFileName,
-        tm);
+        instanceFileName);
     log.print(logLevel, "We have " + countedStatements.size() + " statements inside the instanceString");
     // print the contents of the countedStatements map
     for (Statement s : countedStatements.keySet()) {
@@ -413,7 +409,7 @@ public class Duplicates {
     Model model = ottrInterface.expandAndGetModelFromString(instanceString);
     Model counterModel = findCounterTriples(model);
     HashMap<Statement, Integer> statementCountMap = ottrInterface
-        .expandAndGetCountedStatementsFromString(instanceString, tm);
+        .expandAndGetCountedStatementsFromString(instanceString);
 
     for (Statement statement : counterModel.listStatements().toList()) {
       Statement innerStatement = statement.getSubject().getStmtTerm();

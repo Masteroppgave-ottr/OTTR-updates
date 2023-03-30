@@ -101,8 +101,7 @@ public class OttrInterface {
      * @return
      *         The model containing the expanded instances
      */
-    public HashMap<Statement, Integer> expandAndGetCountedStatementsFromFile(String pathToInstances,
-            TemplateManager tm) {
+    public HashMap<Statement, Integer> expandAndGetCountedStatementsFromFile(String pathToInstances) {
         HashMap<Statement, Integer> countedStatements = new HashMap<Statement, Integer>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(pathToInstances));
@@ -141,8 +140,7 @@ public class OttrInterface {
      * @return
      *         The model containing the expanded instances
      */
-    public HashMap<Statement, Integer> expandAndGetCountedStatementsFromString(String instanceString,
-            TemplateManager tm) {
+    public HashMap<Statement, Integer> expandAndGetCountedStatementsFromString(String instanceString) {
         HashMap<Statement, Integer> countedStatements = new HashMap<Statement, Integer>();
 
         for (String line : instanceString.split("\\r?\\n")) {

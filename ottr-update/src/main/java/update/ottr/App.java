@@ -141,7 +141,7 @@ public class App {
 
             log.print(LOGTAG.DEBUG, addInstancesString);
             // INSERT YOUR CODE HERE
-            Duplicates dup = new Duplicates(log, dbURL, timer, tm);
+            Duplicates dup = new Duplicates(log, dbURL, timer, ottrInterface);
             dup.insertFromFile(old_instance_fileName);
             // dup.insertFromFile(old_instance_fileName);
             userBreakpoint(scanner);
