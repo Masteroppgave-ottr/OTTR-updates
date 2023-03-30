@@ -16,7 +16,6 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.sparql.function.library.leviathan.log;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -91,57 +90,7 @@ public class Duplicates {
         + statement.getPredicate().toString() + "> " + object + " >");
   }
 
-  private void incrementCounterTriples(Model model) {
-    Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
-    UpdateBuilder updateBuilder = new UpdateBuilder()
-        .addDelete("?subject", "<http://example.org/count>", "?old_count")
-        .addInsert("?subject", "<http://example.org/count>", "?new_count")
-        .with(counterGraph);
-
-    WhereBuilder whereBuilder = new WhereBuilder();
-    whereBuilder.addWhereValueVar("subject");
-    for (Statement statement : model.listStatements().toList()) {
-      Resource innerTriple = createStringResourceFromStatement(statement, model);
-      whereBuilder.addWhereValueRow(innerTriple);
-    }
-
-    WhereBuilder optionalBindBuilder = new WhereBuilder();
-    try {
-      optionalBindBuilder
-          .addOptional("?subject", "<http://example.org/count>",
-              "?old_count")
-          .addBind("IF (BOUND(?old_count), ?old_count + 1, 2)", "?new_count");
-    } catch (ParseException e) {
-      log.print(LOGTAG.ERROR, "could not create the BIND part of the query");
-      e.printStackTrace();
-    }
-
-    updateBuilder.addWhere("?subject", "?predicate", "?object");
-    String insertDeleteString = updateBuilder.buildRequest().toString();
-
-    // remove the WHERE part
-    insertDeleteString = insertDeleteString.substring(0,
-        insertDeleteString.indexOf("WHERE"));
-    // add the WHERE part from the whereBuilder
-    insertDeleteString += whereBuilder.build().toString();
-    // remove the last curly bracket
-    insertDeleteString = insertDeleteString.substring(0,
-        insertDeleteString.length() - 2);
-    // remove the "WHERE {"" part of the optionalBindBuilder
-    String optionalBindString = optionalBindBuilder.build().toString();
-    optionalBindString = optionalBindString.substring(10);
-    insertDeleteString += "\n" + optionalBindString;
-
-    UpdateRequest request = UpdateFactory.create(insertDeleteString);
-    log.print(logLevel, "incrementing/creating counter triples");
-    try {
-      fi.updateLocalDB(request, dbURL);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void incrementCounterTriples2(HashMap<Statement, Integer> statementCountMap) {
+  private void incrementCounterTriples(HashMap<Statement, Integer> statementCountMap) {
     // find max value in the statementCountMap
     int max = 0;
     for (Statement statement : statementCountMap.keySet()) {
@@ -150,10 +99,7 @@ public class Duplicates {
       }
     }
 
-    log.print(LOGTAG.DEBUG, "max value is " + max);
-
     for (int i = 1; i <= max; i++) {
-      log.print(LOGTAG.DEBUG, "round " + i);
       Node counterGraph = NodeFactory.createURI("localhost:3030/updated/count");
       UpdateBuilder updateBuilder = new UpdateBuilder()
           .addDelete("?subject", "<http://example.org/count>", "?old_count")
@@ -264,10 +210,9 @@ public class Duplicates {
       log.print(logLevel, s.toString() + " " + duplicateStatementMap.get(s));
     }
 
-    incrementCounterTriples2(duplicateStatementMap);
+    incrementCounterTriples(duplicateStatementMap);
 
     // insert the model into the triple store
-    log.print(LOGTAG.DEBUG, "inserting " + model.size() + " triples");
     UpdateRequest request = new UpdateBuilder().addInsert(model).buildRequest();
     try {
       fi.updateLocalDB(request, dbURL);
@@ -306,10 +251,9 @@ public class Duplicates {
       log.print(logLevel, s.toString() + " " + duplicateStatementMap.get(s));
     }
 
-    incrementCounterTriples2(duplicateStatementMap);
+    incrementCounterTriples(duplicateStatementMap);
 
     // insert the model into the triple store
-    log.print(LOGTAG.DEBUG, "inserting " + model.size() + " triples");
     UpdateRequest request = new UpdateBuilder().addInsert(model).buildRequest();
     try {
       fi.updateLocalDB(request, dbURL);
@@ -416,7 +360,6 @@ public class Duplicates {
 
     Model emptyModel = ModelFactory.createDefaultModel();
     for (int i = 1; i < maxCount; i++) {
-      log.print(LOGTAG.DEBUG, "round " + i + " of decrementing");
       UpdateBuilder updateBuilder = new UpdateBuilder();
       WhereBuilder whereBuilder = new WhereBuilder();
 
@@ -469,26 +412,16 @@ public class Duplicates {
   public void deleteFromString(String instanceString) {
     Model model = ottrInterface.expandAndGetModelFromString(instanceString, tm);
     Model counterModel = findCounterTriples(model);
-
-    log.print(LOGTAG.DEBUG, "Counter model is ");
-    log.printModel(LOGTAG.DEBUG, counterModel);
-
     HashMap<Statement, Integer> statementCountMap = ottrInterface
         .expandAndGetCountedStatementsFromString(instanceString, tm);
 
     for (Statement statement : counterModel.listStatements().toList()) {
-      log.print(LOGTAG.DEBUG, "Statement is " + statement);
       Statement innerStatement = statement.getSubject().getStmtTerm();
       if (statementCountMap.containsKey(innerStatement)) {
         statementCountMap.put(innerStatement, statementCountMap.get(innerStatement) + 1);
       } else {
         statementCountMap.put(innerStatement, 2);
       }
-    }
-
-    log.print(LOGTAG.DEBUG, "\n\nStatement count map is ");
-    for (Statement s : statementCountMap.keySet()) {
-      log.print(LOGTAG.DEBUG, "Statement " + s + " has count " + statementCountMap.get(s));
     }
 
     // decrement counter-triples

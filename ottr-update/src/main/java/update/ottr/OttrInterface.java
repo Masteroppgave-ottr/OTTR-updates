@@ -88,13 +88,11 @@ public class OttrInterface {
 
     public HashMap<Statement, Integer> expandAndGetCountedStatementsFromFile(String pathToInstances,
             TemplateManager tm) {
-
         HashMap<Statement, Integer> countedStatements = new HashMap<Statement, Integer>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(pathToInstances));
             String line = reader.readLine();
             while (line != null) {
-                log.print(LOGTAG.DEBUG, "line: " + line);
                 if (line.length() > 0 && line.charAt(0) != '@') {
                     Model m = expandAndGetModelFromString(line, tm);
                     for (Statement s : m.listStatements().toList()) {
@@ -112,20 +110,14 @@ public class OttrInterface {
             e.printStackTrace();
         }
 
-        for (Object key : countedStatements.keySet().toArray()) {
-            log.print(LOGTAG.DEBUG, key + " " + countedStatements.get(key));
-        }
-
         return countedStatements;
     }
 
     public HashMap<Statement, Integer> expandAndGetCountedStatementsFromString(String instanceString,
             TemplateManager tm) {
-
         HashMap<Statement, Integer> countedStatements = new HashMap<Statement, Integer>();
 
         for (String line : instanceString.split("\\r?\\n")) {
-            log.print(LOGTAG.DEBUG, "line: " + line);
             if (line.length() > 0 && line.charAt(0) != '@') {
                 Model m = expandAndGetModelFromString(line, tm);
                 for (Statement s : m.listStatements().toList()) {
@@ -136,10 +128,6 @@ public class OttrInterface {
                     }
                 }
             }
-        }
-
-        for (Object key : countedStatements.keySet().toArray()) {
-            log.print(LOGTAG.DEBUG, key + " " + countedStatements.get(key));
         }
 
         return countedStatements;
