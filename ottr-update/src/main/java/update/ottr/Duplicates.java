@@ -332,7 +332,6 @@ public class Duplicates {
     }
 
     for (int i = 0; i < maxCount; i++) {
-      log.print(LOGTAG.DEBUG, "Runde " + i);
       UpdateBuilder updateBuilder = new UpdateBuilder();
       WhereBuilder whereBuilder = new WhereBuilder();
 
@@ -341,8 +340,6 @@ public class Duplicates {
       for (Statement s : counterModel.listStatements().toList()) {
         Statement triple = s.getSubject().getStmtTerm();
         Resource innerTriple = createStringResourceFromStatement(triple, counterModel);
-        log.print(LOGTAG.DEBUG,
-            "inner triple: " + innerTriple.toString() + " " + statementCountMap.getOrDefault(triple, -1));
         if (statementCountMap.getOrDefault(triple, -1) >= i) {
           tripleString += "<" + innerTriple + "> ,";
         }
@@ -388,7 +385,8 @@ public class Duplicates {
   }
 
   /**
-   * @param model the model to be deleted from the triple store
+   * Delete the result of the expansion of the given instance string from the
+   * triple store.
    */
   public void deleteFromString(String instanceString) {
     Model deleteModel = ottrInterface.expandAndGetModelFromString(instanceString);
@@ -416,8 +414,6 @@ public class Duplicates {
       int count = s.getObject().asLiteral().getInt();
       Statement innerStatement = innerTriple.getStmtTerm();
       if (statementCountMap.containsKey(innerStatement)) {
-        log.print(LOGTAG.DEBUG,
-            innerStatement.toString() + " " + statementCountMap.get(innerStatement) + " <?" + count);
         if (statementCountMap.get(innerStatement) < count) {
           deleteModel.remove(innerStatement);
         }
