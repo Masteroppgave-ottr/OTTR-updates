@@ -437,7 +437,9 @@ public class Duplicates {
       int count = s.getObject().asLiteral().getInt();
       Statement innerStatement = innerTriple.getStmtTerm();
       if (statementCountMap.containsKey(innerStatement)) {
-        if (statementCountMap.get(innerStatement) <= count) {
+        log.print(LOGTAG.DEBUG,
+            innerStatement.toString() + " " + statementCountMap.get(innerStatement) + " <?" + count);
+        if (statementCountMap.get(innerStatement) < count) {
           deleteModel.remove(innerStatement);
         }
       }
