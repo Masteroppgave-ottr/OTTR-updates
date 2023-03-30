@@ -20,8 +20,6 @@ import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
-import xyz.ottr.lutra.TemplateManager;
-
 public class Duplicates {
   private Logger log;
   private String dbURL;

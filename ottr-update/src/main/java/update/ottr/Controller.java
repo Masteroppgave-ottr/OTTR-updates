@@ -125,7 +125,7 @@ public class Controller {
 
                 log.print(logLevel, "START blank node update for " + n + " instances");
                 BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
-                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
+                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE  blank node update for " + n + " instances");
                 if (contains(solutions, Solutions.REBUILD + "")) {
@@ -197,9 +197,7 @@ public class Controller {
                 }
                 log.print(logLevel, "START blank node update for " + n + " changes");
                 BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
-                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm,
-                        Integer.parseInt(numInstances),
-                        n);
+                blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(numInstances), n);
                 log.print(logLevel, "DONE  blank node update for " + n + " changes");
                 if (contains(solutions, Solutions.REBUILD + "")) {
                     compareDataset("Updated", "Rebuild");
@@ -237,6 +235,6 @@ public class Controller {
             String pathToTemplates) {
         BlankNode b = new BlankNode(log, dbURL, timer, ottrInterface);
         b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances,
-                tm, n, changes);
+                n, changes);
     }
 }

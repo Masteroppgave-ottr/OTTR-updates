@@ -12,8 +12,6 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 
-import xyz.ottr.lutra.TemplateManager;
-
 public class BlankNode {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.BLANK;
@@ -185,11 +183,10 @@ public class BlankNode {
      * takes the counter triples into account
      * 
      * @param deleteInstancesString String containing the instances to delete
-     * @param tm                    TemplateManager for the template
      * @return UpdateRequest containing the update request for deleting the
      *         instances
      */
-    public UpdateRequest createDeleteRequest(String deleteInstancesString, TemplateManager tm) {
+    public UpdateRequest createDeleteRequest(String deleteInstancesString) {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
         UpdateBuilder builder = new UpdateBuilder();
 
@@ -226,8 +223,7 @@ public class BlankNode {
         return builder.buildRequest();
     }
 
-    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, TemplateManager tm, int n,
-            int changes) {
+    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, int n, int changes) {
         timer.newSplit("start", "blank solution", n, changes);
 
         Diff d = new Diff(log);
@@ -261,7 +257,7 @@ public class BlankNode {
         try {
             FusekiInterface fi = new FusekiInterface(log);
             if (deleteInstancesString != null) {
-                UpdateRequest deleteRequest = createDeleteRequest(deleteInstancesString, tm);
+                UpdateRequest deleteRequest = createDeleteRequest(deleteInstancesString);
                 fi.updateLocalDB(deleteRequest, dbURL);
             }
             if (insertModel != null) {
