@@ -279,8 +279,8 @@ public class Duplicates {
       e.printStackTrace();
     }
 
+    // query the database
     Query query = constructBuilder.build();
-
     Model duplicateModel = null;
     try {
       duplicateModel = fi.queryLocalDB(query, dbURL);
@@ -345,6 +345,7 @@ public class Duplicates {
         }
       }
 
+      // if the string is empty, we have no triples to decrement
       if (tripleString.length() == 0) {
         continue;
       }
@@ -389,9 +390,10 @@ public class Duplicates {
    * triple store.
    */
   public void deleteFromString(String instanceString) {
-    Model deleteModel = ottrInterface.expandAndGetModelFromString(instanceString);
     // find all triples that have an existing counter-triple
+    Model deleteModel = ottrInterface.expandAndGetModelFromString(instanceString);
     Model counterModel = findCounterTriples(deleteModel);
+
     // count the number of occurrences of each triple to be deleted
     HashMap<Statement, Integer> statementCountMap = ottrInterface
         .expandAndGetCountedStatementsFromString(instanceString);
@@ -407,8 +409,7 @@ public class Duplicates {
       decrementCounterTriples(statementCountMap, counterModel);
     }
 
-    // Remove the statements that have an existing count greater than the number of
-    // deletes
+    // Remove the triples where we only need to decrement the counter
     for (Statement s : counterModel.listStatements().toList()) {
       Resource innerTriple = s.getSubject();
       int count = s.getObject().asLiteral().getInt();
@@ -420,11 +421,9 @@ public class Duplicates {
       }
     }
 
-    log.print(logLevel, "The following triples will be deleted:");
-    log.printModel(logLevel, deleteModel);
+    // execute the delete query
     UpdateRequest request = new UpdateBuilder().addDelete(deleteModel)
         .buildRequest();
-
     if (deleteModel.size() > 0) {
       log.print(logLevel, "deleting " + deleteModel.size() + " non-duplicates");
       try {
