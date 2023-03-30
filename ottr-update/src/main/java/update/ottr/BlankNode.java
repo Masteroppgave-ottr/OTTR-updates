@@ -21,11 +21,11 @@ public class BlankNode {
     private Timer timer;
     OttrInterface ottrInterface;
 
-    public BlankNode(Logger log, String dbURL, Timer timer) {
+    public BlankNode(Logger log, String dbURL, Timer timer, OttrInterface ottrInterface) {
         this.log = log;
         this.dbURL = dbURL;
         this.timer = timer;
-        this.ottrInterface = new OttrInterface(log);
+        this.ottrInterface = ottrInterface;
     }
 
     /**
@@ -195,7 +195,7 @@ public class BlankNode {
 
         // we expand one instance at a time
         for (String line : deleteInstancesString.split("\n")) {
-            Model m = ottrInterface.expandAndGetModelFromString(line, tm);
+            Model m = ottrInterface.expandAndGetModelFromString(line);
             HashMap<RDFNode, Integer> blankNodeCounts = countBlankNodes(m);
             addDeleteClause(builder, m);
 
@@ -251,7 +251,7 @@ public class BlankNode {
         log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
-        Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString, tm);
+        Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString);
         timer.newSplit("model", "blank solution", n, changes);
 
         if (insertModel != null) {

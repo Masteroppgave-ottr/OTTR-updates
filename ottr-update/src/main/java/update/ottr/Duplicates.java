@@ -37,7 +37,7 @@ public class Duplicates {
     this.timer = timer;
     this.tm = tm;
     this.fi = new FusekiInterface(log);
-    this.ottrInterface = new OttrInterface(log);
+    this.ottrInterface = new OttrInterface(log, tm);
   }
 
   /**
@@ -189,7 +189,7 @@ public class Duplicates {
    */
   public void insertFromString(String instancesString) {
     // look for duplicates between the instanceString and the triple store
-    Model model = ottrInterface.expandAndGetModelFromString(instancesString, tm);
+    Model model = ottrInterface.expandAndGetModelFromString(instancesString);
     log.print(logLevel, "size of model: " + model.size());
     Model duplicateModel = findDuplicates(model);
     log.print(logLevel, "we have " + duplicateModel.size() + " duplicates between the model and the triple store");
@@ -230,7 +230,7 @@ public class Duplicates {
   public void insertFromFile(String instanceFileName) {
 
     // look for duplicates between the instanceString and the triple store
-    Model model = ottrInterface.expandAndGetModelFromFile(instanceFileName, tm);
+    Model model = ottrInterface.expandAndGetModelFromFile(instanceFileName);
     log.print(logLevel, "size of model: " + model.size());
     Model duplicateModel = findDuplicates(model);
     log.print(logLevel, "we have " + duplicateModel.size() + " duplicates between the model and the triple store");
@@ -410,7 +410,7 @@ public class Duplicates {
    * @param model the model to be deleted from the triple store
    */
   public void deleteFromString(String instanceString) {
-    Model model = ottrInterface.expandAndGetModelFromString(instanceString, tm);
+    Model model = ottrInterface.expandAndGetModelFromString(instanceString);
     Model counterModel = findCounterTriples(model);
     HashMap<Statement, Integer> statementCountMap = ottrInterface
         .expandAndGetCountedStatementsFromString(instanceString, tm);

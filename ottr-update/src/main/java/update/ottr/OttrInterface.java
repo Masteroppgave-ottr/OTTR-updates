@@ -17,15 +17,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-// import the file reader
 import java.io.FileReader;
 
 public class OttrInterface {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.OTTR;
+    private TemplateManager tm;
 
-    public OttrInterface(Logger log) {
+    public OttrInterface(Logger log, TemplateManager tm) {
         this.log = log;
+        this.tm = tm;
     }
 
     /**
@@ -41,7 +42,7 @@ public class OttrInterface {
      * @return
      *         The model containing the expanded instances
      */
-    public Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
+    public Model expandAndGetModelFromFile(String pathToInstances) {
         // read instances from file and expand them
         ResultStream<Instance> expanded = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
                 .innerFlatMap(tm.makeExpander());
@@ -67,7 +68,7 @@ public class OttrInterface {
      * @return
      *         The model containing the expanded instances
      */
-    public Model expandAndGetModelFromString(String instancesString, TemplateManager tm) {
+    public Model expandAndGetModelFromString(String instancesString) {
         // read instances from string and expand them
         if (instancesString == null) {
             log.print(logLevel, "instancesString is null");
@@ -86,6 +87,20 @@ public class OttrInterface {
         return writer.writeToModel();
     }
 
+    /**
+     * Reads instances from a file and expands them line by line. All statements
+     * created by the instances are counted and returned in a hashmap.
+     * 
+     * @param pathToInstances
+     *                        The path to the file containing the instances. One
+     *                        instance per
+     *                        line. ended with a '.'
+     * @param tm
+     *                        The template manager. The template manager has read
+     *                        the template file.
+     * @return
+     *         The model containing the expanded instances
+     */
     public HashMap<Statement, Integer> expandAndGetCountedStatementsFromFile(String pathToInstances,
             TemplateManager tm) {
         HashMap<Statement, Integer> countedStatements = new HashMap<Statement, Integer>();
@@ -94,7 +109,7 @@ public class OttrInterface {
             String line = reader.readLine();
             while (line != null) {
                 if (line.length() > 0 && line.charAt(0) != '@') {
-                    Model m = expandAndGetModelFromString(line, tm);
+                    Model m = expandAndGetModelFromString(line);
                     for (Statement s : m.listStatements().toList()) {
                         if (countedStatements.containsKey(s)) {
                             countedStatements.put(s, countedStatements.get(s) + 1);
@@ -113,13 +128,26 @@ public class OttrInterface {
         return countedStatements;
     }
 
+    /**
+     * Reads instances from a string and expands them line by line. All statements
+     * created by the instances are counted and returned in a hashmap.
+     * 
+     * @param instanceString
+     *                       The string containing the instances. One instance per
+     *                       line. ended with a .
+     * @param tm
+     *                       The template manager. The template manager has read
+     *                       the template file
+     * @return
+     *         The model containing the expanded instances
+     */
     public HashMap<Statement, Integer> expandAndGetCountedStatementsFromString(String instanceString,
             TemplateManager tm) {
         HashMap<Statement, Integer> countedStatements = new HashMap<Statement, Integer>();
 
         for (String line : instanceString.split("\\r?\\n")) {
             if (line.length() > 0 && line.charAt(0) != '@') {
-                Model m = expandAndGetModelFromString(line, tm);
+                Model m = expandAndGetModelFromString(line);
                 for (Statement s : m.listStatements().toList()) {
                     if (countedStatements.containsKey(s)) {
                         countedStatements.put(s, countedStatements.get(s) + 1);

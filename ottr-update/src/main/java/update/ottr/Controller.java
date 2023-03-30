@@ -17,6 +17,7 @@ public class Controller {
     LOGTAG logLevel = LOGTAG.TEST;
     FusekiInterface fuseki;
     Scanner scanner;
+    OttrInterface ottrInterface;
 
     private boolean contains(String[] arr, String targetValue) {
         for (String s : arr) {
@@ -31,7 +32,8 @@ public class Controller {
         scanner.nextLine();
     }
 
-    public Controller(String[] solutions, Logger log, Timer timer, String dbURL, TemplateManager tm) {
+    public Controller(String[] solutions, Logger log, Timer timer, String dbURL, TemplateManager tm,
+            OttrInterface ottrInterface) {
         this.solutions = solutions;
         this.log = log;
         this.timer = timer;
@@ -39,6 +41,7 @@ public class Controller {
         this.tm = tm;
         this.fuseki = new FusekiInterface(log);
         this.scanner = new Scanner(System.in);
+        this.ottrInterface = ottrInterface;
     }
 
     /**
@@ -75,7 +78,6 @@ public class Controller {
      *                         the name of the original instance file
      */
     public void nInstances(String[] numElements, String generatedPath, String instanceFileName, String changes) {
-        OttrInterface ottrInterface = new OttrInterface(log);
         FusekiInterface fuseki = new FusekiInterface(log);
         for (String n : numElements) {
             String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
@@ -90,7 +92,7 @@ public class Controller {
                 System.exit(0);
             }
 
-            Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
+            Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances);
 
             if (contains(solutions, Solutions.REBUILD + "")) {
                 log.print(logLevel, "START rebuild update for " + n + " instances");
@@ -122,7 +124,7 @@ public class Controller {
                 }
 
                 log.print(logLevel, "START blank node update for " + n + " instances");
-                BlankNode blankNode = new BlankNode(log, dbURL, timer);
+                BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
                 blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE  blank node update for " + n + " instances");
@@ -161,10 +163,9 @@ public class Controller {
 
     public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances) {
         String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
-        OttrInterface ottrInterface = new OttrInterface(log);
         for (int n : changes) {
             String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
-            Model newModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
+            Model newModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances);
 
             if (contains(solutions, Solutions.REBUILD + "")) {
                 log.print(logLevel, "START rebuild update for " + n + " changes");
@@ -195,7 +196,7 @@ public class Controller {
                     e.printStackTrace();
                 }
                 log.print(logLevel, "START blank node update for " + n + " changes");
-                BlankNode blankNode = new BlankNode(log, dbURL, timer);
+                BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
                 blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, tm,
                         Integer.parseInt(numInstances),
                         n);
@@ -214,7 +215,7 @@ public class Controller {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances, tm);
+                Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances);
                 duplicates.insertFromString(pathToOldInstances);
 
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(numInstances),
@@ -234,7 +235,7 @@ public class Controller {
 
     public void testSingleFile(int n, int changes, String pathToNewInstances, String pathToOldInstances,
             String pathToTemplates) {
-        BlankNode b = new BlankNode(log, dbURL, timer);
+        BlankNode b = new BlankNode(log, dbURL, timer, ottrInterface);
         b.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances,
                 tm, n, changes);
     }

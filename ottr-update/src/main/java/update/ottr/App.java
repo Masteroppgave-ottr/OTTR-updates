@@ -70,13 +70,13 @@ public class App {
         LOGTAG[] logLevels = {
                 LOGTAG.DEFAULT,
                 LOGTAG.DEBUG,
-                // LOGTAG.FUSEKI,
+                LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 // LOGTAG.WARNING,
                 LOGTAG.ERROR,
                 LOGTAG.TEST,
-                // LOGTAG.DUPLICATE,
+                LOGTAG.DUPLICATE,
                 // LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD
@@ -89,6 +89,7 @@ public class App {
         Timer timer = new Timer(tempDir + timerFileName);
         TemplateManager tm = new StandardTemplateManager();
         FusekiInterface fi = new FusekiInterface(log);
+        OttrInterface ottrInterface = new OttrInterface(log, tm);
         org.apache.jena.query.ARQ.init();
 
         // read the template file
@@ -103,7 +104,7 @@ public class App {
             System.exit(1);
         }
 
-        Controller controller = new Controller(solutions, log, timer, dbURL, tm);
+        Controller controller = new Controller(solutions, log, timer, dbURL, tm, ottrInterface);
         if (mode.equals("default")) {
             System.out.println("Running default mode");
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
@@ -130,16 +131,22 @@ public class App {
                 e.printStackTrace();
             }
 
-            OttrInterface jh = new OttrInterface(log);
             // models for the old and new instance files
-            Model oldModel = jh.expandAndGetModelFromFile(old_instance_fileName, tm);
-            Model newModel = jh.expandAndGetModelFromFile(new_instance_fileName, tm);
+            Model oldModel = ottrInterface.expandAndGetModelFromFile(old_instance_fileName);
+            Model newModel = ottrInterface.expandAndGetModelFromFile(new_instance_fileName);
 
             // models for the changes
-            Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
-            Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
+            Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString);
+            Model deleteModel = ottrInterface.expandAndGetModelFromString(deleteInstancesString);
 
+            log.print(LOGTAG.DEBUG, addInstancesString);
             // INSERT YOUR CODE HERE
+            Duplicates dup = new Duplicates(log, dbURL, timer, tm);
+            dup.insertFromFile(old_instance_fileName);
+            // dup.insertFromFile(old_instance_fileName);
+            userBreakpoint(scanner);
+            log.print(LOGTAG.DEBUG, "We are deleting: \n" + deleteInstancesString);
+            dup.deleteFromString(deleteInstancesString);
         }
 
         if (mode.equals("n=instances")) {

@@ -79,9 +79,9 @@ public class SimpleUpdate {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
         timer.newSplit("diff", "simple solution", instances, changes);
-        OttrInterface jh = new OttrInterface(log);
-        Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
-        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
+        OttrInterface jh = new OttrInterface(log, tm);
+        Model insertModel = jh.expandAndGetModelFromString(addInstancesString);
+        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString);
 
         timer.newSplit("model", "simple solution", instances, changes);
 

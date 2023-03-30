@@ -12,12 +12,12 @@ public class Rebuild {
 
     public void buildRebuildSet(String pathToNewInstances, TemplateManager tm, Logger log,
             Timer timer, String dbURL, String instances, String changes) {
-        OttrInterface ottrInterface = new OttrInterface(log);
+        OttrInterface ottrInterface = new OttrInterface(log, tm);
         FusekiInterface fi = new FusekiInterface(log);
 
         timer.newSplit("start", "rebuild set", Integer.parseInt(instances), Integer.parseInt(changes));
 
-        Model model = ottrInterface.expandAndGetModelFromFile(pathToNewInstances, tm);
+        Model model = ottrInterface.expandAndGetModelFromFile(pathToNewInstances);
         log.print(logLevel, "Instances expanded\n");
         try {
             fi.rebuild(model, dbURL);
