@@ -32,6 +32,7 @@ public class App {
         return newArray;
     }
 
+    @SuppressWarnings("unused")
     private static int populateDB(Logger log, FusekiInterface fi, String pathToOldInstances, String pathToNewInstances,
             TemplateManager tm,
             String dbURL) {
