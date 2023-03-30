@@ -213,8 +213,7 @@ public class Controller {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances);
-                duplicates.insertFromString(pathToOldInstances);
+                duplicates.insertFromFile(pathToOldInstances);
 
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(numInstances),
                         n);
