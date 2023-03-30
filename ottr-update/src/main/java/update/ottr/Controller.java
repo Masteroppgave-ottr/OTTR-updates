@@ -98,7 +98,7 @@ public class Controller {
                 log.print(logLevel, "START rebuild update for " + n + " instances");
                 Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
-                log.print(logLevel, "DONE  rebuild update for " + n + " instances\n");
+                log.print(logLevel, "DONE  rebuild update for " + n + " instances");
             }
             if (this.contains(solutions, Solutions.SIMPLE + "")) {
                 try {
@@ -143,7 +143,7 @@ public class Controller {
                 Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
 
                 // reset the database to the old instances with a correct counter
-                duplicates.insertFromString(pathToOldInstances);
+                duplicates.insertFromFile(pathToOldInstances);
 
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));

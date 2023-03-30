@@ -494,7 +494,7 @@ public class Duplicates {
       if (deleteInstancesString != null) {
         deleteFromString(deleteInstancesString);
       }
-      if (addInstancesString != "") {
+      if (addInstancesString != null) {
         insertFromString(addInstancesString);
       }
     } catch (Exception e) {

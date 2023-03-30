@@ -2,9 +2,7 @@ package update.ottr;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-
 import org.apache.jena.rdf.model.Model;
-
 import xyz.ottr.lutra.TemplateManager;
 
 public class Rebuild {
