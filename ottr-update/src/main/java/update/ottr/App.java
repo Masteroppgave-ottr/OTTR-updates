@@ -94,8 +94,8 @@ public class App {
         org.apache.jena.query.ARQ.init();
 
         // read the template file
-        MessageHandler msgs = tm.fetchMissingDependencies();
-        msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
+        tm.setFetchMissingDependencies(true);
+        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
                 templateFileName);
         Severity severity = msgs.printMessages();
         if (severity == Severity.ERROR) {
@@ -142,7 +142,9 @@ public class App {
 
             log.print(LOGTAG.DEBUG, addInstancesString);
             // INSERT YOUR CODE HERE
+
             Duplicates dup = new Duplicates(log, dbURL, timer, ottrInterface);
+            log.print(LOGTAG.DEBUG, "inserting from the file " + old_instance_fileName);
             dup.insertFromFile(old_instance_fileName);
             userBreakpoint(scanner);
             dup.runDuplicateUpdate(old_instance_fileName, new_instance_fileName, 1, 1);
@@ -168,7 +170,7 @@ public class App {
             String[] instances = args[7].split(", ");
             String changeNr = Integer.parseInt(args[8]) + Integer.parseInt(args[9]) + Integer.parseInt(args[10]) + "";
             controller.nInstances(instances, tempDir + "generated/", instanceFileName,
-                    changeNr);
+                    changeNr, args[8], args[9], args[10]);
         }
         if (mode.equals("n=changes")) {
             // parse extra arguments
@@ -179,7 +181,7 @@ public class App {
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
             controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
-                    instances);
+                    instances, deletions, insertions);
         }
     }
 }

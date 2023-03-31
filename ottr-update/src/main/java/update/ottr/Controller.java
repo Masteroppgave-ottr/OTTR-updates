@@ -78,7 +78,8 @@ public class Controller {
      * @param instanceFileName
      *                         the name of the original instance file
      */
-    public void nInstances(String[] numElements, String generatedPath, String instanceFileName, String changes) {
+    public void nInstances(String[] numElements, String generatedPath, String instanceFileName, String changes,
+            String deletions, String explicitChanges, String insertions) {
         FusekiInterface fuseki = new FusekiInterface(log);
         for (String n : numElements) {
             String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
@@ -140,11 +141,11 @@ public class Controller {
                     e.printStackTrace();
                 }
 
-                log.print(logLevel, "START duplicate update for " + n + " instances");
                 Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
 
                 // reset the database to the old instances with a correct counter
                 duplicates.insertFromFile(pathToOldInstances);
+                log.print(logLevel, "START duplicate update for " + n + " instances");
 
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
@@ -153,16 +154,18 @@ public class Controller {
                     compareDataset("Updated", "Rebuild");
                 }
             }
-
-            try {
-                timer.writeSplitsToFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }
+        try {
+            timer.writeSplitsToFile(
+                    "nInstances_instances-" + numElements[0] + "-" + numElements[numElements.length - 1] + "_"
+                            + "deletions-" + deletions + "_insertions-" + insertions + ".txt");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances) {
+    public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances,
+            String[] deletions, String[] insertions) {
         String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
         for (int n : changes) {
             String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
@@ -223,11 +226,13 @@ public class Controller {
                     compareDataset("Updated", "Rebuild");
                 }
             }
-            try {
-                timer.writeSplitsToFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }
+        try {
+            timer.writeSplitsToFile("nChanges_instances-" + numInstances + "_deletions-" + deletions[0] + "-"
+                    + deletions[deletions.length - 1] + "_insertions" + insertions[0] + "-"
+                    + insertions[insertions.length - 1] + ".txt");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
