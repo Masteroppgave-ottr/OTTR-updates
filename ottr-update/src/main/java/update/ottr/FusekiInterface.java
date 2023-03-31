@@ -33,10 +33,10 @@ public class FusekiInterface {
      * 
      */
     public int initDB(String oldInstanceFileName, String newInstanceFileName, TemplateManager tm, String dbURL) {
-        OttrInterface ottrInterface = new OttrInterface(log);
+        OttrInterface ottrInterface = new OttrInterface(log, tm);
 
-        Model baseModel = ottrInterface.expandAndGetModelFromFile(oldInstanceFileName, tm);
-        Model newModel = ottrInterface.expandAndGetModelFromFile(newInstanceFileName, tm);
+        Model baseModel = ottrInterface.expandAndGetModelFromFile(oldInstanceFileName);
+        Model newModel = ottrInterface.expandAndGetModelFromFile(newInstanceFileName);
 
         int triples = 0;
         try {

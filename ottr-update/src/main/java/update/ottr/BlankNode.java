@@ -12,8 +12,6 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 
-import xyz.ottr.lutra.TemplateManager;
-
 public class BlankNode {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.BLANK;
@@ -21,11 +19,11 @@ public class BlankNode {
     private Timer timer;
     OttrInterface ottrInterface;
 
-    public BlankNode(Logger log, String dbURL, Timer timer) {
+    public BlankNode(Logger log, String dbURL, Timer timer, OttrInterface ottrInterface) {
         this.log = log;
         this.dbURL = dbURL;
         this.timer = timer;
-        this.ottrInterface = new OttrInterface(log);
+        this.ottrInterface = ottrInterface;
     }
 
     /**
@@ -185,17 +183,16 @@ public class BlankNode {
      * takes the counter triples into account
      * 
      * @param deleteInstancesString String containing the instances to delete
-     * @param tm                    TemplateManager for the template
      * @return UpdateRequest containing the update request for deleting the
      *         instances
      */
-    public UpdateRequest createDeleteRequest(String deleteInstancesString, TemplateManager tm) {
+    public UpdateRequest createDeleteRequest(String deleteInstancesString) {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
         UpdateBuilder builder = new UpdateBuilder();
 
         // we expand one instance at a time
         for (String line : deleteInstancesString.split("\n")) {
-            Model m = ottrInterface.expandAndGetModelFromString(line, tm);
+            Model m = ottrInterface.expandAndGetModelFromString(line);
             HashMap<RDFNode, Integer> blankNodeCounts = countBlankNodes(m);
             addDeleteClause(builder, m);
 
@@ -226,8 +223,7 @@ public class BlankNode {
         return builder.buildRequest();
     }
 
-    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, TemplateManager tm, int n,
-            int changes) {
+    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, int n, int changes) {
         timer.newSplit("start", "blank solution", n, changes);
 
         Diff d = new Diff(log);
@@ -251,7 +247,7 @@ public class BlankNode {
         log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
-        Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString, tm);
+        Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString);
         timer.newSplit("model", "blank solution", n, changes);
 
         if (insertModel != null) {
@@ -261,7 +257,7 @@ public class BlankNode {
         try {
             FusekiInterface fi = new FusekiInterface(log);
             if (deleteInstancesString != null) {
-                UpdateRequest deleteRequest = createDeleteRequest(deleteInstancesString, tm);
+                UpdateRequest deleteRequest = createDeleteRequest(deleteInstancesString);
                 fi.updateLocalDB(deleteRequest, dbURL);
             }
             if (insertModel != null) {

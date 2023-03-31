@@ -179,12 +179,24 @@ public class Timer {
      * @throws IOException
      *                     If the file cannot be written to
      */
-    public void writeSplitsToFile() throws IOException {
+    public void writeSplitsToFile(String copyName) throws IOException {
         FileWriter fw = new FileWriter(outputFile);
         for (Split s : splitList) {
             fw.write(s.toString() + "\n");
         }
         fw.close();
+
+        // fin the path
+        String path = outputFile.substring(0, outputFile.lastIndexOf("/") + 1);
+
+        // copy the file to the copyName
+        if (copyName != null) {
+            FileWriter fw2 = new FileWriter(path + "results/" + copyName);
+            for (Split s : splitList) {
+                fw2.write(s.toString() + "\n");
+            }
+            fw2.close();
+        }
     }
 
     /**

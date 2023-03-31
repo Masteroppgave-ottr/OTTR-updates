@@ -11,9 +11,11 @@ import xyz.ottr.lutra.TemplateManager;
 public class SimpleUpdate {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.SIMPLE;
+    private TemplateManager tm;
 
-    public SimpleUpdate(Logger log) {
+    public SimpleUpdate(Logger log, TemplateManager tm) {
         this.log = log;
+        this.tm = tm;
     }
 
     public UpdateRequest createDeleteRequest(Model oldModel) {
@@ -50,7 +52,7 @@ public class SimpleUpdate {
         return request;
     }
 
-    public void runSimpleUpdate(TemplateManager tm, Logger log, String pathToNewInstances,
+    public void runSimpleUpdate(Logger log, String pathToNewInstances,
             String pathToOldInstances,
             String dbURL,
             Timer timer,
@@ -79,9 +81,9 @@ public class SimpleUpdate {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
         timer.newSplit("diff", "simple solution", instances, changes);
-        OttrInterface jh = new OttrInterface(log);
-        Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
-        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
+        OttrInterface jh = new OttrInterface(log, tm);
+        Model insertModel = jh.expandAndGetModelFromString(addInstancesString);
+        Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString);
 
         timer.newSplit("model", "simple solution", instances, changes);
 
