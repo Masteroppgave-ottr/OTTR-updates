@@ -186,10 +186,9 @@ public class Timer {
         }
         fw.close();
 
-        // keep everything up to the last / in outputFile
+        // fin the path
         String path = outputFile.substring(0, outputFile.lastIndexOf("/") + 1);
 
-        System.out.println("\n\n" + path + "results/" + copyName + "\n\n");
         // copy the file to the copyName
         if (copyName != null) {
             FileWriter fw2 = new FileWriter(path + "results/" + copyName);
