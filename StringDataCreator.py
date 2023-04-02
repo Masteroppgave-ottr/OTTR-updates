@@ -6,6 +6,7 @@ from TestDataCreator import insert
 
 tag = "\033[93m[CREATE]\033[0m"
 
+
 def _next_in_list(l: list[int]):
     if len(l) > 0:
         return l.pop(0)
@@ -13,9 +14,9 @@ def _next_in_list(l: list[int]):
         return -1
 
 
-def create_subfile(filename: str, new_filename: str, n: int):
+def create_copy_with_lines(filename: str, new_filename: str, n: int):
     """
-        creates a new file with the first `n` instances of `filename`
+        creates a new file with the first `n` instances of `filename` If n is larger than the number of instances in `filename`, new random instances are generated.
     """
     print(f"{tag} creating shortened file", new_filename)
     # open a new file to write the data to
@@ -36,27 +37,13 @@ def create_subfile(filename: str, new_filename: str, n: int):
     if (n > length):
         print(f"{tag} generating", n - length, "new instances")
         for i in range(prefix_end, n - length):
+            instance = lines[random.randint(prefix_end, length-1)]
             new_file.write(mutate_instance_1st_IRI(
-                lines[prefix_end+1], 1, rng_range=10000000000000000000))
+                instance, 1, rng_range=10000000000000000000))
 
-
-def mutate_instance(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 100000000):
-    """
-        mutates argument `arg_nr` in instance `line`.
-        NB the argument at position `arg_nr` is assumed to be an IRI
-    """
-    if new_value is None:
-        new_value = '"new text here' + \
-            str(random.randint(0, rng_range)) + '"'
-
-    split = instance.split(", ")
-
-    combo = split[:arg_nr-1] + [new_value] + split[arg_nr:]
-
-    return ", ".join(combo)
 
 def mutate_instance_1st_IRI(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 10000000000000000000):
-    # assuming the first argument is an IRI, and that there are several arguments 
+    # assuming the first argument is an IRI, and that there are several arguments
     front = instance[:instance.find("(")+1]
     end = instance[instance.find(")"):]
     arguments = instance[instance.find("(")+1:instance.find(")")]
@@ -65,10 +52,9 @@ def mutate_instance_1st_IRI(instance: str, arg_nr: int, new_value: str = None, r
     if new_value is None:
         new_value = '<http://example.org/newID' + \
             str(random.randint(0, rng_range)) + '>'
-        
+
     new_instance = (front + new_value + restArgs + end)
     return new_instance
-
 
 
 def create_file_nInstances(deletions: int, changes: int, insertions: int, filename: str, new_filename: str):
@@ -128,7 +114,7 @@ def create_file_nInstances(deletions: int, changes: int, insertions: int, filena
     new_file.close()
 
 
-def run(source_dir: str, source: str, target_dir: str, file_sizes: list[str], delete_nr: int, change_nr: int, insert_nr: int):
+def run_nInstances(source_dir: str, source: str, target_dir: str, file_sizes: list[str], delete_nr: int, change_nr: int, insert_nr: int):
     """
         for every N in `file_sizes`:
             create a new file with the first N instances of `source`
@@ -136,8 +122,8 @@ def run(source_dir: str, source: str, target_dir: str, file_sizes: list[str], de
         the files are placed in `target_dir`
     """
     for size in file_sizes:
-        create_subfile(source_dir + source,
-                       target_dir + size + "_old_" + source, int(size))
+        create_copy_with_lines(source_dir + source,
+                               target_dir + size + "_old_" + source, int(size))
 
         create_file_nInstances(delete_nr, change_nr, insert_nr, target_dir +
                                size + "_old_" + source, target_dir + size + "_new_" + source)
@@ -151,8 +137,8 @@ def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_siz
         the files are placed in `target_dir`
     """
     old_file_name = target_dir + str(file_size) + "_old_" + source
-    create_subfile(source_dir + source,
-                   old_file_name, file_size)
+    create_copy_with_lines(source_dir + source,
+                           old_file_name, file_size)
 
     for i in range(len(deletions)):
         total_changes = int(deletions[i]) + \
@@ -178,8 +164,8 @@ if __name__ == "__main__":
         change_nr = int(sys.argv[6])
         insert_nr = int(sys.argv[7])
 
-        run(source_dir, source, target_dir,
-            file_sizes, delete_nr, change_nr, insert_nr)
+        run_nInstances(source_dir, source, target_dir,
+                       file_sizes, delete_nr, change_nr, insert_nr)
 
     if (mode == "n=changes"):
         if len(sys.argv) < 8:
