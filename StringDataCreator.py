@@ -53,8 +53,8 @@ def create_copy_of_length(filename: str, new_filename: str, n: int):
 
 def mutate_instance_argument_n(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 10000000000000000000):
     front = instance[:instance.find("(")+1]
-    end = instance[instance.find(")"):]
-    arguments = instance[instance.find("(")+1:instance.find(")")].split(", ")
+    end = instance[instance.rfind(")"):]
+    arguments = instance[instance.find("(")+1:instance.rfind(")")].split(", ")
 
     if arg_nr > len(arguments):
         raise Exception(
@@ -248,11 +248,8 @@ if __name__ == "__main__":
         # add_n_duplicates(source_dir+source, duplicate_nr)
         # exit(0)
 
-        add_n_blanks(source_dir+source, blank_nr)
-        exit(0)
-
         run_nInstances(source_dir, source, target_dir,
-                       file_sizes, delete_nr, change_nr, insert_nr)
+                       file_sizes, delete_nr, change_nr, insert_nr, duplicate_nr, blank_nr)
 
     if (mode == "n=changes"):
         if len(sys.argv) < 8:
