@@ -32,6 +32,16 @@ public class Timer {
         public String toString() {
             return instances + " ; " + changes + " ; " + solutionName + " ; " + label + " ; " + time;
         }
+
+        public int compareTo(Split s) {
+            if (this.instances < s.instances) {
+                return -1;
+            } else if (this.instances > s.instances) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
     }
 
     private String outputFile;
@@ -180,6 +190,12 @@ public class Timer {
      *                     If the file cannot be written to
      */
     public void writeSplitsToFile(String copyName) throws IOException {
+        // sort the splits
+        System.out.println("Writing splits to file: " + outputFile);
+
+        // sort by number of instances
+        splitList.sort((s1, s2) -> s1.compareTo(s2));
+
         FileWriter fw = new FileWriter(outputFile);
         for (Split s : splitList) {
             fw.write(s.toString() + "\n");

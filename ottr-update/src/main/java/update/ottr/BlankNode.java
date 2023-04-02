@@ -224,7 +224,9 @@ public class BlankNode {
     }
 
     public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, int n, int changes) {
-        timer.newSplit("start", "blank solution", n, changes);
+        if (n != -1) {
+            timer.newSplit("start", "blank solution", n, changes);
+        }
 
         Diff d = new Diff(log);
         d.readDiff(pathToOldInstances, pathToNewInstances);
@@ -242,13 +244,19 @@ public class BlankNode {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        timer.newSplit("diff", "blank solution", n, changes);
+
+        if (n != -1) {
+            timer.newSplit("diff", "blank solution", n, changes);
+        }
 
         log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
         Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString);
-        timer.newSplit("model", "blank solution", n, changes);
+
+        if (n != -1) {
+            timer.newSplit("model", "blank solution", n, changes);
+        }
 
         if (insertModel != null) {
             log.print(logLevel, "insert model " + insertModel.toString());
@@ -268,8 +276,9 @@ public class BlankNode {
             e.printStackTrace();
         }
 
-        timer.newSplit("end", "blank solution", n, changes);
-
+        if (n != -1) {
+            timer.newSplit("end", "blank solution", n, changes);
+        }
     }
 
 }

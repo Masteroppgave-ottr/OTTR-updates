@@ -9,6 +9,7 @@ import xyz.ottr.lutra.TemplateManager;
 
 public class Controller {
     String[] solutions;
+    String solutionString;
     Logger log;
     Timer timer;
     String dbURL;
@@ -43,6 +44,11 @@ public class Controller {
         this.fuseki = new FusekiInterface(log);
         this.scanner = new Scanner(System.in);
         this.ottrInterface = ottrInterface;
+        this.solutionString = "(";
+        for (String s : solutions) {
+            solutionString += s + "_";
+        }
+        solutionString = solutionString.substring(0, solutionString.length() - 1) + ")";
     }
 
     /**
@@ -81,6 +87,34 @@ public class Controller {
     public void nInstances(String[] numElements, String generatedPath, String instanceFileName, String changes,
             String deletions, String explicitChanges, String insertions) {
         FusekiInterface fuseki = new FusekiInterface(log);
+
+        log.print(LOGTAG.TEST, "START warmup");
+        long before = System.currentTimeMillis();
+        Rebuild rebuild = new Rebuild();
+        Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
+        BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
+
+        // warm up for ~ 10 seconds
+        while (((System.currentTimeMillis() - before) / 1000) < 3) {
+            String newF = generatedPath + numElements[0] + "_new_" + instanceFileName;
+            String oldF = generatedPath + numElements[0] + "_old_" + instanceFileName;
+
+            rebuild.buildRebuildSet(newF, tm, log, timer, dbURL,
+                    null, changes);
+            duplicates.runDuplicateUpdate(oldF, newF, -1, Integer.parseInt(changes));
+            blankNode.runBlankNodeUpdate(oldF, newF, -1,
+                    Integer.parseInt(changes));
+
+        }
+        log.print(LOGTAG.TEST, "DONE  warmup in " + ((System.currentTimeMillis() - before) / 1000) + " seconds");
+
+        // sleep for 1 second
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         for (String n : numElements) {
             String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
             String pathToOldInstances = generatedPath + n + "_old_" + instanceFileName;
@@ -98,7 +132,6 @@ public class Controller {
 
             if (contains(solutions, Solutions.REBUILD + "")) {
                 log.print(logLevel, "START rebuild update for " + n + " instances");
-                Rebuild rebuild = new Rebuild();
                 rebuild.buildRebuildSet(pathToNewInstances, tm, log, timer, dbURL, n, changes);
                 log.print(logLevel, "DONE  rebuild update for " + n + " instances");
             }
@@ -126,7 +159,6 @@ public class Controller {
                 }
 
                 log.print(logLevel, "START blank node update for " + n + " instances");
-                BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
                 blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE  blank node update for " + n + " instances");
@@ -140,8 +172,6 @@ public class Controller {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
 
                 // reset the database to the old instances with a correct counter
                 duplicates.insertFromFile(pathToOldInstances);
@@ -158,7 +188,8 @@ public class Controller {
         try {
             timer.writeSplitsToFile(
                     "nInstances_instances-" + numElements[0] + "-" + numElements[numElements.length - 1] + "_"
-                            + "deletions-" + deletions + "_insertions-" + insertions + ".txt");
+                            + "deletions-" + deletions + "_insertions-" + insertions + "_" + solutionString
+                            + ".txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -226,13 +257,13 @@ public class Controller {
                     compareDataset("Updated", "Rebuild");
                 }
             }
-        }
-        try {
-            timer.writeSplitsToFile("nChanges_instances-" + numInstances + "_deletions-" + deletions[0] + "-"
-                    + deletions[deletions.length - 1] + "_insertions" + insertions[0] + "-"
-                    + insertions[insertions.length - 1] + ".txt");
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                timer.writeSplitsToFile("nChanges_instances-" + numInstances + "_deletions-" + deletions[0] + "-"
+                        + deletions[deletions.length - 1] + "_insertions" + insertions[0] + "-"
+                        + insertions[insertions.length - 1] + "_" + solutionString + ".txt");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

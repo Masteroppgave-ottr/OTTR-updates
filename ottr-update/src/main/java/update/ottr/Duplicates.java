@@ -436,7 +436,9 @@ public class Duplicates {
 
   public void runDuplicateUpdate(String pathToOldInstances, String pathToNewInstances, int n,
       int changes) {
-    timer.newSplit("start", "duplicate solution", n, changes);
+    if (n != -1) {
+      timer.newSplit("start", "duplicate solution", n, changes);
+    }
 
     Diff d = new Diff(log);
     d.readDiff(pathToOldInstances, pathToNewInstances);
@@ -454,10 +456,14 @@ public class Duplicates {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    timer.newSplit("diff", "duplicate solution", n, changes);
+    if (n != -1) {
+      timer.newSplit("diff", "duplicate solution", n, changes);
+    }
 
     // TODO: do something about this timing
-    timer.newSplit("model", "duplicate solution", n, changes);
+    if (n != -1) {
+      timer.newSplit("model", "duplicate solution", n, changes);
+    }
 
     try {
       if (deleteInstancesString != null) {
@@ -470,8 +476,9 @@ public class Duplicates {
       e.printStackTrace();
     }
 
-    timer.newSplit("end", "duplicate solution", n, changes);
-
+    if (n != -1) {
+      timer.newSplit("end", "duplicate solution", n, changes);
+    }
   }
 
 }
