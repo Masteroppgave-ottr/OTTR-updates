@@ -72,6 +72,32 @@ public class Controller {
         return isIsomorphic;
     }
 
+    private void warmup(int instances, String generatedPath, String fileName, int warmupSeconds) {
+        long before = System.currentTimeMillis();
+        Rebuild rebuild = new Rebuild();
+        Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
+        BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
+
+        log.print(LOGTAG.TEST, "START warmup");
+        while (((System.currentTimeMillis() - before) / 1000) < warmupSeconds) {
+            String newF = generatedPath + instances + "_new_" + fileName;
+            String oldF = generatedPath + instances + "_old_" + fileName;
+
+            rebuild.buildRebuildSet(newF, tm, log, timer, dbURL,
+                    null, "0");
+            duplicates.runDuplicateUpdate(oldF, newF, -1, 0);
+            blankNode.runBlankNodeUpdate(oldF, newF, -1, 0);
+        }
+        log.print(LOGTAG.TEST, "DONE  warmup in " + ((System.currentTimeMillis() - before) / 1000) + " seconds");
+
+        // sleep for 1 second
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * For every n in numElements:
      * run the solutions specified in 'this.solutions'
@@ -88,30 +114,11 @@ public class Controller {
             String deletions, String explicitChanges, String insertions, int warmupSeconds) {
         FusekiInterface fuseki = new FusekiInterface(log);
 
-        long before = System.currentTimeMillis();
         Rebuild rebuild = new Rebuild();
         Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
         BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
 
-        log.print(LOGTAG.TEST, "START warmup");
-        while (((System.currentTimeMillis() - before) / 1000) < warmupSeconds) {
-            String newF = generatedPath + numElements[0] + "_new_" + instanceFileName;
-            String oldF = generatedPath + numElements[0] + "_old_" + instanceFileName;
-
-            rebuild.buildRebuildSet(newF, tm, log, timer, dbURL,
-                    null, changes);
-            duplicates.runDuplicateUpdate(oldF, newF, -1, Integer.parseInt(changes));
-            blankNode.runBlankNodeUpdate(oldF, newF, -1,
-                    Integer.parseInt(changes));
-        }
-        log.print(LOGTAG.TEST, "DONE  warmup in " + ((System.currentTimeMillis() - before) / 1000) + " seconds");
-
-        // sleep for 1 second
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        warmup(Integer.parseInt(numElements[0]), generatedPath, instanceFileName, warmupSeconds);
 
         for (String n : numElements) {
             String pathToNewInstances = generatedPath + n + "_new_" + instanceFileName;
@@ -194,8 +201,11 @@ public class Controller {
     }
 
     public void nChanges(int[] changes, String generatedPath, String instanceFileName, String numInstances,
-            String[] deletions, String[] insertions) {
+            String[] deletions, String[] insertions, int warmupSeconds) {
         String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
+
+        warmup(Integer.parseInt(numInstances), generatedPath, instanceFileName, 0);
+
         for (int n : changes) {
             String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
             Model newModel = ottrInterface.expandAndGetModelFromFile(pathToNewInstances);

@@ -182,7 +182,7 @@ public class App {
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
             controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
-                    instances, deletions, insertions);
+                    instances, deletions, insertions, warmupSeconds);
         }
     }
 }
