@@ -85,17 +85,16 @@ public class Controller {
      *                         the name of the original instance file
      */
     public void nInstances(String[] numElements, String generatedPath, String instanceFileName, String changes,
-            String deletions, String explicitChanges, String insertions) {
+            String deletions, String explicitChanges, String insertions, int warmupSeconds) {
         FusekiInterface fuseki = new FusekiInterface(log);
 
-        log.print(LOGTAG.TEST, "START warmup");
         long before = System.currentTimeMillis();
         Rebuild rebuild = new Rebuild();
         Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
         BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
 
-        // warm up for ~ 10 seconds
-        while (((System.currentTimeMillis() - before) / 1000) < 3) {
+        log.print(LOGTAG.TEST, "START warmup");
+        while (((System.currentTimeMillis() - before) / 1000) < warmupSeconds) {
             String newF = generatedPath + numElements[0] + "_new_" + instanceFileName;
             String oldF = generatedPath + numElements[0] + "_old_" + instanceFileName;
 
@@ -104,7 +103,6 @@ public class Controller {
             duplicates.runDuplicateUpdate(oldF, newF, -1, Integer.parseInt(changes));
             blankNode.runBlankNodeUpdate(oldF, newF, -1,
                     Integer.parseInt(changes));
-
         }
         log.print(LOGTAG.TEST, "DONE  warmup in " + ((System.currentTimeMillis() - before) / 1000) + " seconds");
 

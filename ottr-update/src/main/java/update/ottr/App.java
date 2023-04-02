@@ -66,6 +66,7 @@ public class App {
         String timerFileName = args[4];
         String dbURL = args[5];
         String[] solutions = args[6].split(", ");
+        int warmupSeconds = Integer.parseInt(args[7]);
         Scanner scanner = new Scanner(System.in);
 
         LOGTAG[] logLevels = {
@@ -167,17 +168,17 @@ public class App {
 
         if (mode.equals("n=instances")) {
             // parse extra arguments
-            String[] instances = args[7].split(", ");
-            String changeNr = Integer.parseInt(args[8]) + Integer.parseInt(args[9]) + Integer.parseInt(args[10]) + "";
+            String[] instances = args[8].split(", ");
+            String changeNr = Integer.parseInt(args[9]) + Integer.parseInt(args[10]) + Integer.parseInt(args[11]) + "";
             controller.nInstances(instances, tempDir + "generated/", instanceFileName,
-                    changeNr, args[8], args[9], args[10]);
+                    changeNr, args[9], args[10], args[11], warmupSeconds);
         }
         if (mode.equals("n=changes")) {
             // parse extra arguments
-            String instances = args[7];
-            String[] deletions = args[8].split(", ");
-            String[] changes = args[9].split(", ");
-            String[] insertions = args[10].split(", ");
+            String instances = args[8];
+            String[] deletions = args[9].split(", ");
+            String[] changes = args[10].split(", ");
+            String[] insertions = args[11].split(", ");
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
             controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
