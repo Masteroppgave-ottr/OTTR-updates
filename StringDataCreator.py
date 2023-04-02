@@ -14,7 +14,16 @@ def _next_in_list(l: list[int]):
         return -1
 
 
-def create_copy_with_lines(filename: str, new_filename: str, n: int):
+def _find_prefix_end(lines: list[str]):
+    prefix_end = 0
+    for nr, line in enumerate(lines):
+        if len(line) > 1 and not line.startswith("@"):
+            prefix_end = nr
+            break
+    return prefix_end
+
+
+def create_copy_of_length(filename: str, new_filename: str, n: int):
     """
         creates a new file with the first `n` instances of `filename` If n is larger than the number of instances in `filename`, new random instances are generated.
     """
@@ -38,23 +47,67 @@ def create_copy_with_lines(filename: str, new_filename: str, n: int):
         print(f"{tag} generating", n - length, "new instances")
         for i in range(prefix_end, n - length):
             instance = lines[random.randint(prefix_end, length-1)]
-            new_file.write(mutate_instance_1st_IRI(
+            new_file.write(mutate_instance_argument_n(
                 instance, 1, rng_range=10000000000000000000))
 
 
-def mutate_instance_1st_IRI(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 10000000000000000000):
-    # assuming the first argument is an IRI, and that there are several arguments
+def mutate_instance_argument_n(instance: str, arg_nr: int, new_value: str = None, rng_range: int = 10000000000000000000):
     front = instance[:instance.find("(")+1]
     end = instance[instance.find(")"):]
-    arguments = instance[instance.find("(")+1:instance.find(")")]
-    restArgs = arguments[arguments.find(","):]
+    arguments = instance[instance.find("(")+1:instance.find(")")].split(", ")
+
+    if arg_nr > len(arguments):
+        raise Exception(
+            f"you are trying to mutate argument {arg_nr} of an instance with only {len(arguments)} arguments")
 
     if new_value is None:
         new_value = '<http://example.org/newID' + \
             str(random.randint(0, rng_range)) + '>'
 
-    new_instance = (front + new_value + restArgs + end)
-    return new_instance
+    mutated_instance = front
+    for i in range(0, len(arguments)):
+        if i == arg_nr-1:
+            mutated_instance += new_value + ", "
+        else:
+            mutated_instance += arguments[i] + ", "
+
+    mutated_instance = mutated_instance[:-2] + end
+    return mutated_instance
+
+
+def add_n_duplicates(filename: str, n: int):
+    file = open(filename)
+    lines = file.readlines()
+    length = len(lines)
+    prefix_end = _find_prefix_end(lines)
+
+    # create a list of n pairs of line numbers. No line number occurs twice in the list.
+    mutate_line_numbers = random.sample(range(prefix_end, length), n*2)
+    print(mutate_line_numbers)
+
+    # iterate 2 and 2 elements from line_numbers
+    for i in range(0, len(mutate_line_numbers), 2):
+        print("i is " + str(i))
+        line1 = lines[mutate_line_numbers[i]]
+        newLine1 = mutate_instance_argument_n(
+            line1, 3, f"<http://example.org/duplicateID/{i}>")
+        newLine1 = mutate_instance_argument_n(
+            newLine1, 4, f'"sun{i}"')
+
+        line2 = lines[mutate_line_numbers[i+1]]
+        newLine2 = mutate_instance_argument_n(
+            line2, 3, f"<http://example.org/duplicateID/{i}>")
+        newLine2 = mutate_instance_argument_n(
+            newLine2, 4, f'"sun{i}"')
+
+        # write the new lines to the file
+        lines[mutate_line_numbers[i]] = newLine1
+        lines[mutate_line_numbers[i+1]] = newLine2
+
+    # write the new lines to the file
+    file = open(filename, "w")
+    file.writelines(lines)
+    file.close()
 
 
 def create_file_nInstances(deletions: int, changes: int, insertions: int, filename: str, new_filename: str):
@@ -69,11 +122,7 @@ def create_file_nInstances(deletions: int, changes: int, insertions: int, filena
     new_file = open(new_filename, "w")
     lines = original_file.readlines()
     length = len(lines)
-    prefix_end = 0
-    for nr, line in enumerate(lines):
-        if len(line) > 1 and not line.startswith("@"):
-            prefix_end = nr
-            break
+    prefix_end = _find_prefix_end(lines)
 
     # find line number to delete and insert
     change_delete_line_numbers = random.sample(
@@ -101,13 +150,13 @@ def create_file_nInstances(deletions: int, changes: int, insertions: int, filena
 
         # change instance
         if line_nr == next_change_line:
-            new_file.write(mutate_instance_1st_IRI(line, 1))
+            new_file.write(mutate_instance_argument_n(line, 1))
             next_change_line = _next_in_list(change_line_numbers)
 
         # insert instance
         if line_nr == next_insert_line:
             while line_nr == next_insert_line:
-                new_file.write(mutate_instance_1st_IRI(line, 1))
+                new_file.write(mutate_instance_argument_n(line, 1))
                 next_insert_line = _next_in_list(insert_line_numbers)
 
     original_file.close()
@@ -122,8 +171,8 @@ def run_nInstances(source_dir: str, source: str, target_dir: str, file_sizes: li
         the files are placed in `target_dir`
     """
     for size in file_sizes:
-        create_copy_with_lines(source_dir + source,
-                               target_dir + size + "_old_" + source, int(size))
+        create_copy_of_length(source_dir + source,
+                              target_dir + size + "_old_" + source, int(size))
 
         create_file_nInstances(delete_nr, change_nr, insert_nr, target_dir +
                                size + "_old_" + source, target_dir + size + "_new_" + source)
@@ -137,8 +186,8 @@ def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_siz
         the files are placed in `target_dir`
     """
     old_file_name = target_dir + str(file_size) + "_old_" + source
-    create_copy_with_lines(source_dir + source,
-                           old_file_name, file_size)
+    create_copy_of_length(source_dir + source,
+                          old_file_name, file_size)
 
     for i in range(len(deletions)):
         total_changes = int(deletions[i]) + \
@@ -163,6 +212,13 @@ if __name__ == "__main__":
         delete_nr = int(sys.argv[5])
         change_nr = int(sys.argv[6])
         insert_nr = int(sys.argv[7])
+        duplicate_nr = int(sys.argv[8])
+        blank_nr = int(sys.argv[9])
+
+        # print(
+        #     f"creating {duplicate_nr} duplicates in the file {source_dir+source}")
+        # add_n_duplicates(source_dir+source, duplicate_nr)
+        # exit(0)
 
         run_nInstances(source_dir, source, target_dir,
                        file_sizes, delete_nr, change_nr, insert_nr)
