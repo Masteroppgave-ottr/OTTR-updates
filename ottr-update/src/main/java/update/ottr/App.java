@@ -32,6 +32,7 @@ public class App {
         return newArray;
     }
 
+    @SuppressWarnings("unused")
     private static int populateDB(Logger log, FusekiInterface fi, String pathToOldInstances, String pathToNewInstances,
             TemplateManager tm,
             String dbURL) {
@@ -65,15 +66,16 @@ public class App {
         String timerFileName = args[4];
         String dbURL = args[5];
         String[] solutions = args[6].split(", ");
+        int warmupSeconds = Integer.parseInt(args[7]);
         Scanner scanner = new Scanner(System.in);
 
         LOGTAG[] logLevels = {
-                LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
+                // LOGTAG.DEFAULT,
+                // LOGTAG.DEBUG,
                 // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
-                // LOGTAG.WARNING,
+                LOGTAG.WARNING,
                 LOGTAG.ERROR,
                 LOGTAG.TEST,
                 // LOGTAG.DUPLICATE,
@@ -89,11 +91,12 @@ public class App {
         Timer timer = new Timer(tempDir + timerFileName);
         TemplateManager tm = new StandardTemplateManager();
         FusekiInterface fi = new FusekiInterface(log);
+        OttrInterface ottrInterface = new OttrInterface(log, tm);
         org.apache.jena.query.ARQ.init();
 
         // read the template file
-        MessageHandler msgs = tm.fetchMissingDependencies();
-        msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
+        tm.setFetchMissingDependencies(true);
+        MessageHandler msgs = tm.readLibrary(tm.getFormat("stOTTR"), tempDir +
                 templateFileName);
         Severity severity = msgs.printMessages();
         if (severity == Severity.ERROR) {
@@ -103,7 +106,7 @@ public class App {
             System.exit(1);
         }
 
-        Controller controller = new Controller(solutions, log, timer, dbURL, tm);
+        Controller controller = new Controller(solutions, log, timer, dbURL, tm, ottrInterface);
         if (mode.equals("default")) {
             System.out.println("Running default mode");
             String old_instance_fileName = tempDir + "old_" + instanceFileName;
@@ -130,35 +133,56 @@ public class App {
                 e.printStackTrace();
             }
 
-            OttrInterface jh = new OttrInterface(log);
             // models for the old and new instance files
-            Model oldModel = jh.expandAndGetModelFromFile(old_instance_fileName, tm);
-            Model newModel = jh.expandAndGetModelFromFile(new_instance_fileName, tm);
+            Model oldModel = ottrInterface.expandAndGetModelFromFile(old_instance_fileName);
+            Model newModel = ottrInterface.expandAndGetModelFromFile(new_instance_fileName);
 
             // models for the changes
-            Model insertModel = jh.expandAndGetModelFromString(addInstancesString, tm);
-            Model deleteModel = jh.expandAndGetModelFromString(deleteInstancesString, tm);
+            Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString);
+            Model deleteModel = ottrInterface.expandAndGetModelFromString(deleteInstancesString);
 
+            log.print(LOGTAG.DEBUG, addInstancesString);
             // INSERT YOUR CODE HERE
+
+            Duplicates dup = new Duplicates(log, dbURL, timer, ottrInterface);
+            log.print(LOGTAG.DEBUG, "inserting from the file " + old_instance_fileName);
+            dup.insertFromFile(old_instance_fileName);
+            userBreakpoint(scanner);
+            dup.runDuplicateUpdate(old_instance_fileName, new_instance_fileName, 1, 1);
+
+            Rebuild r = new Rebuild();
+            FusekiInterface fuseki = new FusekiInterface(log);
+            r.buildRebuildSet(new_instance_fileName, tm, log, timer, dbURL, "1", "1");
+            try {
+                Model updated = fuseki.getDataset(dbURL, "Updated");
+                Model rebuild = fuseki.getDataset(dbURL, "Rebuild");
+                if (updated.isIsomorphicWith(rebuild)) {
+                    log.print(LOGTAG.SUCCESS, "Graphs are isomorphic");
+                } else {
+                    log.print(LOGTAG.ERROR, "Graphs are not isomorphic");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         if (mode.equals("n=instances")) {
             // parse extra arguments
-            String[] instances = args[7].split(", ");
-            String changeNr = Integer.parseInt(args[8]) + Integer.parseInt(args[9]) + Integer.parseInt(args[10]) + "";
+            String[] instances = args[8].split(", ");
+            String changeNr = Integer.parseInt(args[9]) + Integer.parseInt(args[10]) + Integer.parseInt(args[11]) + "";
             controller.nInstances(instances, tempDir + "generated/", instanceFileName,
-                    changeNr);
+                    changeNr, args[9], args[10], args[11], warmupSeconds);
         }
         if (mode.equals("n=changes")) {
             // parse extra arguments
-            String instances = args[7];
-            String[] deletions = args[8].split(", ");
-            String[] changes = args[9].split(", ");
-            String[] insertions = args[10].split(", ");
+            String instances = args[8];
+            String[] deletions = args[9].split(", ");
+            String[] changes = args[10].split(", ");
+            String[] insertions = args[11].split(", ");
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
             controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
-                    instances);
+                    instances, deletions, insertions, warmupSeconds);
         }
     }
 }

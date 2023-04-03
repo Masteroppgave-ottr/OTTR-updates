@@ -12,8 +12,6 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.update.UpdateRequest;
 
-import xyz.ottr.lutra.TemplateManager;
-
 public class BlankNode {
     private Logger log;
     private LOGTAG logLevel = LOGTAG.BLANK;
@@ -21,11 +19,11 @@ public class BlankNode {
     private Timer timer;
     OttrInterface ottrInterface;
 
-    public BlankNode(Logger log, String dbURL, Timer timer) {
+    public BlankNode(Logger log, String dbURL, Timer timer, OttrInterface ottrInterface) {
         this.log = log;
         this.dbURL = dbURL;
         this.timer = timer;
-        this.ottrInterface = new OttrInterface(log);
+        this.ottrInterface = ottrInterface;
     }
 
     /**
@@ -129,6 +127,7 @@ public class BlankNode {
      * This finds all graphs that match the deleteModel and have a blank node.
      */
     private void addInnerSubQuery(SelectBuilder builder, Model model, String blankName) {
+        builder.addVar(blankName);
         addWhereClauseToSelect(builder, model, blankName);
         try {
             builder.addFilter("isblank(" + blankName + ")");
@@ -140,6 +139,8 @@ public class BlankNode {
     /**
      * Adds the outer sub query to the builder.
      * This counts the number of triples the the sub query has.
+     * 
+     * @return
      */
     private void addOuterSubQuery(SelectBuilder builder, Model model, int count, String blankName) {
         builder.addVar(blankName);
@@ -151,16 +152,21 @@ public class BlankNode {
             e.printStackTrace();
         }
 
-        builder.addWhere(blankName, "?pred", "?obj");
-        SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", blankName);
-        builder.addUnion(newBuilder);
-
         builder.addGroupBy(blankName);
         try {
             builder.addHaving("?count_" + blankName.substring(1) + "= " + count);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        builder.setLimit(1);
+    }
+
+    private void addMiddleSubQuery(SelectBuilder builder, String blankName) {
+        builder.setDistinct(true);
+        builder.addVar("*");
+        builder.addWhere(blankName, "?pred", "?obj");
+        SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", blankName);
+        builder.addUnion(newBuilder);
     }
 
     public UpdateRequest createInsertRequest(Model newModel) {
@@ -177,17 +183,16 @@ public class BlankNode {
      * takes the counter triples into account
      * 
      * @param deleteInstancesString String containing the instances to delete
-     * @param tm                    TemplateManager for the template
      * @return UpdateRequest containing the update request for deleting the
      *         instances
      */
-    public UpdateRequest createDeleteRequest(String deleteInstancesString, TemplateManager tm) {
+    public UpdateRequest createDeleteRequest(String deleteInstancesString) {
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
         UpdateBuilder builder = new UpdateBuilder();
 
         // we expand one instance at a time
         for (String line : deleteInstancesString.split("\n")) {
-            Model m = ottrInterface.expandAndGetModelFromString(line, tm);
+            Model m = ottrInterface.expandAndGetModelFromString(line);
             HashMap<RDFNode, Integer> blankNodeCounts = countBlankNodes(m);
             addDeleteClause(builder, m);
 
@@ -199,14 +204,17 @@ public class BlankNode {
                 SelectBuilder outerSubBuilder = new SelectBuilder();
                 addOuterSubQuery(outerSubBuilder, m, blankNodeCounts.get(key), blankName);
 
+                // create the middle sub query
+                SelectBuilder middleSubBilder = new SelectBuilder();
+                addMiddleSubQuery(middleSubBilder, blankName);
+
                 // create the inner sub query
                 SelectBuilder innerSubBuilder = new SelectBuilder();
-                innerSubBuilder.addVar(blankName);
                 addInnerSubQuery(innerSubBuilder, m, blankName);
 
                 // set sub queries
-                outerSubBuilder.addSubQuery(innerSubBuilder);
-                outerSubBuilder.setLimit(1);
+                middleSubBilder.addSubQuery(innerSubBuilder);
+                outerSubBuilder.addSubQuery(middleSubBilder);
                 builder.addSubQuery(outerSubBuilder);
             }
         }
@@ -215,9 +223,10 @@ public class BlankNode {
         return builder.buildRequest();
     }
 
-    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, TemplateManager tm, int n,
-            int changes) {
-        timer.newSplit("start", "blank solution", n, changes);
+    public void runBlankNodeUpdate(String pathToOldInstances, String pathToNewInstances, int n, int changes) {
+        if (n != -1) {
+            timer.newSplit("start", "blank solution", n, changes);
+        }
 
         Diff d = new Diff(log);
         d.readDiff(pathToOldInstances, pathToNewInstances);
@@ -235,13 +244,19 @@ public class BlankNode {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        timer.newSplit("diff", "blank solution", n, changes);
+
+        if (n != -1) {
+            timer.newSplit("diff", "blank solution", n, changes);
+        }
 
         log.print(logLevel, "String containing instances to add\n'" + addInstancesString + "'");
         log.print(logLevel, "String containing instances to delete\n'" + deleteInstancesString + "'");
 
-        Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString, tm);
-        timer.newSplit("model", "blank solution", n, changes);
+        Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString);
+
+        if (n != -1) {
+            timer.newSplit("model", "blank solution", n, changes);
+        }
 
         if (insertModel != null) {
             log.print(logLevel, "insert model " + insertModel.toString());
@@ -250,7 +265,7 @@ public class BlankNode {
         try {
             FusekiInterface fi = new FusekiInterface(log);
             if (deleteInstancesString != null) {
-                UpdateRequest deleteRequest = createDeleteRequest(deleteInstancesString, tm);
+                UpdateRequest deleteRequest = createDeleteRequest(deleteInstancesString);
                 fi.updateLocalDB(deleteRequest, dbURL);
             }
             if (insertModel != null) {
@@ -261,8 +276,9 @@ public class BlankNode {
             e.printStackTrace();
         }
 
-        timer.newSplit("end", "blank solution", n, changes);
-
+        if (n != -1) {
+            timer.newSplit("end", "blank solution", n, changes);
+        }
     }
 
 }
