@@ -42,7 +42,7 @@ public class OttrInterface {
      * @return
      *         The model containing the expanded instances
      */
-    public Model expandAndGetModelFromFile(String pathToInstances, TemplateManager tm) {
+    public Model expandAndGetModelFromFile(String pathToInstances) {
         // read instances from file
         ResultStream<Instance> instanceStream = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
                 .innerFlatMap(tm.makeExpander());
