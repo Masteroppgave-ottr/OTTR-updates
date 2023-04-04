@@ -204,9 +204,8 @@ public class Controller {
             String[] deletions, String[] insertions, int warmupSeconds) {
         String pathToOldInstances = generatedPath + numInstances + "_old_" + instanceFileName;
 
-        warmup(Integer.parseInt(numInstances), generatedPath, instanceFileName, 0);
-
-        Model oldModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances);
+        warmup(Integer.parseInt(numInstances), generatedPath, instanceFileName, warmupSeconds);
+        Model baseModel = ottrInterface.expandAndGetModelFromFile(pathToOldInstances);
 
         for (int n : changes) {
             String pathToNewInstances = generatedPath + numInstances + "_changes_" + n + "_new_" + instanceFileName;
@@ -221,7 +220,7 @@ public class Controller {
 
             if (contains(solutions, Solutions.SIMPLE + "")) {
                 try {
-                    fuseki.resetUpdatedDataset(oldModel, dbURL);
+                    fuseki.resetUpdatedDataset(baseModel, dbURL);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -236,7 +235,7 @@ public class Controller {
             }
             if (contains(solutions, Solutions.BLANK + "")) {
                 try {
-                    fuseki.resetUpdatedDataset(oldModel, dbURL);
+                    fuseki.resetUpdatedDataset(baseModel, dbURL);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

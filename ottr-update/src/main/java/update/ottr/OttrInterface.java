@@ -43,12 +43,12 @@ public class OttrInterface {
      *         The model containing the expanded instances
      */
     public Model expandAndGetModelFromFile(String pathToInstances) {
-        // read instances from file and expand them
-        ResultStream<Instance> expanded = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
+        // read instances from file
+        ResultStream<Instance> instanceStream = tm.readInstances(tm.getFormat("stOTTR"), pathToInstances)
                 .innerFlatMap(tm.makeExpander());
 
         Set<Instance> instances = new HashSet<Instance>();
-        expanded.innerForEach(instances::add);
+        instanceStream.innerForEach(instances::add);
 
         // write expanded instances to model
         WInstanceWriter writer = new WInstanceWriter();
