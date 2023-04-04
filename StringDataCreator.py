@@ -143,7 +143,7 @@ def add_n_duplicates(filename: str, n: int):
     return line_nr_new_instance_pairs
 
 
-def add_n_blanks(filename: str, n: int):
+def add_n_blanks(filename: str, n: int, seed: str = ""):
     file = open(filename)
     lines = file.readlines()
     length = len(lines)
@@ -153,17 +153,19 @@ def add_n_blanks(filename: str, n: int):
     mutate_line_numbers = random.sample(range(prefix_end, length), n)
     print(mutate_line_numbers)
 
-    # iterate 2 and 2 elements from line_numbers
+    added_blanks = []
     for i in range(0, len(mutate_line_numbers)):
         line = lines[mutate_line_numbers[i]]
         newLine = mutate_instance_argument_n(
             line, 3, f"_:blankID/{i}")
         lines[mutate_line_numbers[i]] = newLine
+        added_blanks.append((mutate_line_numbers[i], newLine))
 
     # write the new lines to the file
     file = open(filename, "w")
     file.writelines(lines)
     file.close()
+    return added_blanks
 
 
 def create_file_nInstances(deletions: int, changes: int, insertions: int, filename: str, new_filename: str):
@@ -317,6 +319,56 @@ def create_file_nDuplicates(source_dir: str, source: str, target_dir: str, file_
     file.close()
 
 
+def create_file_nBlanks(source_dir: str, source: str, target_dir: str, file_size: int, deletions: list[str], insertions: list[str]):
+    """
+        for every N in `changes`:
+            create a new file with the first `file_size` instances of `source`
+            create a new file with `N` changes
+        the files are placed in `target_dir`
+    """
+    old_file_name = target_dir + str(file_size) + "_old_" + source
+    create_copy_of_length(source_dir + source,
+                          old_file_name, file_size)
+
+    print("file_size: ", file_size)
+    print("deletions: ", deletions)
+    print("insertions: ", insertions)
+
+    added_blanks = add_n_blanks(
+        old_file_name, int(deletions[len(deletions)-1]))
+
+    # sort the list by line number
+    added_blanks.sort(key=lambda x: x[0], reverse=True)
+    print("added_blanks are", added_blanks)
+
+    for i in range(len(deletions)):
+        file = open(old_file_name)
+        lines = file.readlines()
+        prefix_end = _find_prefix_end(lines)
+        changes = int(deletions[i]) + int(insertions[i])
+
+        # remove blank nodes that was added earlier
+        for line_nr, instance in added_blanks:
+            lines.pop(int(line_nr))
+
+            # add blank nodes to be inserted
+        for j in range(int(insertions[i])):
+            line_to_modify = lines[random.randint(prefix_end, len(lines)-1)]
+            line_to_modify = mutate_instance_argument_n(
+                line_to_modify, 3, "_:blank" + str(j))
+            lines.append(mutate_instance_argument_n(line_to_modify, 1))
+
+            # write the new file
+        new_file = open(target_dir + str(file_size) +
+                        "_changes_" + str(changes) + "_new_" + source, "w")
+        new_file.writelines(lines)
+        new_file.close()
+        print(tag + "created file", target_dir + str(file_size) +
+              "_changes_" + str(changes) + "_new_" + source)
+
+    file.close()
+
+
 if __name__ == "__main__":
     source_dir = sys.argv[2]
     target_dir = source_dir+"generated/"
@@ -365,10 +417,25 @@ if __name__ == "__main__":
         file_size = int(sys.argv[4])
         nr_of_deletions = sys.argv[5].split(", ")
         nr_of_insertions = sys.argv[6].split(", ")
-
         if (len(nr_of_deletions) != len(nr_of_insertions)):
             raise Exception(
                 "Number of deletions and insertions must be equal")
 
         create_file_nDuplicates(source_dir, source, target_dir,
                                 file_size, nr_of_deletions, nr_of_insertions)
+
+    if (mode == "n=blanks"):
+        if len(sys.argv) < 7:
+            raise Exception(
+                "Not enough arguments. Run with arguments: n=changes <instance_file> <number_of_instances> <list of dup deletions> <list of dup insertions>")
+
+        source = sys.argv[3]
+        file_size = int(sys.argv[4])
+        nr_of_deletions = sys.argv[5].split(", ")
+        nr_of_insertions = sys.argv[6].split(", ")
+        if (len(nr_of_deletions) != len(nr_of_insertions)):
+            raise Exception(
+                "Number of deletions and insertions must be equal")
+
+        create_file_nBlanks(source_dir, source, target_dir,
+                            file_size, nr_of_deletions, nr_of_insertions)
