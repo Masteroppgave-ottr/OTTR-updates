@@ -157,7 +157,7 @@ def add_n_blanks(filename: str, n: int, seed: str = ""):
     for i in range(0, len(mutate_line_numbers)):
         line = lines[mutate_line_numbers[i]]
         newLine = mutate_instance_argument_n(
-            line, 3, f"_:blankID/{i}")
+            line, 3, f"_:blankID{i}")
         lines[mutate_line_numbers[i]] = newLine
         added_blanks.append((mutate_line_numbers[i], newLine))
 
