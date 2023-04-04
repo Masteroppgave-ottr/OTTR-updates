@@ -334,12 +334,12 @@ def create_file_nBlanks(source_dir: str, source: str, target_dir: str, file_size
     print("deletions: ", deletions)
     print("insertions: ", insertions)
 
-    added_blanks = add_n_blanks(
-        old_file_name, int(deletions[len(deletions)-1]))
-
-    # sort the list by line number
-    added_blanks.sort(key=lambda x: x[0], reverse=True)
-    print("added_blanks are", added_blanks)
+    # add blanks to the old file - this will be deleted later
+    if (len(deletions) > 0 and int(deletions[len(deletions)-1]) > 0):
+        added_blanks = add_n_blanks(
+            old_file_name, int(deletions[len(deletions)-1]))
+        added_blanks.sort(key=lambda x: x[0], reverse=True)
+        print("added_blanks are", added_blanks)
 
     for i in range(len(deletions)):
         file = open(old_file_name)
@@ -348,15 +348,21 @@ def create_file_nBlanks(source_dir: str, source: str, target_dir: str, file_size
         changes = int(deletions[i]) + int(insertions[i])
 
         # remove blank nodes that was added earlier
-        for line_nr, instance in added_blanks:
-            lines.pop(int(line_nr))
+        if (len(deletions) > 0 and int(deletions[i]) > 0):
+            for j in range(int(deletions[i])):
+                print("removing", added_blanks[j][1],
+                      "which is line", added_blanks[j][0])
+                lines.pop(added_blanks[j][0])
 
             # add blank nodes to be inserted
-        for j in range(int(insertions[i])):
-            line_to_modify = lines[random.randint(prefix_end, len(lines)-1)]
-            line_to_modify = mutate_instance_argument_n(
-                line_to_modify, 3, "_:blank" + str(j))
-            lines.append(mutate_instance_argument_n(line_to_modify, 1))
+
+        if (len(insertions) > 0 and int(insertions[i]) > 0):
+            for k in range(int(insertions[i])):
+                line_to_modify = lines[random.randint(
+                    prefix_end, len(lines)-1)]
+                line_to_modify = mutate_instance_argument_n(
+                    line_to_modify, 3, "_:blank" + str(k))
+                lines.append(mutate_instance_argument_n(line_to_modify, 1))
 
             # write the new file
         new_file = open(target_dir + str(file_size) +
