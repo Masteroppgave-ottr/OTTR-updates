@@ -178,7 +178,7 @@ def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["d
     plt.savefig("./temp/bar.png", dpi=500)
 
 
-def create_line_graph_nInstances(timestamp_list: list[list[str]]) -> None:
+def create_line_graph_nInstances(timestamp_list: list[list[str]], x_label: str = "number of changes") -> None:
     """
     Create a line graph for the given solution, The time is between the start and end tag.
     """
@@ -191,16 +191,16 @@ def create_line_graph_nInstances(timestamp_list: list[list[str]]) -> None:
         plt.plot(n, time, label=solution,
                  color=color_hexes[i], marker="o", markersize=4, linewidth=2, antialiased=True, markerfacecolor="white", markeredgewidth=2)
 
-    plt.xlabel("number of instances")
+    plt.xlabel(x_label)
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.title(
-        f"Runtime | Number of changes = {changes[0]}")
+        f"Number of changes = {changes[0]}")
     print("[PLOT] Creating line graph")
     plt.savefig("./temp/line.png", dpi=500)
 
 
-def create_line_graph_nChanges(timestamp_list: list[list[str]]) -> None:
+def create_line_graph_nChanges(timestamp_list: list[list[str]], x_label: str = "number of changes") -> None:
     """
     Create a line graph for the given solution, The time is between the start and end tag.
     """
@@ -212,11 +212,11 @@ def create_line_graph_nChanges(timestamp_list: list[list[str]]) -> None:
         plt.plot(changes, time, label=solution,  color=color_hexes[i], marker="o", markersize=4,
                  linewidth=2, antialiased=True, markerfacecolor="white", markeredgewidth=2)
 
-    plt.xlabel("number of changes")
+    plt.xlabel(x_label)
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
     plt.title(
-        f"Runtime | Number of Instances = {instances[0]}")
+        f"Number of Instances = {instances[0]}")
     print("[PLOT] Creating line graph")
     plt.savefig("./temp/line.png", dpi=500)
 
@@ -239,10 +239,12 @@ def has_multiple_n(timestamp_list: list[list[str]], field=instances_index) -> bo
 if __name__ == '__main__':
     plot_type = sys.argv[1]
     timestamp_list = read_file(sys.argv[2])
+    if (len(sys.argv) > 3):
+        x_label = sys.argv[3]
 
     if plot_type == "n=instances":
         if has_multiple_n(timestamp_list, instances_index):
-            create_line_graph_nInstances(timestamp_list)
+            create_line_graph_nInstances(timestamp_list, x_label)
         else:
             create_bar_interval(timestamp_list,
                                 ["diff", "model"],
@@ -250,7 +252,7 @@ if __name__ == '__main__':
 
     elif plot_type == "n=changes":
         if has_multiple_n(timestamp_list, changes_idex):
-            create_line_graph_nChanges(timestamp_list)
+            create_line_graph_nChanges(timestamp_list, x_label)
         else:
             create_bar_interval(timestamp_list,
                                 ["diff", "model"],
