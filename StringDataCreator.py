@@ -75,7 +75,39 @@ def mutate_instance_argument_n(instance: str, arg_nr: int, new_value: str = None
     return mutated_instance
 
 
+def add_n_half_duplicates(filename: str, n: str):
+    file = open(filename)
+    lines = file.readlines()
+    length = len(lines)
+    prefix_end = _find_prefix_end(lines)
+
+    # create a list of n line numbers
+    mutate_line_numbers = random.sample(range(prefix_end, length), n)
+
+    print("mutate the following lines", mutate_line_numbers)
+
+    line_nr_new_instance_pairs = []
+    for i in range(0, len(mutate_line_numbers)):
+        line = lines[mutate_line_numbers[i]]
+        newLine = mutate_instance_argument_n(
+            line, 3, f"<http://example.org/possibleDuplicateID/{i}>")
+        newLine = mutate_instance_argument_n(
+            newLine, 4, f'"possibleSun{i}"')
+        lines[mutate_line_numbers[i]] = newLine
+        line_nr_new_instance_pairs.append((mutate_line_numbers[i], newLine))
+
+    # write the new lines to the file
+    file = open(filename, "w")
+    file.writelines(lines)
+    file.close()
+    return line_nr_new_instance_pairs
+
+
 def add_n_duplicates(filename: str, n: int):
+    """
+        adds n duplicates to the file
+        returns the paris of line numbers and the new instances
+    """
     file = open(filename)
     lines = file.readlines()
     length = len(lines)
@@ -83,8 +115,8 @@ def add_n_duplicates(filename: str, n: int):
 
     # create a list of n pairs of line numbers, these will be duplicates
     mutate_line_numbers = random.sample(range(prefix_end, length), n*2)
-    print(mutate_line_numbers)
 
+    line_nr_new_instance_pairs = []
     # iterate 2 and 2 elements from line_numbers
     for i in range(0, len(mutate_line_numbers), 2):
         line1 = lines[mutate_line_numbers[i]]
@@ -101,14 +133,17 @@ def add_n_duplicates(filename: str, n: int):
 
         lines[mutate_line_numbers[i]] = newLine1
         lines[mutate_line_numbers[i+1]] = newLine2
+        line_nr_new_instance_pairs.append((mutate_line_numbers[i], newLine1))
+        line_nr_new_instance_pairs.append((mutate_line_numbers[i+1], newLine2))
 
     # write the new lines to the file
     file = open(filename, "w")
     file.writelines(lines)
     file.close()
+    return line_nr_new_instance_pairs
 
 
-def add_n_blanks(filename: str, n: int):
+def add_n_blanks(filename: str, n: int, seed: str = ""):
     file = open(filename)
     lines = file.readlines()
     length = len(lines)
@@ -118,17 +153,19 @@ def add_n_blanks(filename: str, n: int):
     mutate_line_numbers = random.sample(range(prefix_end, length), n)
     print(mutate_line_numbers)
 
-    # iterate 2 and 2 elements from line_numbers
+    added_blanks = []
     for i in range(0, len(mutate_line_numbers)):
         line = lines[mutate_line_numbers[i]]
         newLine = mutate_instance_argument_n(
-            line, 3, f"_:blankID/{i}")
+            line, 3, f"_:blankID{i}")
         lines[mutate_line_numbers[i]] = newLine
+        added_blanks.append((mutate_line_numbers[i], newLine))
 
     # write the new lines to the file
     file = open(filename, "w")
     file.writelines(lines)
     file.close()
+    return added_blanks
 
 
 def create_file_nInstances(deletions: int, changes: int, insertions: int, filename: str, new_filename: str):
@@ -206,7 +243,7 @@ def run_nInstances(source_dir: str, source: str, target_dir: str, file_sizes: li
             add_n_blanks(target_dir + size + "_new_" + source, blank_nr)
 
 
-def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_size: int, deletions: list[str], changes: list[str], insertions: list[str],):
+def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_size: int, deletions: list[str], changes: list[str], insertions: list[str]):
     """
         for every N in `changes`:
             create a new file with the first `file_size` instances of `source`
@@ -223,6 +260,119 @@ def create_file_nChanges(source_dir: str, source: str, target_dir: str, file_siz
 
         create_file_nInstances(int(deletions[i]), int(changes[i]), int(insertions[i]), old_file_name,
                                target_dir + str(file_size) + "_changes_" + str(total_changes) + "_new_" + source)
+
+
+def create_file_nDuplicates(source_dir: str, source: str, target_dir: str, file_size: int, deletions: list[str], insertions: list[str]):
+    """
+        for every N in `changes`:
+            create a new file with the first `file_size` instances of `source`
+            create a new file with `N` changes
+        the files are placed in `target_dir`
+    """
+    old_file_name = target_dir + str(file_size) + "_old_" + source
+    create_copy_of_length(source_dir + source,
+                          old_file_name, file_size)
+
+    print("file_size: ", file_size)
+    print("deletions: ", deletions)
+    print("insertions: ", insertions)
+
+    # add one half of duplicates to the old file - by adding one more we create duplicates
+    if (len(insertions) > 0 and int(insertions[len(insertions)-1]) > 0):
+        half_duplicates = add_n_half_duplicates(
+            old_file_name, int(insertions[len(insertions)-1]))
+
+    # add duplicates to the old file - this will be deleted later
+    if (len(deletions) > 0 and int(deletions[len(deletions)-1]) > 0):
+        line_dup_instance_pairs = add_n_duplicates(
+            old_file_name, int(deletions[len(deletions)-1]))
+        delete_line_numbers = []
+        for i in range(0, len(line_dup_instance_pairs), 2):
+            delete_line_numbers.append(line_dup_instance_pairs[i][0])
+        delete_line_numbers.sort(reverse=True)
+
+    for i in range(len(deletions)):
+        file = open(old_file_name)
+        lines = file.readlines()
+        changes = int(deletions[i]) + int(insertions[i])
+
+        # delete the correct number of duplicates
+        if (len(deletions) > 0 and int(deletions[i]) > 0):
+            for j in range(int(deletions[i])):
+                line_to_delete = int(delete_line_numbers[j])
+                inst = lines.pop(line_to_delete)
+
+        if (len(insertions) > 0 and int(insertions[i]) > 0):
+            for k in range(int(insertions[i])):
+                line_to_insert = half_duplicates[k][1]
+                lines.append(mutate_instance_argument_n(
+                    line_to_insert, 1, f"<http://example.org/uniqueID/{k}>"))
+
+        # write the new file
+        new_file = open(target_dir + str(file_size) +
+                        "_changes_" + str(changes) + "_new_" + source, "w")
+        new_file.writelines(lines)
+        new_file.close()
+        print(tag + "created file", target_dir + str(file_size) +
+              "_changes_" + str(changes) + "_new_" + source)
+
+    file.close()
+
+
+def create_file_nBlanks(source_dir: str, source: str, target_dir: str, file_size: int, deletions: list[str], insertions: list[str]):
+    """
+        for every N in `changes`:
+            create a new file with the first `file_size` instances of `source`
+            create a new file with `N` changes
+        the files are placed in `target_dir`
+    """
+    old_file_name = target_dir + str(file_size) + "_old_" + source
+    create_copy_of_length(source_dir + source,
+                          old_file_name, file_size)
+
+    print("file_size: ", file_size)
+    print("deletions: ", deletions)
+    print("insertions: ", insertions)
+
+    # add blanks to the old file - this will be deleted later
+    if (len(deletions) > 0 and int(deletions[len(deletions)-1]) > 0):
+        added_blanks = add_n_blanks(
+            old_file_name, int(deletions[len(deletions)-1]))
+        added_blanks.sort(key=lambda x: x[0], reverse=True)
+        print("added_blanks are", added_blanks)
+
+    for i in range(len(deletions)):
+        file = open(old_file_name)
+        lines = file.readlines()
+        prefix_end = _find_prefix_end(lines)
+        changes = int(deletions[i]) + int(insertions[i])
+
+        # remove blank nodes that was added earlier
+        if (len(deletions) > 0 and int(deletions[i]) > 0):
+            for j in range(int(deletions[i])):
+                print("removing", added_blanks[j][1],
+                      "which is line", added_blanks[j][0])
+                lines.pop(added_blanks[j][0])
+
+            # add blank nodes to be inserted
+
+        if (len(insertions) > 0 and int(insertions[i]) > 0):
+            for k in range(int(insertions[i])):
+                line_to_modify = lines[random.randint(
+                    prefix_end, len(lines)-1)]
+                line_to_modify = mutate_instance_argument_n(
+                    line_to_modify, 3, "_:blank" + str(k))
+                lines.append(mutate_instance_argument_n(line_to_modify, 1))
+
+            # write the new file
+        new_file = open(target_dir + str(file_size) +
+                        "_changes_" + str(changes) + "_new_" + source, "w")
+        new_file.writelines(lines)
+        new_file.close()
+        print(tag + "created file", target_dir + str(file_size) +
+              "_changes_" + str(changes) + "_new_" + source)
+
+    file.close()
 
 
 if __name__ == "__main__":
@@ -242,11 +392,6 @@ if __name__ == "__main__":
         insert_nr = int(sys.argv[7])
         duplicate_nr = int(sys.argv[8])
         blank_nr = int(sys.argv[9])
-
-        # print(
-        #     f"creating {duplicate_nr} duplicates in the file {source_dir+source}")
-        # add_n_duplicates(source_dir+source, duplicate_nr)
-        # exit(0)
 
         run_nInstances(source_dir, source, target_dir,
                        file_sizes, delete_nr, change_nr, insert_nr, duplicate_nr, blank_nr)
@@ -268,3 +413,35 @@ if __name__ == "__main__":
 
         create_file_nChanges(source_dir, source, target_dir,
                              file_size, nr_of_deletions, nr_of_changes, nr_of_insertions)
+
+    if (mode == "n=duplicates"):
+        if len(sys.argv) < 7:
+            raise Exception(
+                "Not enough arguments. Run with arguments: n=changes <instance_file> <number_of_instances> <list of dup deletions> <list of dup insertions>")
+
+        source = sys.argv[3]
+        file_size = int(sys.argv[4])
+        nr_of_deletions = sys.argv[5].split(", ")
+        nr_of_insertions = sys.argv[6].split(", ")
+        if (len(nr_of_deletions) != len(nr_of_insertions)):
+            raise Exception(
+                "Number of deletions and insertions must be equal")
+
+        create_file_nDuplicates(source_dir, source, target_dir,
+                                file_size, nr_of_deletions, nr_of_insertions)
+
+    if (mode == "n=blanks"):
+        if len(sys.argv) < 7:
+            raise Exception(
+                "Not enough arguments. Run with arguments: n=changes <instance_file> <number_of_instances> <list of dup deletions> <list of dup insertions>")
+
+        source = sys.argv[3]
+        file_size = int(sys.argv[4])
+        nr_of_deletions = sys.argv[5].split(", ")
+        nr_of_insertions = sys.argv[6].split(", ")
+        if (len(nr_of_deletions) != len(nr_of_insertions)):
+            raise Exception(
+                "Number of deletions and insertions must be equal")
+
+        create_file_nBlanks(source_dir, source, target_dir,
+                            file_size, nr_of_deletions, nr_of_insertions)
