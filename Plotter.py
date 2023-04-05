@@ -178,7 +178,7 @@ def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["d
     plt.savefig("./temp/bar.png", dpi=500)
 
 
-def create_line_graph_nInstances(timestamp_list: list[list[str]], x_label: str = "number of changes") -> None:
+def create_line_graph_nInstances(timestamp_list: list[list[str]], x_label: str = "") -> None:
     """
     Create a line graph for the given solution, The time is between the start and end tag.
     """
@@ -190,7 +190,8 @@ def create_line_graph_nInstances(timestamp_list: list[list[str]], x_label: str =
         # plot with the lines smooth
         plt.plot(n, time, label=solution,
                  color=color_hexes[i], marker="o", markersize=4, linewidth=2, antialiased=True, markerfacecolor="white", markeredgewidth=2)
-
+    if x_label == "":
+        "number of changes"
     plt.xlabel(x_label)
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
@@ -200,7 +201,7 @@ def create_line_graph_nInstances(timestamp_list: list[list[str]], x_label: str =
     plt.savefig("./temp/line.png", dpi=500)
 
 
-def create_line_graph_nChanges(timestamp_list: list[list[str]], x_label: str = "number of changes") -> None:
+def create_line_graph_nChanges(timestamp_list: list[list[str]], x_label: str = "") -> None:
     """
     Create a line graph for the given solution, The time is between the start and end tag.
     """
@@ -212,6 +213,8 @@ def create_line_graph_nChanges(timestamp_list: list[list[str]], x_label: str = "
         plt.plot(changes, time, label=solution,  color=color_hexes[i], marker="o", markersize=4,
                  linewidth=2, antialiased=True, markerfacecolor="white", markeredgewidth=2)
 
+    if x_label == "":
+        x_label = "number of changes"
     plt.xlabel(x_label)
     plt.ylabel("Time in nano seconds")
     plt.legend(solutions)
@@ -239,6 +242,7 @@ def has_multiple_n(timestamp_list: list[list[str]], field=instances_index) -> bo
 if __name__ == '__main__':
     plot_type = sys.argv[1]
     timestamp_list = read_file(sys.argv[2])
+    x_label = ""
     if (len(sys.argv) > 3):
         x_label = sys.argv[3]
 
