@@ -167,9 +167,9 @@ public class Controller {
                 blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE  blank node update for " + n + " instances");
-                if (contains(solutions, Solutions.REBUILD + "")) {
-                    compareDataset("Updated", "Rebuild");
-                }
+                // if (contains(solutions, Solutions.REBUILD + "")) {
+                //     compareDataset("Updated", "Rebuild");
+                // }
             }
             if (contains(solutions, Solutions.DUPLICATE + "")) {
                 try {

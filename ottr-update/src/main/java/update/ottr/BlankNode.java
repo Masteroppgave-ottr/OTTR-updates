@@ -147,7 +147,10 @@ public class BlankNode {
         try {
             // we give count a unique name in order to avoid name clashes with other
             // sub-queries
-            builder.addVar("count(" + blankName + ")", "count_" + blankName.substring(1));
+            builder.addVar("count(DISTINCT *)", "count_" + blankName.substring(1));
+            builder.addWhere(blankName, "?pred", "?obj");
+            SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", blankName);
+            builder.addUnion(newBuilder);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -159,14 +162,6 @@ public class BlankNode {
             e.printStackTrace();
         }
         builder.setLimit(1);
-    }
-
-    private void addMiddleSubQuery(SelectBuilder builder, String blankName) {
-        builder.setDistinct(true);
-        builder.addVar("*");
-        builder.addWhere(blankName, "?pred", "?obj");
-        SelectBuilder newBuilder = new SelectBuilder().addWhere("?obj", "?pred", blankName);
-        builder.addUnion(newBuilder);
     }
 
     public UpdateRequest createInsertRequest(Model newModel) {
@@ -204,17 +199,12 @@ public class BlankNode {
                 SelectBuilder outerSubBuilder = new SelectBuilder();
                 addOuterSubQuery(outerSubBuilder, m, blankNodeCounts.get(key), blankName);
 
-                // create the middle sub query
-                SelectBuilder middleSubBilder = new SelectBuilder();
-                addMiddleSubQuery(middleSubBilder, blankName);
-
                 // create the inner sub query
                 SelectBuilder innerSubBuilder = new SelectBuilder();
                 addInnerSubQuery(innerSubBuilder, m, blankName);
 
                 // set sub queries
-                middleSubBilder.addSubQuery(innerSubBuilder);
-                outerSubBuilder.addSubQuery(middleSubBilder);
+                outerSubBuilder.addSubQuery(innerSubBuilder);
                 builder.addSubQuery(outerSubBuilder);
             }
         }
