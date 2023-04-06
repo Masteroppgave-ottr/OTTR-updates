@@ -390,11 +390,9 @@ if __name__ == "__main__":
         delete_nr = int(sys.argv[5])
         change_nr = int(sys.argv[6])
         insert_nr = int(sys.argv[7])
-        duplicate_nr = int(sys.argv[8])
-        blank_nr = int(sys.argv[9])
 
         run_nInstances(source_dir, source, target_dir,
-                       file_sizes, delete_nr, change_nr, insert_nr, duplicate_nr, blank_nr)
+                       file_sizes, delete_nr, change_nr, insert_nr, 0, 0)
 
     if (mode == "n=changes"):
         if len(sys.argv) < 8:
