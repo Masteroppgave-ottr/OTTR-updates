@@ -6,40 +6,45 @@ PORT = 3030
 # Default inputs
 TEMP_DIR = /home/magnus/Emner/Master/dev/temp/
 INSTANCE_FILE = "exoplanets.stottr"    # all files are automatically annotated with either old_ or new_
-TEMPLATE_FILE = "template_duplicates.stottr"
+TEMPLATE_FILE = "template_default.stottr"
 TIMER = times.txt
 DB_URL = http://localhost:3030/
-SOLUTIONS = "REBUILD, DUPLICATE, SIMPLE"
-WARMUP_SECONDS = 1
+SOLUTIONS = "BLANK"
+WARMUP_SECONDS = 0
 ALL = $(TEMP_DIR) $(INSTANCE_FILE) $(TEMPLATE_FILE) $(TIMER) $(DB_URL) $(SOLUTIONS) $(WARMUP_SECONDS)
 
 # Generator parameters with varying number of instances
-INSTANCE_NR = "50, 100, 500"
-DELETION_NUMBER = 10
+INSTANCE_NR = "250, 500, 1000, 2500, 5000, 10000, 15000, 20000, 30000, 40000, 50000"
+DELETION_NUMBER = 0
 CHANGE_NUMBER = 0
-INSERT_NUMBER = 10
+INSERT_NUMBER = 0
+DUPLICATE_PAIR_INSERT_NUMBER = 0
+DUPLICATE_PAIR_DELETE_NUMBER = 0
+BLANK_INSERT_NUMBER = 0
+BLANK_DELETE_NUMBER = 5
+
 
 # Generator parameters with varying number of changes
-INSTANCE_NR_2 = 10
-DELETION_NUMBERS = "2, 2"
-CHANGE_NUMBERS = "0, 0"
-INSERT_NUMBERS = "0, 1"
+INSTANCE_NR_2 = 20000
+DELETION_NUMBERS = "250, 500, 1000, 2500, 5000, 7500, 10000"
+CHANGE_NUMBERS = "0, 0, 0, 0, 0, 0, 0"
+INSERT_NUMBERS = "250, 500, 1000, 2500, 5000, 7500, 10000"
 
 # Generator parameters with varying number of duplicates
-INSTANCE_NR_3 = 1000
-DUP_INSERT_NUMBERS = "100, 200, 500, 750"
-DUP_CHANGE_NUMBERS = "0, 0, 0, 0"
-DUP_DELETION_NUMBERS = "10, 20, 30, 40"
+INSTANCE_NR_3 = 20000
+DUP_DELETION_NUMBERS = "25"#"25, 50, 100, 150, 200, 250, 300, 350"
+DUP_CHANGE_NUMBERS = "0"#"0, 0, 0, 0, 0, 0, 0, 0"
+DUP_INSERT_NUMBERS = "25"#"25, 50, 100, 150, 200, 250, 300, 350"
 
 # Generator parameters with varying number of blank nodes
-INSTANCE_NR_4 = 1000
-BLANK_INSERT_NUMBERS = "5, 10, 15, 20"
-BLANK_CHANGE_NUMBERS = "0, 0, 0, 0"
-BLANK_DELETION_NUMBERS = "10, 10, 10, 10"
+INSTANCE_NR_4 = 20000
+BLANK_DELETION_NUMBERS = "20"#"10, 20, 30, 40, 50, 60, 70, 80"
+BLANK_CHANGE_NUMBERS = "0"#"0, 0, 0, 0, 0, 0, 0, 0"
+BLANK_INSERT_NUMBERS = "20"#"0, 0, 0, 0, 0, 0, 0, 0"
 
 # The x labels used in the plots
-X_LABEL_N_CHANGES = ""
-X_LABEL_N_INSTANCES = ""
+X_LABEL_N_CHANGES = "Number of blank insertions/deletions"
+X_LABEL_N_INSTANCES = "Number of instances"
 
 
 # Default rules
@@ -55,7 +60,7 @@ run_default:
 
 # Create input
 create_input_nInstances:
-	python3 StringDataCreator.py n=instances $(TEMP_DIR) $(INSTANCE_FILE) $(INSTANCE_NR) $(DELETION_NUMBER) $(CHANGE_NUMBER) $(INSERT_NUMBER) $(DUPLICATE_NUMBER) $(BLANK_NUMBER)
+	python3 StringDataCreator.py n=instances $(TEMP_DIR) $(INSTANCE_FILE) $(INSTANCE_NR) $(DELETION_NUMBER) $(CHANGE_NUMBER) $(INSERT_NUMBER) $(DUPLICATE_PAIR_INSERT_NUMBER) $(DUPLICATE_PAIR_DELETE_NUMBER) $(BLANK_INSERT_NUMBER) $(BLANK_DELETE_NUMBER)
 
 create_input_nChanges:
 	python3 StringDataCreator.py n=changes $(TEMP_DIR) $(INSTANCE_FILE)  $(INSTANCE_NR_2) $(DELETION_NUMBERS) $(CHANGE_NUMBERS) $(INSERT_NUMBERS)
@@ -103,7 +108,3 @@ run_plot_nInstances: run_nInstances plot_nInstances
 run_plot_nChanges: run_nChanges plot_nChanges
 run_nDuplicates: run_nDuplicates plot_nChanges
 run_nBlanks: run_nBlanks plot_nChanges
-
-
-
-
