@@ -236,10 +236,10 @@ def run_nInstances(source_dir: str, source: str, target_dir: str, file_sizes: li
         # add duplicates and blank nodes if specified
         if duplicate_insert_nr > 0:
             add_n_duplicates(target_dir + size + "_new_" +
-                             source, duplicate_insert_nr)
+                             source, duplicate_insert_nr, "insert")
         if duplicate_delete_nr > 0:
             add_n_duplicates(target_dir + size + "_old_" +
-                             source, duplicate_delete_nr)
+                             source, duplicate_delete_nr, "delete")
 
         if blank_insert_nr > 0:
             add_n_blanks(target_dir + size + "_new_" +
