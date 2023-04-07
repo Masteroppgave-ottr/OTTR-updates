@@ -149,7 +149,6 @@ def add_n_blanks(filename: str, n: int, seed: str = ""):
 
     # create a list of n line numbers, these will contain blank nodes
     mutate_line_numbers = random.sample(range(prefix_end, length), n)
-    print(mutate_line_numbers)
 
     added_blanks = []
     for i in range(0, len(mutate_line_numbers)):
@@ -279,10 +278,6 @@ def create_file_nDuplicates(source_dir: str, source: str, target_dir: str, file_
     create_copy_of_length(source_dir + source,
                           old_file_name, file_size)
 
-    print("file_size: ", file_size)
-    print("deletions: ", deletions)
-    print("insertions: ", insertions)
-
     # add one half of duplicates to the old file - by adding one more we create duplicates
     if (len(insertions) > 0 and int(insertions[len(insertions)-1]) > 0):
         half_duplicates = add_n_half_duplicates(
@@ -336,16 +331,11 @@ def create_file_nBlanks(source_dir: str, source: str, target_dir: str, file_size
     create_copy_of_length(source_dir + source,
                           old_file_name, file_size)
 
-    print("file_size: ", file_size)
-    print("deletions: ", deletions)
-    print("insertions: ", insertions)
-
     # add blanks to the old file - this will be deleted later
     if (len(deletions) > 0 and int(deletions[len(deletions)-1]) > 0):
         added_blanks = add_n_blanks(
             old_file_name, int(deletions[len(deletions)-1]))
         added_blanks.sort(key=lambda x: x[0], reverse=True)
-        print("added_blanks are", added_blanks)
 
     for i in range(len(deletions)):
         file = open(old_file_name)
@@ -356,8 +346,6 @@ def create_file_nBlanks(source_dir: str, source: str, target_dir: str, file_size
         # remove blank nodes that was added earlier
         if (len(deletions) > 0 and int(deletions[i]) > 0):
             for j in range(int(deletions[i])):
-                print("removing", added_blanks[j][1],
-                      "which is line", added_blanks[j][0])
                 lines.pop(added_blanks[j][0])
 
             # add blank nodes to be inserted
