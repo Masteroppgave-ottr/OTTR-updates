@@ -66,7 +66,7 @@ def get_time(timestamp_list: list[list[str]]) -> list[int]:
     """
     matches = []
     for i in timestamp_list:
-        matches.append(int(i[time_index]))
+        matches.append(float(i[time_index]))
     return matches
 
 
@@ -118,7 +118,7 @@ def read_file(filename: str, divisor: int = 1) -> list[list[str]]:
                 continue
             line = line.strip()
             args = line.split(" ; ")
-            args[-1] = str(int(args[-1]) / divisor)
+            args[time_index] = str(int(args[time_index]) / divisor)
             measurements.append(args)
     return measurements
 
