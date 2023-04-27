@@ -84,7 +84,7 @@ def find_interval(timestamp_list: list[list[str]], solution: str, start_tag: str
             for j in timestamp_list:
                 if j[field] == i[field] and j[solution_index] == solution and j[tag_index] == end_tag:
                     matches.append([i[instances_index], i[changes_idex], i[solution_index],
-                                   j[tag_index], int(j[time_index]) - int(i[time_index])])
+                                   j[tag_index], float(j[time_index]) - float(i[time_index])])
                     break
 
     return matches
@@ -101,7 +101,7 @@ def get_instance_change_time_lists(timestamp_list: list[list[str]], solution_nam
     return n, changes, time
 
 
-def read_file(filename: str) -> list[list[str]]:
+def read_file(filename: str, divisor: int = 1) -> list[list[str]]:
     """
     read the content of the file, and parse to list
     Format of file content per line:
@@ -118,6 +118,7 @@ def read_file(filename: str) -> list[list[str]]:
                 continue
             line = line.strip()
             args = line.split(" ; ")
+            args[-1] = str(int(args[-1]) / divisor)
             measurements.append(args)
     return measurements
 
@@ -171,7 +172,7 @@ def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["d
                     solutionTimes, width=width, label=solution, color=color_hexes[counter])
 
     plt.xticks(x, plot_labels)
-    plt.ylabel("Time in nano seconds")
+    plt.ylabel("Seconds")
     plt.legend(solutions)
     plt.title(f"Instances = {instances[0]} | Changes = {changes[0]}")
     print("[PLOT] Creating bar chart")
@@ -193,7 +194,7 @@ def create_line_graph_nInstances(timestamp_list: list[list[str]], x_label: str =
     if x_label == "":
         "number of changes"
     plt.xlabel(x_label)
-    plt.ylabel("Time in nano seconds")
+    plt.ylabel("Seconds")
     plt.legend(solutions)
     plt.title(
         f"Number of changes = {changes[0]}")
@@ -216,7 +217,7 @@ def create_line_graph_nChanges(timestamp_list: list[list[str]], x_label: str = "
     if x_label == "":
         x_label = "number of changes"
     plt.xlabel(x_label)
-    plt.ylabel("Time in nano seconds")
+    plt.ylabel("Seconds")
     plt.legend(solutions)
     plt.title(
         f"Number of Instances = {instances[0]}")
@@ -241,7 +242,8 @@ def has_multiple_n(timestamp_list: list[list[str]], field=instances_index) -> bo
 
 if __name__ == '__main__':
     plot_type = sys.argv[1]
-    timestamp_list = read_file(sys.argv[2])
+    timestamp_list = read_file(sys.argv[2], 1000000000)
+
     x_label = ""
     if (len(sys.argv) > 3):
         x_label = sys.argv[3]
