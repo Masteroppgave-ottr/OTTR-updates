@@ -190,7 +190,6 @@ public class Timer {
      *                     If the file cannot be written to
      */
     public void writeSplitsToFile(String copyName) throws IOException {
-        // sort the splits
         System.out.println("Writing splits to file: " + outputFile);
 
         // sort by number of instances

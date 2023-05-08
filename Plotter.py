@@ -110,6 +110,10 @@ def read_file(filename: str, divisor: int = 1) -> list[list[str]]:
         ```10 ; 2 ; naive solution ; start ; 34328947247251```
     """
     measurements = []
+    # print working directory
+    print("Working directory: " + sys.path[0])
+    print()
+    print(filename)
     with open(filename, "r") as f:
         lines = f.readlines()
 
@@ -176,7 +180,8 @@ def create_bar_interval(timestamp_list: list[list[str]], labels: list[str] = ["d
     plt.legend(solutions)
     plt.title(f"Instances = {instances[0]} | Changes = {changes[0]}")
     print("[PLOT] Creating bar chart")
-    plt.savefig("./temp/bar.png", dpi=500)
+    # plt.savefig("./temp/bar.png", dpi=500)
+    plt.show()
 
 
 def create_line_graph_nInstances(timestamp_list: list[list[str]], x_label: str = "") -> None:
@@ -199,7 +204,8 @@ def create_line_graph_nInstances(timestamp_list: list[list[str]], x_label: str =
     plt.title(
         f"Number of changes = {changes[0]}")
     print("[PLOT] Creating line graph")
-    plt.savefig("./temp/line.png", dpi=500)
+    # plt.savefig("./temp/line.png", dpi=500)
+    plt.show()
 
 
 def create_line_graph_nChanges(timestamp_list: list[list[str]], x_label: str = "") -> None:
@@ -222,7 +228,8 @@ def create_line_graph_nChanges(timestamp_list: list[list[str]], x_label: str = "
     plt.title(
         f"Number of Instances = {instances[0]}")
     print("[PLOT] Creating line graph")
-    plt.savefig("./temp/line.png", dpi=500)
+    # plt.savefig("./temp/line.png", dpi=500)
+    plt.show()
 
 
 def has_multiple_n(timestamp_list: list[list[str]], field=instances_index) -> bool:

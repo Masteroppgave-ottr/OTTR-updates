@@ -5,24 +5,57 @@
 * Apache Jena Fuseki (https://jena.apache.org/download/)
 * Apache Jena (https://jena.apache.org/download/)
 
-## How to run
+## How to run the demo
+Install Apache Jena from (https://jena.apache.org/download/)
 
-build the program
+Install Apache Jena Fuseki from (https://jena.apache.org/download/)
+
+SET the `DB_DIR` variable in the makefile in the `/demo` directory.
+
+Navigate to the demo folder
+```bash
+cd demo
+```
+
+Build the program
 ```bash
 make build
 ```
 
-Start the server:
+In a new terminal window start the Fuseki database:
 ```
-bash init_db
+make init_db
 ```
 
-run the program
+Run one of the tests
+1. run a test with a varying number of *normal instances* and a constant number of changes to *normal instances*
+    - ```bash
+      make test_varying_normal_instances
+      ```
+2. run a test with a varying number of changes to *normal instances* and a constant number of *normal instances*
+    - ```bash
+      make test_varying_normal_changes
+      ```
+3. run a test with a varying number of changes to *duplicate instances* and a constant number of *normal instances*
+    - ```bash
+      make test_varying_duplicate_changes
+      ```
+4. run a test with a varying number of changes to *blank instances* and a constant number of *normal instances*
+    - ```bash
+      make test_varying_blank_changes
+      ```
+
+Plot the result of point 1
 ```bash
-make run_Blank
+make plot_nInstances
 ```
 
-## Configure the makefile
+Plot the results of points 2, 3 or 4
+```bash
+make plot_nChanges
+```
+
+<!-- ## Configure the makefile
 In the example_temp directory, we see an example of a makefile.
 
 The default inputs have to be specified:
@@ -33,7 +66,7 @@ The default inputs have to be specified:
 - `TIMER`: the name of the file where timestamps are saved
 - `SOLUTIONS`: String of space-separated solution names.
 
-NB: INSTANCE_FILE, TEMPLATE_FILE and TIMER have to be stored in the temp directory. 
+NB: INSTANCE_FILE, TEMPLATE_FILE and TIMER have to be stored in the temp directory.  -->
 
 
 ## Structure
@@ -57,14 +90,17 @@ NB: INSTANCE_FILE, TEMPLATE_FILE and TIMER have to be stored in the temp directo
 ### Timer.java
   - Create timestamps with meta information and save to file
 ###  Plotter.py
-   -  reads the timer file and creates plots
+  - Reads the timer file and creates plots
+### StringDataCreator.py
+  - Creates test data from the `exoplantes.stottr` seed file    
 ### Solutions
   - Rebuild.java
     - the baseline naive solution
-  - SImpleUpdate.java
+  - SimpleUpdate.java
   - BlankNode.java
+  - Duplicates.java
 
-
+<!-- 
 ## Timing:
 Timing is done by the Timer class. A `timer` object is passed to the different classes to be timed. The times are written to a file in the `temp` folder specified by the TIME variable in the make file.
 
@@ -79,4 +115,4 @@ timer.newSplit("label", "solutionName", <instances>, <changes>)
 ```
 
 - N.B.: The first split needs to have the label "start" 
-- N.B.: The last  split needs to have the label "end" 
+- N.B.: The last  split needs to have the label "end"  -->

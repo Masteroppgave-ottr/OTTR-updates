@@ -1,0 +1,256 @@
+@prefix ottr: <http://ns.ottr.xyz/0.4/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/11_Oph_b>, "11 Oph b", <http://example.org/data/11_Oph>, none, "21.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/11_UMi_b>, "11 UMi b", <http://example.org/data/11_UMi>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID1443231633627603051>, "11 UMi b", <http://example.org/data/11_UMi>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/14_Her_b>, "14 Her b", <http://example.org/data/14_Her>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/16_Cyg_B_b>, "16 Cyg B b", <http://example.org/data/16_Cyg_B>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/17_Sco_b>, "17 Sco b", <http://example.org/data/17_Sco>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/18_Del_b>, "18 Del b", <http://example.org/data/18_Del>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/1RXS_1609_b>, "1RXS 1609 b", <http://example.org/data/1RXS_1609>, none, "14.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/1RXS_J235133.3+312720_b>, "1RXS J235133.3+312720 b", <http://example.org/data/1RXS_J235133.3+312720>, none, "32.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/1SWASP_J1407_b>, "1SWASP J1407 b", <http://example.org/data/1SWASP_J1407>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/24_Boo_b>, "24 Boo b", <http://example.org/data/24_Boo>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/24_Sex_b>, "24 Sex b", <http://example.org/data/24_Sex>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/24_Sex_c>, "24 Sex c", <http://example.org/data/24_Sex>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2I/Borisov>, "2I/Borisov", <http://example.org/data/Sun>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M_0103-55_(AB)_b>, "2M 0103-55 (AB) b", <http://example.org/data/2M_0103-55_(AB)>, none, "13.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M_0219-39_b>, "2M 0219-39 b", <http://example.org/data/2M_0219-39>, none, "13.9"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M_0441+23_b>, "2M 0441+23 b", <http://example.org/data/2M_0441+23>, none, "7.5"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M_1938+46_b>, "2M 1938+46 b", <http://example.org/data/2M__1938+46>, none, "1.9"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M_2140+16_b>, "2M 2140+16 b", <http://example.org/data/2M_2140+16>, none, "20.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M_2206-20_b>, "2M 2206-20 b", <http://example.org/data/2M_2206-20>, none, "30.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M_2236+4751_b>, "2M 2236+4751 b", <http://example.org/data/2M_2236+4751>, none, "12.5"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M_J2126-81_b>, "2M J2126-81 b", <http://example.org/data/TYC_9486-927-1>, none, "13.3"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M0045+16>, "2M0045+16", <http://example.org/data/>, none, "25.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M0117-34>, "2M0117-34", <http://example.org/data/>, none, "16.4"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M1059-21_b>, "2M1059-21 b", <http://example.org/data/2M1059-21>, none, "66.95"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M1207_A>, "2M1207 A", <http://example.org/data/>, none, "60.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M1207_b>, "2M1207 b", <http://example.org/data/>, none, "5.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M1510A_a>, "2M1510A a", <http://example.org/data/>, none, "40.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2M1510A_b>, "2M1510A b", <http://example.org/data/>, none, "39.3"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J00413538-5621127_B>, "2MASS J00413538-5621127 B", <http://example.org/data/>, none, "15.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J0249-0557_(AB)_c>, "2MASS J0249-0557 (AB) c", <http://example.org/data/>, none, "11.6"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID2345916653500993712>, "2MASS J0249-0557 (AB) c", <http://example.org/data/>, none, "11.6"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J0249-0557A>, "2MASS J0249-0557A", <http://example.org/data/>, none, "48.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J0249-0557B>, "2MASS J0249-0557B", <http://example.org/data/>, none, "44.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J10475385+2124234>, "2MASS J10475385+2124234", <http://example.org/data/>, none, "42.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J11011926-7732383_A>, "2MASS J11011926-7732383 A", <http://example.org/data/>, none, "50.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J11011926-7732383_B>, "2MASS J11011926-7732383 B", <http://example.org/data/>, none, "30.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J11193254_AB>, "2MASS J11193254 AB", <http://example.org/data/2MASS_J11193254_AB>, none, "3.7"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J1155-7919_b>, "2MASS J1155-7919 b", <http://example.org/data/2MASS_J1155-7919>, none, "10.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J1450-7841_A>, "2MASS J1450-7841 A", <http://example.org/data/2MASS_J1450-7841_B>, none, "40.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J1450-7841_B>, "2MASS J1450-7841 B", <http://example.org/data/2MASS_J1450-7841_A>, none, "40.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J15344984-2952274_A>, "2MASS J15344984-2952274 A", <http://example.org/data/>, none, "30.1"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J15344984-2952274_B>, "2MASS J15344984-2952274 B", <http://example.org/data/>, none, "28.2"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/2MASS_J2250+2325_b>, "2MASS J2250+2325 b", <http://example.org/data/2MASS_J2250+2325>, none, "30.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/30_Ari_B_b>, "30 Ari B b", <http://example.org/data/30_Ari_B>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/38_Vir_b>, "38 Vir b", <http://example.org/data/38_Vir>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/4_Uma_b>, "4 Uma b", <http://example.org/data/4_Uma>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/42_Dra_b>, "42 Dra b", <http://example.org/data/42_Dra>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/44_Uma_b>, "44 Uma b", <http://example.org/data/44_Uma>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/47_Uma_b>, "47 Uma b", <http://example.org/data/47_Uma>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/47_Uma_c>, "47 Uma c", <http://example.org/data/47_Uma>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/47_Uma_d>, "47 Uma d", <http://example.org/data/47_Uma>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/51_Eri_b>, "51 Eri b", <http://example.org/data/51_Eri>, none, "2.6"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/51_Peg_b>, "51 Peg b", <http://example.org/data/51_Peg>, none, "0.47"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/55_Cnc_b>, "55 Cnc b", <http://example.org/data/55_Cnc>, none, "0.84"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/55_Cnc_c>, "55 Cnc c", <http://example.org/data/55_Cnc>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/55_Cnc_d>, "55 Cnc d", <http://example.org/data/55_Cnc>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/55_Cnc_e>, "55 Cnc e", <http://example.org/data/55_Cnc>, none, "0.02703"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/55_Cnc_f>, "55 Cnc f", <http://example.org/data/55_Cnc>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/6_Lyn_b>, "6 Lyn b", <http://example.org/data/6_Lyn>, none, "68.8"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/61_Vir_b>, "61 Vir b", <http://example.org/data/61_Vir>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/61_Vir_c>, "61 Vir c", <http://example.org/data/61_Vir>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/61_Vir_d>, "61 Vir d", <http://example.org/data/61_Vir>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/7_CMA_c>, "7 CMA c", <http://example.org/data/7_CMa>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/7_CMa_b>, "7 CMa b", <http://example.org/data/7_CMa>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/70_Vir_b>, "70 Vir b", <http://example.org/data/70_Vir>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/75_Cet_b>, "75 Cet b", <http://example.org/data/75_Cet>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/8_Umi_b>, "8 Umi b", <http://example.org/data/8_Umi>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/81_Cet_b>, "81 Cet b", <http://example.org/data/81_Cet>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/91_Aqr_b>, "91 Aqr b", <http://example.org/data/91_Aqr>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/AB_Dor_C_b>, "AB Dor C b", <http://example.org/data/AB_Dor_C>, none, "13.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/AB_Pic_b>, "AB Pic b", <http://example.org/data/AB_Pic>, none, "13.5"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/AD_3116_b>, "AD 3116 b", <http://example.org/data/AD_3116>, none, "54.2"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/AS_205_A_b>, "AS 205 A b", <http://example.org/data/AS_205A>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/AU_Mic_b>, "AU Mic b", <http://example.org/data/AU_Mic>, none, "0.053"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/AU_Mic_c>, "AU Mic c", <http://example.org/data/AU_Mic>, none, "0.0463"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+03_2562_b>, "BD+03 2562 b", <http://example.org/data/BD+03_2562>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+14_4559_b>, "BD+14 4559 b", <http://example.org/data/BD+14_4559>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+15_2375_b>, "BD+15 2375 b", <http://example.org/data/BD+15_2375>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+15_2940_b>, "BD+15 2940 b", <http://example.org/data/BD+15_2940>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+20_2457_b>, "BD+20 2457 b", <http://example.org/data/BD+20_2457>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID4184682005701948762>, "BD+20 2457 b", <http://example.org/data/BD+20_2457>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+20_594_b>, "BD+20 594 b", <http://example.org/data/BD+20_594>, none, "0.07"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+24_4697_b>, "BD+24 4697 b", <http://example.org/data/BD+24_4697>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+26_1888_b>, "BD+26 1888 b", <http://example.org/data/BD+26_1888>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+48_738_b>, "BD+48 738 b", <http://example.org/data/BD_+48_738>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+48_740_b>, "BD+48 740 b", <http://example.org/data/BD+48_740>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD+49_828_b>, "BD+49 828 b", <http://example.org/data/BD+49_828>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-06_1339_b>, "BD-06 1339 b", <http://example.org/data/BD-06_1339>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-06_1339_c>, "BD-06 1339 c", <http://example.org/data/BD-06_1339>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-06_1339_d>, "BD-06 1339 d", <http://example.org/data/BD-06_1339>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-08_2823_b>, "BD-08 2823 b", <http://example.org/data/BD-08_2823>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-08_2823_c>, "BD-08 2823 c", <http://example.org/data/BD-08_2823>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-10_3166_b>, "BD-10 3166 b", <http://example.org/data/BD-10_3166>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-11_4672_b>, "BD-11 4672 b", <http://example.org/data/BD-11_4672>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-11_4672_c>, "BD-11 4672 c", <http://example.org/data/BD-11_4672>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/BD-17_63_b>, "BD-17 63 b", <http://example.org/data/BD-17_63>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CD_Cet_b>, "CD Cet b", <http://example.org/data/CD_Cet>, none, "0.01244"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CD-35_2722_b>, "CD-35 2722 b", <http://example.org/data/CD-35_2722>, none, "31.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CFBD_1458_B>, "CFBD 1458 B", <http://example.org/data/>, none, "10.5"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CFBDS_1458_A>, "CFBDS 1458 A", <http://example.org/data/>, none, "24.1"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CFBDS0059>, "CFBDS0059", <http://example.org/data/>, none, "22.5"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CFBDSIR_J2149-0403_b>, "CFBDSIR J2149-0403 b", <http://example.org/data/CFBDSIR_J2149-0403>, none, "21.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CHXR_73_b>, "CHXR 73 b", <http://example.org/data/CHXR_73>, none, "12.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CI_Tau_b>, "CI Tau b", <http://example.org/data/CI_Tau>, none, "11.6"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CT_Cha_b>, "CT Cha b", <http://example.org/data/CT_Cha>, none, "17.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CWISEP_J144606.62-231717.8>, "CWISEP J144606.62-231717.8", <http://example.org/data/>, none, "11.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID5875561494694178611>, "CWISEP J144606.62-231717.8", <http://example.org/data/>, none, "11.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CWISEP_J1935-1546>, "CWISEP J1935-1546", <http://example.org/data/>, none, "11.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/Cha_Ha_8_b>, "Cha Ha 8 b", <http://example.org/data/Cha_Ha_8>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-10_b>, "CoRoT-10 b", <http://example.org/data/CoRoT-10>, none, "2.75"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-11_b>, "CoRoT-11 b", <http://example.org/data/CoRoT-11>, none, "2.33"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-12_b>, "CoRoT-12 b", <http://example.org/data/CoRoT-12>, none, "0.917"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-13_b>, "CoRoT-13 b", <http://example.org/data/CoRoT-13>, none, "1.308"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-14_b>, "CoRoT-14 b", <http://example.org/data/CoRoT-14>, none, "7.6"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-15_b>, "CoRoT-15 b", <http://example.org/data/CoRoT-15>, none, "63.4"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-16_b>, "CoRoT-16 b", <http://example.org/data/CoRoT-16>, none, "0.535"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-18_b>, "CoRoT-18 b", <http://example.org/data/CoRoT-18>, none, "3.47"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-19_b>, "CoRoT-19 b", <http://example.org/data/CoRoT-19>, none, "1.11"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID2176368503242057341>, "CoRoT-19 b", <http://example.org/data/CoRoT-19>, none, "1.11"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID9182701601252839241>, "CoRoT-19 b", <http://example.org/data/CoRoT-19>, none, "1.11"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-2_b>, "CoRoT-2 b", <http://example.org/data/CoRoT-2>, none, "3.31"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-20_b>, "CoRoT-20 b", <http://example.org/data/CoRoT-20>, none, "4.24"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-21_b>, "CoRoT-21 b", <http://example.org/data/CoRoT-21>, none, "2.26"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-22_b>, "CoRoT-22 b", <http://example.org/data/CoRoT-22>, none, "0.06"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-23_b>, "CoRoT-23 b", <http://example.org/data/CoRoT-23>, none, "2.8"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-24_b>, "CoRoT-24 b", <http://example.org/data/CoRoT-24>, none, "0.018"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-24_c>, "CoRoT-24 c", <http://example.org/data/CoRoT-24>, none, "0.088"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-25_b>, "CoRoT-25 b", <http://example.org/data/CoRoT-25>, none, "0.27"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-26_b>, "CoRoT-26 b", <http://example.org/data/CoRoT-26>, none, "0.52"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-27_b>, "CoRoT-27 b", <http://example.org/data/CoRoT-27>, none, "10.39"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-28_b>, "CoRoT-28 b", <http://example.org/data/CoRoT-28>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-29_b>, "CoRoT-29 b", <http://example.org/data/CoRoT-29>, none, "0.85"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-3_b>, "CoRoT-3 b", <http://example.org/data/CoRoT-3>, none, "21.66"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-30_b>, "CoRoT-30 b", <http://example.org/data/CoRoT-30>, none, "2.9"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-31_b>, "CoRoT-31 b", <http://example.org/data/CoRoT-31>, none, "0.84"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-32_b>, "CoRoT-32 b", <http://example.org/data/CoRoT-32>, none, "0.15"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-33_b>, "CoRoT-33 b", <http://example.org/data/CoRoT-33>, none, "59.2"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-4_b>, "CoRoT-4 b", <http://example.org/data/CoRoT-4>, none, "0.72"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-5_b>, "CoRoT-5 b", <http://example.org/data/CoRoT-5>, none, "0.467"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-6_b>, "CoRoT-6 b", <http://example.org/data/CoRoT-6>, none, "2.96"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-7_b>, "CoRoT-7 b", <http://example.org/data/CoRoT-7>, none, "0.0149"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-7_c>, "CoRoT-7 c", <http://example.org/data/CoRoT-7>, none, "0.04266"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-8_b>, "CoRoT-8 b", <http://example.org/data/CoRoT-8>, none, "0.2158"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/CoRoT-9_b>, "CoRoT-9 b", <http://example.org/data/CoRoT-9>, none, "0.84"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/Corot-20_c>, "Corot-20 c", <http://example.org/data/CoRoT-20>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DE_CVn_b>, "DE CVn b", <http://example.org/data/DE_CVn>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DE0630-18_(bc)>, "DE0630-18 (bc)", <http://example.org/data/>, none, "53.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DE0630-18_a>, "DE0630-18 a", <http://example.org/data/>, none, "58.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DE0823-49_b>, "DE0823-49 b", <http://example.org/data/DE0823-49>, none, "31.5"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DH_Tau_b>, "DH Tau b", <http://example.org/data/DH_Tau>, none, "11.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DP_Leo_(AB)_b>, "DP Leo (AB) b", <http://example.org/data/DP_Leo_(AB)>, none, "6.05"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DS_Tuc_A_b>, "DS Tuc A b", <http://example.org/data/DS_Tuc_A>, none, "0.088"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DW_Lyn_b>, "DW Lyn b", <http://example.org/data/DW_Lyn>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/DW_Uma_b>, "DW Uma b", <http://example.org/data/DW_Uma>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_201170410_b>, "EPIC 201170410 b", <http://example.org/data/EPIC_201170410>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_201238110_b>, "EPIC 201238110 b", <http://example.org/data/EPIC_201238110>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_201295312_b>, "EPIC 201295312 b", <http://example.org/data/K2-44>, none, "0.0379"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_201757695_b>, "EPIC 201757695 b", <http://example.org/data/EPIC_201757695>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_201833600_c>, "EPIC 201833600 c", <http://example.org/data/K2-50>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_201841433_b>, "EPIC 201841433 b", <http://example.org/data/EPIC_201841433>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_205084841_b>, "EPIC 205084841 b", <http://example.org/data/EPIC_205084841>, none, "0.3883"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_205950854_c>, "EPIC 205950854 c", <http://example.org/data/K2-168>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_206024342_b>, "EPIC 206024342 b", <http://example.org/data/EPIC_206024342>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_206042996_b>, "EPIC 206042996 b", <http://example.org/data/EPIC_206042996>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_206061524_b>, "EPIC 206061524 b", <http://example.org/data/EPIC_206061524>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_206215704_b>, "EPIC 206215704 b", <http://example.org/data/EPIC_206215704>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID5414367003656173809>, "EPIC 206215704 b", <http://example.org/data/EPIC_206215704>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_206317286_b>, "EPIC 206317286 b", <http://example.org/data/EPIC_206317286>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_211442297_b>, "EPIC 211442297 b", <http://example.org/data/K2-115>, none, "0.84"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_211822797_b>, "EPIC 211822797 b", <http://example.org/data/EPIC_211822797>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_211939692.01>, "EPIC 211939692.01", <http://example.org/data/EPIC_211939692>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_211939692.02>, "EPIC 211939692.02", <http://example.org/data/EPIC_211939692>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_211945201_b>, "EPIC 211945201 b", <http://example.org/data/EPIC_211945201>, none, "0.085"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_212036875_b>, "EPIC 212036875 b", <http://example.org/data/EPIC_212036875>, none, "51.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_212297394_b>, "EPIC 212297394 b", <http://example.org/data/EPIC_212297394>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_212424622_b>, "EPIC 212424622 b", <http://example.org/data/EPIC_212424622>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_212587672_b>, "EPIC 212587672 b", <http://example.org/data/EPIC_212587672>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_212737443_b>, "EPIC 212737443 b", <http://example.org/data/EPIC_212737443>, none, "0.02907"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_212737443_c>, "EPIC 212737443 c", <http://example.org/data/EPIC_212737443>, none, "0.0303"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_219388192_b>, "EPIC 219388192 b", <http://example.org/data/EPIC_219388192>, none, "36.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_220554210_c>, "EPIC 220554210 c", <http://example.org/data/K2-282>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_220674823_b>, "EPIC 220674823 b", <http://example.org/data/EPIC_220674823>, none, "0.0263"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_220674823_c>, "EPIC 220674823 c", <http://example.org/data/EPIC_220674823>, none, "0.018"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_246193072_b>, "EPIC 246193072 b", <http://example.org/data/EPIC_246193072>, none, "0.26"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_246851721_b>, "EPIC 246851721 b", <http://example.org/data/EPIC_246851721>, none, "5.74"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID6703344408526790525>, "EPIC 246851721 b", <http://example.org/data/EPIC_246851721>, none, "5.74"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_249893012_b>, "EPIC 249893012 b", <http://example.org/data/EPIC_249893012>, none, "0.02753"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_249893012_c>, "EPIC 249893012 c", <http://example.org/data/EPIC_249893012>, none, "0.04616"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/EPIC_249893012_d>, "EPIC 249893012 d", <http://example.org/data/EPIC_249893012>, none, "0.03203"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/FL_Lyr_b>, "FL Lyr b", <http://example.org/data/FL_Lyr>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/FU_Tau_b>, "FU Tau b", <http://example.org/data/FU_Tau>, none, "15.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/Fomalhaut_b>, "Fomalhaut b", <http://example.org/data/Fomalhaut>, none, "0.208"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/G_196-3_b>, "G 196-3 b", <http://example.org/data/G_196-3>, none, "15.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/G_9-40_b>, "G 9-40 b", <http://example.org/data/G_9-40>, none, "0.016"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID1305475634248025810>, "G 9-40 b", <http://example.org/data/G_9-40>, none, "0.016"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/G204-39_b>, "G204-39 b", <http://example.org/data/G204-39>, none, "29.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1061_b>, "GJ 1061 b", <http://example.org/data/GJ_1061>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1061_c>, "GJ 1061 c", <http://example.org/data/GJ_1061>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1061_d>, "GJ 1061 d", <http://example.org/data/GJ_1061>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1132_b>, "GJ 1132 b", <http://example.org/data/GJ_1132>, none, "0.00522"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1132_c>, "GJ 1132 c", <http://example.org/data/GJ_1132>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1151_c>, "GJ 1151 c", <http://example.org/data/GJ_1151>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1214_b>, "GJ 1214 b", <http://example.org/data/GJ_1214>, none, "0.0203253311519"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1252_b>, "GJ 1252 b", <http://example.org/data/GJ_1252>, none, "0.00658"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_1265_b>, "GJ 1265 b", <http://example.org/data/GJ_1265>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_143_b>, "GJ 143 b", <http://example.org/data/GJ_143>, none, "0.0714"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_143_c>, "GJ 143 c", <http://example.org/data/GJ_143>, none, "0.01164"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_15A_b>, "GJ 15A b", <http://example.org/data/GJ_15A>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_160.2_b>, "GJ 160.2 b", <http://example.org/data/GJ_160.2>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_163_b>, "GJ 163 b", <http://example.org/data/GJ_163>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_163_c>, "GJ 163 c", <http://example.org/data/GJ_163>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_163_d>, "GJ 163 d", <http://example.org/data/GJ_163>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_163_e>, "GJ 163 e", <http://example.org/data/GJ_163>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_163_f>, "GJ 163 f", <http://example.org/data/GJ_163>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_176_b>, "GJ 176 b", <http://example.org/data/GJ_176>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_176_c>, "GJ 176 c", <http://example.org/data/GJ_176>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_179_b>, "GJ 179 b", <http://example.org/data/GJ_179>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_179_c>, "GJ 179 c", <http://example.org/data/GJ_179>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_180_b>, "GJ 180 b", <http://example.org/data/GJ_180>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_180_c>, "GJ 180 c", <http://example.org/data/GJ_180>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_180_d>, "GJ 180 d", <http://example.org/data/GJ_180>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_2056_b>, "GJ 2056 b", <http://example.org/data/GJ_2056>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_2056_c>, "GJ 2056 c", <http://example.org/data/GJ_2056>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_221_e>, "GJ 221 e", <http://example.org/data/BD-06_1339>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_229_A_b>, "GJ 229 A b", <http://example.org/data/GJ_229>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_229_A_c>, "GJ 229 A c", <http://example.org/data/GJ_229>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_229_B>, "GJ 229 B", <http://example.org/data/GJ_229>, none, "35.0"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_27.1_b>, "GJ 27.1 b", <http://example.org/data/GJ_27.1>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_273_b>, "GJ 273 b", <http://example.org/data/GJ_273>, none, "0.00922"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_273_c>, "GJ 273 c", <http://example.org/data/GJ_273>, none, "0.00374"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_273_d>, "GJ 273 d", <http://example.org/data/GJ_273>, none, "0.03448"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/newID4218579826495207902>, "GJ 273 d", <http://example.org/data/GJ_273>, none, "0.03448"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_273_e>, "GJ 273 e", <http://example.org/data/GJ_273>, none, "0.0297"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3021_b>, "GJ 3021 b", <http://example.org/data/GJ_3021>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3082_b>, "GJ 3082 b", <http://example.org/data/GJ_3082>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3138_b>, "GJ 3138 b", <http://example.org/data/GJ_3138>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3138_c>, "GJ 3138 c", <http://example.org/data/GJ_3138>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3138_d>, "GJ 3138 d", <http://example.org/data/GJ_3138>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_317_b>, "GJ 317 b", <http://example.org/data/GJ_317>, none, "2.3298"^^xsd:decimal) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_317_c>, "GJ 317 c", <http://example.org/data/GJ_317>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_328_b>, "GJ 328 b", <http://example.org/data/GJ_328>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3293_b>, "GJ 3293 b", <http://example.org/data/GJ_3293>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3293_c>, "GJ 3293 c", <http://example.org/data/GJ_3293>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3293_d>, "GJ 3293 d", <http://example.org/data/GJ_3293>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3293_e>, "GJ 3293 e", <http://example.org/data/GJ_3293>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3323_b>, "GJ 3323 b", <http://example.org/data/GJ_3323>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3323_c>, "GJ 3323 c", <http://example.org/data/GJ_3323>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3341_b>, "GJ 3341 b", <http://example.org/data/GJ_3341>, none, none) .
+<http://leifhka.org/in5800/data/templates/library/astronomy/Planet>(<http://example.org/data/GJ_3470_b>, "GJ 3470 b", <http://example.org/data/GJ_3470>, none, "0.03958"^^xsd:decimal) .

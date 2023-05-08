@@ -61,12 +61,13 @@ public class App {
     public static void main(String[] args) {
         String mode = args[0];
         String tempDir = args[1];
-        String instanceFileName = args[2];
-        String templateFileName = args[3];
-        String timerFileName = args[4];
-        String dbURL = args[5];
-        String[] solutions = args[6].split(", ");
-        int warmupSeconds = Integer.parseInt(args[7]);
+        String generatedDir = args[2];
+        String instanceFileName = args[3];
+        String templateFileName = args[4];
+        String timerFileName = args[5];
+        String dbURL = args[6];
+        String[] solutions = args[7].split(", ");
+        int warmupSeconds = Integer.parseInt(args[8]);
         Scanner scanner = new Scanner(System.in);
 
         LOGTAG[] logLevels = {
@@ -168,20 +169,20 @@ public class App {
 
         if (mode.equals("n=instances")) {
             // parse extra arguments
-            String[] instances = args[8].split(", ");
-            String changeNr = Integer.parseInt(args[9]) + Integer.parseInt(args[10]) + Integer.parseInt(args[11]) + "";
-            controller.nInstances(instances, tempDir + "generated/", instanceFileName,
-                    changeNr, args[9], args[10], args[11], warmupSeconds);
+            String[] instances = args[9].split(", ");
+            String changeNr = Integer.parseInt(args[10]) + Integer.parseInt(args[11]) + Integer.parseInt(args[12]) + "";
+            controller.nInstances(instances, generatedDir, instanceFileName,
+                    changeNr, args[10], args[11], args[12], warmupSeconds);
         }
         if (mode.equals("n=changes")) {
             // parse extra arguments
-            String instances = args[8];
-            String[] deletions = args[9].split(", ");
-            String[] changes = args[10].split(", ");
-            String[] insertions = args[11].split(", ");
+            String instances = args[9];
+            String[] deletions = args[10].split(", ");
+            String[] changes = args[11].split(", ");
+            String[] insertions = args[12].split(", ");
             int[] changeList = combineStringNumberArrays(deletions, changes, insertions);
 
-            controller.nChanges(changeList, tempDir + "generated/", instanceFileName,
+            controller.nChanges(changeList, generatedDir, instanceFileName,
                     instances, deletions, insertions, warmupSeconds);
         }
     }
