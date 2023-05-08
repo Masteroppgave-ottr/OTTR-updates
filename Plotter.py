@@ -110,10 +110,6 @@ def read_file(filename: str, divisor: int = 1) -> list[list[str]]:
         ```10 ; 2 ; naive solution ; start ; 34328947247251```
     """
     measurements = []
-    # print working directory
-    print("Working directory: " + sys.path[0])
-    print()
-    print(filename)
     with open(filename, "r") as f:
         lines = f.readlines()
 
