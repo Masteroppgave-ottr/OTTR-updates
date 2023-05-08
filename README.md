@@ -1,4 +1,4 @@
-# OTTR Update algorithm
+# Efficient update of OTTR-constructed triplestores
 
 ### Requirements:
 * Lutra (https://gitlab.com/ottr/lutra/lutra)
