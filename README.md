@@ -1,4 +1,5 @@
 # Efficient update of OTTR-constructed triplestores
+By Preben Zahl and Magnus Wiik Eckhoff
 
 ### Requirements:
 * Lutra (https://gitlab.com/ottr/lutra/lutra)
