@@ -116,3 +116,19 @@ timer.newSplit("label", "solutionName", <instances>, <changes>)
 
 - N.B.: The first split needs to have the label "start" 
 - N.B.: The last  split needs to have the label "end"  -->
+
+## General outline of the program
+<img src="https://user-images.githubusercontent.com/42439472/236768091-ebb96bbd-676f-4593-bb3d-5ea2d23ae8ad.svg" width="30%" />
+
+## Simple solution
+<img src="https://user-images.githubusercontent.com/42439472/236768266-f1d4c490-95a0-42d8-b9db-8bb919588152.svg" width="30%" />
+
+## Duplicate solution
+<img src="https://user-images.githubusercontent.com/42439472/236768335-e5b7c5d2-c05b-4b33-aae4-e89241c905b8.svg" width="30%" />
+
+## Blank node solution
+<img src="https://user-images.githubusercontent.com/42439472/236768406-eb8bbbb5-ab45-4af7-b9e1-c7cfe2cda519.svg" width="30%" />
+
+## Combined solution
+<img src="https://user-images.githubusercontent.com/42439472/236768458-0348c4c3-fdc9-4d05-987a-06db3f60dd15.svg" width="30%" />
+
