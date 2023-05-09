@@ -85,7 +85,7 @@ public class Duplicates {
         + statement.getPredicate().toString() + "> " + object + " >");
   }
 
-  private void incrementCounterTriples(HashMap<Statement, Integer> statementCountMap) {
+  public void incrementCounterTriples(HashMap<Statement, Integer> statementCountMap) {
     // find max value in the statementCountMap
     int max = 0;
     for (Statement statement : statementCountMap.keySet()) {
@@ -154,7 +154,7 @@ public class Duplicates {
     }
   }
 
-  private HashMap<Statement, Integer> combineAndGetDuplicates(Model model, HashMap<Statement, Integer> statementCount) {
+  public HashMap<Statement, Integer> combineAndGetDuplicates(Model model, HashMap<Statement, Integer> statementCount) {
     // add the model to the statementCount map
     for (Statement s : model.listStatements().toList()) {
       if (statementCount.containsKey(s)) {
@@ -259,7 +259,7 @@ public class Duplicates {
    * Given a model of triples find the triples that already has a counter in the
    * triple store.
    */
-  private Model findCounterTriples(Model model) {
+  public Model findCounterTriples(Model model) {
     ConstructBuilder constructBuilder = new ConstructBuilder()
         .addConstruct("?subject", "?predicate", "?object")
         .addWhere("?subject", "?predicate", "?object")
@@ -385,19 +385,8 @@ public class Duplicates {
     }
   }
 
-  /**
-   * Delete the result of the expansion of the given instance string from the
-   * triple store.
-   */
-  public void deleteFromString(String instanceString) {
-    // find all triples that have an existing counter-triple
-    Model deleteModel = ottrInterface.expandAndGetModelFromString(instanceString);
-    Model counterModel = findCounterTriples(deleteModel);
-
-    // count the number of occurrences of each triple to be deleted
-    HashMap<Statement, Integer> statementCountMap = ottrInterface
-        .expandAndGetCountedStatementsFromString(instanceString);
-
+  public void deleteFromModelAndCounter(HashMap<Statement, Integer> statementCountMap,
+      Model counterModel, Model deleteModel) {
     log.print(logLevel, "The following triples will be deleted the following number of times:");
     for (Statement s : statementCountMap.keySet()) {
       log.print(logLevel, s.toString() + " : " + statementCountMap.get(s));
@@ -432,6 +421,22 @@ public class Duplicates {
         e.printStackTrace();
       }
     }
+  }
+
+  /**
+   * Delete the result of the expansion of the given instance string from the
+   * triple store.
+   */
+  public void deleteFromString(String instanceString) {
+    // find all triples that have an existing counter-triple
+    Model deleteModel = ottrInterface.expandAndGetModelFromString(instanceString);
+    Model counterModel = findCounterTriples(deleteModel);
+
+    // count the number of occurrences of each triple to be deleted
+    HashMap<Statement, Integer> statementCountMap = ottrInterface
+        .expandAndGetCountedStatementsFromString(instanceString);
+
+    deleteFromModelAndCounter(statementCountMap, counterModel, deleteModel);
   }
 
   public void runDuplicateUpdate(String pathToOldInstances, String pathToNewInstances, int n,

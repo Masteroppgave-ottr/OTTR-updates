@@ -71,18 +71,19 @@ public class App {
         Scanner scanner = new Scanner(System.in);
 
         LOGTAG[] logLevels = {
-                // LOGTAG.DEFAULT,
-                // LOGTAG.DEBUG,
-                // LOGTAG.FUSEKI,
+                LOGTAG.DEFAULT,
+                LOGTAG.DEBUG,
+                LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 LOGTAG.WARNING,
                 LOGTAG.ERROR,
                 LOGTAG.TEST,
-                // LOGTAG.DUPLICATE,
-                // LOGTAG.BLANK,
+                LOGTAG.COMBINED,
+                LOGTAG.DUPLICATE,
+                LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
-                // LOGTAG.REBUILD
+                // LOGTAG.REBUILD,
                 LOGTAG.SUCCESS
         };
         ArrayList<LOGTAG> loggerLevel = new ArrayList<LOGTAG>(List.of(logLevels));
@@ -134,6 +135,9 @@ public class App {
                 e.printStackTrace();
             }
 
+            // read the text from file at old_instance_fileName to a string
+            String oldInstanceFileContent = ottrInterface.readFromFileToString(old_instance_fileName, 2);
+
             // models for the old and new instance files
             Model oldModel = ottrInterface.expandAndGetModelFromFile(old_instance_fileName);
             Model newModel = ottrInterface.expandAndGetModelFromFile(new_instance_fileName);
@@ -142,29 +146,41 @@ public class App {
             Model insertModel = ottrInterface.expandAndGetModelFromString(addInstancesString);
             Model deleteModel = ottrInterface.expandAndGetModelFromString(deleteInstancesString);
 
+            log.print(LOGTAG.DEBUG, oldInstanceFileContent);
             log.print(LOGTAG.DEBUG, addInstancesString);
+            log.print(LOGTAG.DEBUG, deleteInstancesString);
             // INSERT YOUR CODE HERE
 
-            Duplicates dup = new Duplicates(log, dbURL, timer, ottrInterface);
-            log.print(LOGTAG.DEBUG, "inserting from the file " + old_instance_fileName);
-            dup.insertFromFile(old_instance_fileName);
-            userBreakpoint(scanner);
-            dup.runDuplicateUpdate(old_instance_fileName, new_instance_fileName, 1, 1);
+            Combined c = new Combined(log, dbURL, timer, ottrInterface);
 
-            Rebuild r = new Rebuild();
-            FusekiInterface fuseki = new FusekiInterface(log);
-            r.buildRebuildSet(new_instance_fileName, tm, log, timer, dbURL, "1", "1");
-            try {
-                Model updated = fuseki.getDataset(dbURL, "Updated");
-                Model rebuild = fuseki.getDataset(dbURL, "Rebuild");
-                if (updated.isIsomorphicWith(rebuild)) {
-                    log.print(LOGTAG.SUCCESS, "Graphs are isomorphic");
-                } else {
-                    log.print(LOGTAG.ERROR, "Graphs are not isomorphic");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            userBreakpoint(scanner);
+            c.insertFromString(oldInstanceFileContent);
+            userBreakpoint(scanner);
+            c.insertFromString(oldInstanceFileContent);
+            System.exit(0);
+
+            c.runCombinedUpdate(old_instance_fileName, new_instance_fileName);
+
+            // Duplicates dup = new Duplicates(log, dbURL, timer, ottrInterface);
+            // log.print(LOGTAG.DEBUG, "inserting from the file " + old_instance_fileName);
+            // dup.insertFromFile(old_instance_fileName);
+            // userBreakpoint(scanner);
+            // dup.runDuplicateUpdate(old_instance_fileName, new_instance_fileName, 1, 1);
+
+            // Rebuild r = new Rebuild();
+            // FusekiInterface fuseki = new FusekiInterface(log);
+            // r.buildRebuildSet(new_instance_fileName, tm, log, timer, dbURL, "1", "1");
+            // try {
+            // Model updated = fuseki.getDataset(dbURL, "Updated");
+            // Model rebuild = fuseki.getDataset(dbURL, "Rebuild");
+            // if (updated.isIsomorphicWith(rebuild)) {
+            // log.print(LOGTAG.SUCCESS, "Graphs are isomorphic");
+            // } else {
+            // log.print(LOGTAG.ERROR, "Graphs are not isomorphic");
+            // }
+            // } catch (IOException e) {
+            // e.printStackTrace();
+            // }
         }
 
         if (mode.equals("n=instances")) {

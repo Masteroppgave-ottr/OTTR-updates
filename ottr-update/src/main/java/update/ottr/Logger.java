@@ -65,6 +65,8 @@ public class Logger {
                 System.out.println(ANSI_ORANGE + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.DUPLICATE) {
                 System.out.println(ANSI_TURQUOISE + "[" + tag + "]" + ANSI_RESET + message);
+            } else if (tag == LOGTAG.COMBINED) {
+                System.out.println(ANSI_PINK + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.TEST) {
                 System.out.println(ANSI_GREY + "[" + tag + "]" + ANSI_RESET + message);
             } else if (tag == LOGTAG.SUCCESS) {
