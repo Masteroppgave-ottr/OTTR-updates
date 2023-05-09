@@ -117,6 +117,7 @@ public class Controller {
         Rebuild rebuild = new Rebuild();
         Duplicates duplicates = new Duplicates(log, dbURL, timer, ottrInterface);
         BlankNode blankNode = new BlankNode(log, dbURL, timer, ottrInterface);
+        Combined combined = new Combined(log, dbURL, timer, ottrInterface);
 
         warmup(Integer.parseInt(numElements[0]), generatedPath, instanceFileName, warmupSeconds);
 
@@ -168,7 +169,7 @@ public class Controller {
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE  blank node update for " + n + " instances");
                 // if (contains(solutions, Solutions.REBUILD + "")) {
-                //     compareDataset("Updated", "Rebuild");
+                // compareDataset("Updated", "Rebuild");
                 // }
             }
             if (contains(solutions, Solutions.DUPLICATE + "")) {
@@ -185,6 +186,23 @@ public class Controller {
                 duplicates.runDuplicateUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE duplicate update for " + n + " instances");
+                if (contains(solutions, Solutions.REBUILD + "")) {
+                    compareDataset("Updated", "Rebuild");
+                }
+            }
+            if (contains(solutions, Solutions.COMBINED + "")) {
+                try {
+                    fuseki.clearUpdated(dbURL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                // reset the database to the old instances with a correct counter
+                combined.insertFromFile(pathToOldInstances);
+                log.print(logLevel, "START combined update for " + n + " instances");
+
+                combined.runCombinedUpdate(pathToOldInstances, pathToNewInstances);
+                log.print(logLevel, "DONE combined update for " + n + " instances");
                 if (contains(solutions, Solutions.REBUILD + "")) {
                     compareDataset("Updated", "Rebuild");
                 }

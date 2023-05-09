@@ -122,8 +122,9 @@ public class BlankNode {
         }
     }
 
-    public void addDeleteClauseOnlyBlanks(UpdateBuilder builder, Model model) {
+    public boolean addDeleteClauseOnlyBlanks(UpdateBuilder builder, Model model) {
         StmtIterator statements = model.listStatements();
+        boolean containsBlank = false;
         while (statements.hasNext()) {
             Statement statement = statements.next();
 
@@ -139,12 +140,16 @@ public class BlankNode {
 
             if (sub != null && obj != null) {
                 builder.addDelete(sub, statement.getPredicate(), obj);
+                containsBlank = true;
             } else if (sub != null) {
                 builder.addDelete(sub, statement.getPredicate(), statement.getObject());
+                containsBlank = true;
             } else if (obj != null) {
                 builder.addDelete(statement.getSubject(), statement.getPredicate(), obj);
+                containsBlank = true;
             }
         }
+        return containsBlank;
     }
 
     /**

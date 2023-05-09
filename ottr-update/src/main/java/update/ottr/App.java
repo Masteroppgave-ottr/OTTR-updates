@@ -71,17 +71,17 @@ public class App {
         Scanner scanner = new Scanner(System.in);
 
         LOGTAG[] logLevels = {
-                LOGTAG.DEFAULT,
-                LOGTAG.DEBUG,
-                LOGTAG.FUSEKI,
+                // LOGTAG.DEFAULT,
+                // LOGTAG.DEBUG,
+                // LOGTAG.FUSEKI,
                 // LOGTAG.OTTR,
                 // LOGTAG.DIFF,
                 LOGTAG.WARNING,
                 LOGTAG.ERROR,
                 LOGTAG.TEST,
-                LOGTAG.COMBINED,
-                LOGTAG.DUPLICATE,
-                LOGTAG.BLANK,
+                // LOGTAG.COMBINED,
+                // LOGTAG.DUPLICATE,
+                // LOGTAG.BLANK,
                 // LOGTAG.SIMPLE,
                 // LOGTAG.REBUILD,
                 LOGTAG.SUCCESS
@@ -153,11 +153,10 @@ public class App {
 
             Combined c = new Combined(log, dbURL, timer, ottrInterface);
 
-            userBreakpoint(scanner);
+            c.insertFromString(oldInstanceFileContent);
             c.insertFromString(oldInstanceFileContent);
             userBreakpoint(scanner);
-            c.insertFromString(oldInstanceFileContent);
-            System.exit(0);
+            // c.insertFromString(oldInstanceFileContent);
 
             c.runCombinedUpdate(old_instance_fileName, new_instance_fileName);
 

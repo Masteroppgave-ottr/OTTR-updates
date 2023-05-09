@@ -42,6 +42,11 @@ public class Combined {
     scanner.nextLine();
   }
 
+  public void insertFromFile(String file) {
+    String fileContent = ottrInterface.readFromFileToString(file, 6);
+    insertFromString(fileContent);
+  }
+
   public void insertFromString(String instanceString) {
     Model allTriples = ottrInterface.expandAndGetModelFromString(instanceString);
     Model nonBlankTriples = ModelFactory.createDefaultModel();
@@ -110,10 +115,12 @@ public class Combined {
   public void deleteFromString(String instanceString) {
     // create delete the blank triples
     UpdateRequest blankDeleteRequest = createDeleteRequestBlankTriples(instanceString);
-    try {
-      fi.updateLocalDB(blankDeleteRequest, dbURL);
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (blankDeleteRequest != null) {
+      try {
+        fi.updateLocalDB(blankDeleteRequest, dbURL);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     // count the number of occurrences of each triple to be deleted
@@ -139,10 +146,11 @@ public class Combined {
 
   public UpdateRequest createDeleteRequestBlankTriples(String instancesString) {
     UpdateBuilder builder = new UpdateBuilder();
+    boolean hasBlanks = false;
     for (String line : instancesString.split("\n")) {
       Model m = ottrInterface.expandAndGetModelFromString(line);
       HashMap<RDFNode, Integer> blankNodeCounts = blankNodes.countBlankNodes(m);
-      blankNodes.addDeleteClauseOnlyBlanks(builder, m);
+      hasBlanks = blankNodes.addDeleteClauseOnlyBlanks(builder, m);
 
       // create a sub query for each blank node
       for (RDFNode key : blankNodeCounts.keySet()) {
@@ -162,6 +170,10 @@ public class Combined {
       }
     }
 
+    if (!hasBlanks) {
+      log.print(LOGTAG.COMBINED, "No blank nodes found in the instances string");
+      return null;
+    }
     log.print(LOGTAG.DEBUG, builder.buildRequest().toString());
     return builder.buildRequest();
 
