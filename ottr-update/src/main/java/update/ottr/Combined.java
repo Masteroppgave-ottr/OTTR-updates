@@ -3,7 +3,6 @@ package update.ottr;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Scanner;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -78,20 +77,18 @@ public class Combined {
 
       HashMap<Statement, Integer> countedStatements = ottrInterface.expandAndGetCountedStatementsFromString(
           instanceString);
-      // print the keys in the countedStatements
 
       // remove all key value pairs where the key is a blank node
-      Iterator<Statement> iterator = countedStatements.keySet().iterator();
-      while (iterator.hasNext()) {
-        Statement key = iterator.next();
-        if (key.asTriple().getSubject().isBlank() || key.asTriple().getObject().isBlank()) {
-          countedStatements.remove(key);
+      HashMap<Statement, Integer> nonBlankCountedStatements = new HashMap<Statement, Integer>();
+      for (Statement key : countedStatements.keySet()) {
+        if (!key.asTriple().getSubject().isBlank() && !key.asTriple().getObject().isBlank()) {
+          nonBlankCountedStatements.put(key, countedStatements.get(key));
         }
       }
-      log.print(logLevel, "We have " + countedStatements.size() + " statements inside the instanceString");
+      log.print(logLevel, "We have " + nonBlankCountedStatements.size() + " statements inside the instanceString");
 
       HashMap<Statement, Integer> duplicateStatementMap = duplicates.combineAndGetDuplicates(duplicateModel,
-          countedStatements);
+          nonBlankCountedStatements);
       log.print(logLevel, "We have " + duplicateStatementMap.size() + " duplicates");
       for (Statement s : duplicateStatementMap.keySet()) {
         log.print(logLevel, s.toString() + " " + duplicateStatementMap.get(s));
