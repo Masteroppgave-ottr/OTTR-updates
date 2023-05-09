@@ -201,7 +201,8 @@ public class Controller {
                 combined.insertFromFile(pathToOldInstances);
                 log.print(logLevel, "START combined update for " + n + " instances");
 
-                combined.runCombinedUpdate(pathToOldInstances, pathToNewInstances);
+                combined.runCombinedUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
+                        Integer.parseInt(changes));
                 log.print(logLevel, "DONE combined update for " + n + " instances");
                 if (contains(solutions, Solutions.REBUILD + "")) {
                     compareDataset("Updated", "Rebuild");

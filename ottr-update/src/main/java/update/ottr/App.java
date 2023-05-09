@@ -158,7 +158,7 @@ public class App {
             userBreakpoint(scanner);
             // c.insertFromString(oldInstanceFileContent);
 
-            c.runCombinedUpdate(old_instance_fileName, new_instance_fileName);
+            c.runCombinedUpdate(old_instance_fileName, new_instance_fileName, -1, -1);
 
             // Duplicates dup = new Duplicates(log, dbURL, timer, ottrInterface);
             // log.print(LOGTAG.DEBUG, "inserting from the file " + old_instance_fileName);

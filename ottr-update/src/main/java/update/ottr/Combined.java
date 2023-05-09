@@ -179,8 +179,10 @@ public class Combined {
 
   }
 
-  public void runCombinedUpdate(String pathToOldInstances, String pathToNewInstances) {
-    log.print(LOGTAG.COMBINED, "Running Combined solution 😎😎");
+  public void runCombinedUpdate(String pathToOldInstances, String pathToNewInstances, int n, int changes) {
+    if (n != -1) {
+      timer.newSplit("start", "combined solution", n, changes);
+    }
 
     Diff d = new Diff(log);
     d.readDiff(pathToOldInstances, pathToNewInstances);
@@ -198,6 +200,14 @@ public class Combined {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    if (n != -1) {
+      timer.newSplit("diff", "combined solution", n, changes);
+    }
+
+    // TODO: do something about this timing
+    if (n != -1) {
+      timer.newSplit("model", "combined solution", n, changes);
+    }
 
     log.print(logLevel, "Add instances string: " + addInstancesString);
     log.print(logLevel, "Delete instances string: " + deleteInstancesString);
@@ -207,6 +217,10 @@ public class Combined {
     }
     if (deleteInstancesString != null) {
       deleteFromString(deleteInstancesString);
+    }
+
+    if (n != -1) {
+      timer.newSplit("end", "combined solution", n, changes);
     }
 
   }
