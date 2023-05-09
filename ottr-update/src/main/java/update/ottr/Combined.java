@@ -137,11 +137,13 @@ public class Combined {
 
     log.print(LOGTAG.DEBUG, "nonBlankModel: " + nonBlankModel.size());
     log.printModel(LOGTAG.DEBUG, nonBlankModel);
-    Model counterModel = duplicates.findCounterTriples(nonBlankModel);
-    log.print(LOGTAG.DEBUG, "counterModel: " + counterModel.size());
-    log.printModel(LOGTAG.DEBUG, counterModel);
+    if (nonBlankModel.size() > 0) {
+      Model counterModel = duplicates.findCounterTriples(nonBlankModel);
+      log.print(LOGTAG.DEBUG, "counterModel: " + counterModel.size());
+      log.printModel(LOGTAG.DEBUG, counterModel);
 
-    duplicates.deleteFromModelAndCounter(statementCountMap, counterModel, nonBlankModel);
+      duplicates.deleteFromModelAndCounter(statementCountMap, counterModel, nonBlankModel);
+    }
   }
 
   public UpdateRequest createDeleteRequestBlankTriples(String instancesString) {
