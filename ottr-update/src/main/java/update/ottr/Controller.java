@@ -285,6 +285,25 @@ public class Controller {
                     compareDataset("Updated", "Rebuild");
                 }
             }
+            if (contains(solutions, Solutions.COMBINED + "")) {
+                log.print(logLevel, "START combined update for " + n + " instances");
+                Combined combined = new Combined(log, dbURL, timer, ottrInterface);
+
+                // reset the database to the old instances with a correct counter
+                try {
+                    fuseki.clearUpdated(dbURL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                combined.insertFromFile(pathToOldInstances);
+
+                combined.runCombinedUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(numInstances),
+                        n);
+                log.print(logLevel, "DONE combined update for " + n + " instances");
+                if (contains(solutions, Solutions.REBUILD + "")) {
+                    compareDataset("Updated", "Rebuild");
+                }
+            }
             try {
                 timer.writeSplitsToFile("nChanges_instances-" + numInstances + "_deletions-" + deletions[0] + "-"
                         + deletions[deletions.length - 1] + "_insertions" + insertions[0] + "-"
