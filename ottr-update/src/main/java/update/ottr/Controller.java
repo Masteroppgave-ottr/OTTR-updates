@@ -168,9 +168,9 @@ public class Controller {
                 blankNode.runBlankNodeUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE  blank node update for " + n + " instances");
-                // if (contains(solutions, Solutions.REBUILD + "")) {
-                // compareDataset("Updated", "Rebuild");
-                // }
+                if (contains(solutions, Solutions.REBUILD + "")) {
+                    compareDataset("Updated", "Rebuild");
+                }
             }
             if (contains(solutions, Solutions.DUPLICATE + "")) {
                 try {
@@ -197,16 +197,12 @@ public class Controller {
                     e.printStackTrace();
                 }
 
-                userBreakpoint();
                 // reset the database to the old instances with a correct counter
                 combined.insertFromFile(pathToOldInstances);
                 log.print(logLevel, "START combined update for " + n + " instances");
-                userBreakpoint();
-
                 combined.runCombinedUpdate(pathToOldInstances, pathToNewInstances, Integer.parseInt(n),
                         Integer.parseInt(changes));
                 log.print(logLevel, "DONE combined update for " + n + " instances");
-                userBreakpoint();
                 if (contains(solutions, Solutions.REBUILD + "")) {
                     compareDataset("Updated", "Rebuild");
                 }

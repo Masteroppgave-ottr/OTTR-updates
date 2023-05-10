@@ -49,6 +49,8 @@ public class Combined {
 
   public void insertFromString(String instanceString) {
     Model allTriples = ottrInterface.expandAndGetModelFromString(instanceString);
+    log.print(LOGTAG.COMBINED, "all triples are");
+    log.printModel(LOGTAG.COMBINED, allTriples);
     Model nonBlankTriples = ModelFactory.createDefaultModel();
     Model blankTriples = ModelFactory.createDefaultModel();
     for (StmtIterator i = allTriples.listStatements(); i.hasNext();) {
@@ -67,6 +69,7 @@ public class Combined {
 
     // ~~ Handle blank triples ~~
     if (blankTriples.size() > 0) {
+      log.print(LOGTAG.COMBINED, "INSERTING " + blankTriples.size() + " BLANK TRIPLES");
       UpdateRequest blankInsertRequest = blankNodes.createInsertRequest(blankTriples);
       try {
         fi.updateLocalDB(blankInsertRequest, dbURL);
@@ -77,6 +80,7 @@ public class Combined {
 
     // ~~ Handle non blank triples ~~
     if (nonBlankTriples.size() > 0) {
+      log.print(LOGTAG.COMBINED, "INSERTING " + nonBlankTriples.size() + " NON BLANK TRIPLES");
       Model duplicateModel = duplicates.findDuplicates(nonBlankTriples);
       log.print(logLevel, "we have " + duplicateModel.size() + " duplicates between the model and the triple store");
 
@@ -116,6 +120,7 @@ public class Combined {
     // create delete the blank triples
     UpdateRequest blankDeleteRequest = createDeleteRequestBlankTriples(instanceString);
     if (blankDeleteRequest != null) {
+      log.print(LOGTAG.COMBINED, "DELETING BLANK TRIPLES");
       try {
         fi.updateLocalDB(blankDeleteRequest, dbURL);
       } catch (IOException e) {
@@ -138,6 +143,7 @@ public class Combined {
     log.print(LOGTAG.DEBUG, "nonBlankModel: " + nonBlankModel.size());
     log.printModel(LOGTAG.DEBUG, nonBlankModel);
     if (nonBlankModel.size() > 0) {
+      log.print(LOGTAG.COMBINED, "DELETING NON BLANK TRIPLES");
       Model counterModel = duplicates.findCounterTriples(nonBlankModel);
       log.print(LOGTAG.DEBUG, "counterModel: " + counterModel.size());
       log.printModel(LOGTAG.DEBUG, counterModel);
@@ -149,10 +155,15 @@ public class Combined {
   public UpdateRequest createDeleteRequestBlankTriples(String instancesString) {
     UpdateBuilder builder = new UpdateBuilder();
     boolean hasBlanks = false;
+    log.print(LOGTAG.COMBINED, "Creating the delete request for the blank triples in\n" + instancesString);
     for (String line : instancesString.split("\n")) {
       Model m = ottrInterface.expandAndGetModelFromString(line);
+      log.print(LOGTAG.COMBINED, "!!! THE MODEL IS NOW !!!");
+      log.printModel(LOGTAG.COMBINED, m);
+      log.print(LOGTAG.COMBINED, "");
       HashMap<RDFNode, Integer> blankNodeCounts = blankNodes.countBlankNodes(m);
-      hasBlanks = blankNodes.addDeleteClauseOnlyBlanks(builder, m);
+      boolean thisHasBlanks = blankNodes.addDeleteClauseOnlyBlanks(builder, m);
+      hasBlanks = hasBlanks || thisHasBlanks;
 
       // create a sub query for each blank node
       for (RDFNode key : blankNodeCounts.keySet()) {
@@ -214,11 +225,12 @@ public class Combined {
     log.print(logLevel, "Add instances string: " + addInstancesString);
     log.print(logLevel, "Delete instances string: " + deleteInstancesString);
 
-    if (addInstancesString != null) {
-      insertFromString(addInstancesString);
-    }
     if (deleteInstancesString != null) {
       deleteFromString(deleteInstancesString);
+    }
+
+    if (addInstancesString != null) {
+      insertFromString(addInstancesString);
     }
 
     if (n != -1) {

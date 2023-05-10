@@ -124,32 +124,30 @@ public class BlankNode {
 
     public boolean addDeleteClauseOnlyBlanks(UpdateBuilder builder, Model model) {
         StmtIterator statements = model.listStatements();
-        boolean containsBlank = false;
+        boolean hasBlanks = false;
         while (statements.hasNext()) {
             Statement statement = statements.next();
-
             String sub = null;
             String obj = null;
             if (statement.getSubject().isAnon()) {
                 sub = "?" + statement.getSubject().toString().replace("-", "_");
+                hasBlanks = true;
             }
 
             if (statement.getObject().isAnon()) {
                 obj = "?" + statement.getObject().toString().replace("-", "_");
+                hasBlanks = true;
             }
 
             if (sub != null && obj != null) {
                 builder.addDelete(sub, statement.getPredicate(), obj);
-                containsBlank = true;
             } else if (sub != null) {
                 builder.addDelete(sub, statement.getPredicate(), statement.getObject());
-                containsBlank = true;
             } else if (obj != null) {
                 builder.addDelete(statement.getSubject(), statement.getPredicate(), obj);
-                containsBlank = true;
             }
         }
-        return containsBlank;
+        return hasBlanks;
     }
 
     /**
