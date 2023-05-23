@@ -1,6 +1,25 @@
 # Efficient update of OTTR-constructed triplestores
 By Preben Zahl and Magnus Wiik Eckhoff
 
+Reasonable Ontology Templates (OTTR) is a language designed to improve
+the efficiency and quality of building, using, and maintaining knowledge
+bases. OTTR introduces templates to create patterns of RDF triples.
+Templates are instantiated by template instances, which can be expanded
+to an RDF graph, and then stored in a triplestore. It is desirable to use
+the template instances to dictate the content of the triplestore. Currently,
+OTTR has no way of updating the triplestore when a change to the template
+instances occurs, besides rebuilding all triples. In this thesis, we have
+created several algorithms to more efficiently update the triplestore based
+on changes to template instances. Our algorithms aim to update only the
+parts affected by the change. First, we created a simple solution with
+excellent performance, but strict assumptions about input data. Then,
+we created other solutions that remove one or several assumptions. All
+solutions significantly outperform OTTR‘s current solution in a typical
+use case. We investigate the performance of the different solutions and
+compare them to each other.
+
+This repo contains the implementation of the algorithms described in the masters thesis **Efficient update of OTTR-constructed triplestores**.
+
 ### Requirements:
 * Lutra (https://gitlab.com/ottr/lutra/lutra)
 * Apache Jena Fuseki (https://jena.apache.org/download/)
@@ -100,6 +119,7 @@ NB: INSTANCE_FILE, TEMPLATE_FILE and TIMER have to be stored in the temp directo
   - SimpleUpdate.java
   - BlankNode.java
   - Duplicates.java
+  - Combined.java
 
 <!-- 
 ## Timing:
