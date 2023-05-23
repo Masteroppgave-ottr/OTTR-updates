@@ -13,9 +13,12 @@ import org.apache.jena.rdf.model.Statement;
 
 //java
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 import java.io.FileReader;
 
@@ -27,6 +30,30 @@ public class OttrInterface {
     public OttrInterface(Logger log, TemplateManager tm) {
         this.log = log;
         this.tm = tm;
+    }
+
+    /**
+     * Reads a file and returns the content as a string
+     * 
+     * @param path_to_file
+     * @param lineOffset   The number of lines to skip before reading the file
+     * @return The content of the file as a string
+     */
+    public String readFromFileToString(String path_to_file, int lineOffset) {
+        String content = "";
+        File file = new File(path_to_file);
+        try {
+            Scanner scanner = new Scanner(file);
+            for (int i = 0; i < lineOffset; i++) {
+                scanner.nextLine();
+            }
+            while (scanner.hasNextLine()) {
+                content += scanner.nextLine() + "\n";
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 
     /**

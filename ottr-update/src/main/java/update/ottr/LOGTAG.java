@@ -12,6 +12,7 @@ public enum LOGTAG {
     DUPLICATE,
     SIMPLE,
     REBUILD,
+    COMBINED,
     TEST,
     SUCCESS,
 }

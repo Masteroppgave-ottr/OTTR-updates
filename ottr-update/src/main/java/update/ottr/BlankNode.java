@@ -29,7 +29,7 @@ public class BlankNode {
     /**
      * Count the number of triples containing one or more blank nodes in the model.
      **/
-    private HashMap<RDFNode, Integer> countBlankNodes(Model model) {
+    public HashMap<RDFNode, Integer> countBlankNodes(Model model) {
 
         HashMap<RDFNode, Integer> blankNodeCounts = new HashMap<RDFNode, Integer>();
 
@@ -122,11 +122,39 @@ public class BlankNode {
         }
     }
 
+    public boolean addDeleteClauseOnlyBlanks(UpdateBuilder builder, Model model) {
+        StmtIterator statements = model.listStatements();
+        boolean hasBlanks = false;
+        while (statements.hasNext()) {
+            Statement statement = statements.next();
+            String sub = null;
+            String obj = null;
+            if (statement.getSubject().isAnon()) {
+                sub = "?" + statement.getSubject().toString().replace("-", "_");
+                hasBlanks = true;
+            }
+
+            if (statement.getObject().isAnon()) {
+                obj = "?" + statement.getObject().toString().replace("-", "_");
+                hasBlanks = true;
+            }
+
+            if (sub != null && obj != null) {
+                builder.addDelete(sub, statement.getPredicate(), obj);
+            } else if (sub != null) {
+                builder.addDelete(sub, statement.getPredicate(), statement.getObject());
+            } else if (obj != null) {
+                builder.addDelete(statement.getSubject(), statement.getPredicate(), obj);
+            }
+        }
+        return hasBlanks;
+    }
+
     /**
      * Adds the inner sub query to the builder.
      * This finds all graphs that match the deleteModel and have a blank node.
      */
-    private void addInnerSubQuery(SelectBuilder builder, Model model, String blankName) {
+    public void addInnerSubQuery(SelectBuilder builder, Model model, String blankName) {
         builder.addVar(blankName);
         addWhereClauseToSelect(builder, model, blankName);
         try {
@@ -142,7 +170,7 @@ public class BlankNode {
      * 
      * @return
      */
-    private void addOuterSubQuery(SelectBuilder builder, Model model, int count, String blankName) {
+    public void addOuterSubQuery(SelectBuilder builder, Model model, int count, String blankName) {
         builder.addVar(blankName);
         try {
             // we give count a unique name in order to avoid name clashes with other
